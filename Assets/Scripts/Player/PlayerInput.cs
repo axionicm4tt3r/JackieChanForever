@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInput : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
+public class PlayerInput : MonoBehaviour
+{
+	PlayerController playerController;
+	PlayerMovement playerMovement;
+	Camera playerCamera;
 	
-	// Update is called once per frame
-	void Update () {
+	void Start()
+	{
+		playerController = GetComponent<PlayerController>();
+		playerMovement = GetComponent<PlayerMovement>();
+		playerCamera = GameObject.FindWithTag("Camera").GetComponent<Camera>();
+	}
+
+	void Update ()
+	{
 		
 	}
 }
