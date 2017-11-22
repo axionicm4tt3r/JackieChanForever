@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerCamera : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +13,7 @@ public class PlayerController : MonoBehaviour {
 		
 	}
 
-	internal void Attack()
+	internal void Look(Vector2 vector2)
 	{
 		//throw new NotImplementedException();
 	}
