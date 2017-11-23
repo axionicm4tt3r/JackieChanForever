@@ -6,11 +6,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 	public GameObject PlayerHUD;
+	public PlayerSoundManager playerSoundManager;
 	public CapsuleCollider MidPunchHitbox;
 	public CapsuleCollider JumpKickHitbox;
 	public CapsuleCollider SlideKickHitbox;
 
-	public float basicAttackCooldown = 0.5f;
+	public float basicAttackCooldown = 0.3f;
 
 	private float cooldown = 0f;
 	private bool hitboxesReset = true;
@@ -21,6 +22,8 @@ public class PlayerController : MonoBehaviour
 		{
 			Instantiate(PlayerHUD);
 		}
+
+		playerSoundManager = GetComponent<PlayerSoundManager>();
 
 		MidPunchHitbox = GameObject.FindGameObjectWithTag("MidPunchHitbox").GetComponent<CapsuleCollider>();
 		JumpKickHitbox = GameObject.FindGameObjectWithTag("JumpKickHitbox").GetComponent<CapsuleCollider>();
@@ -61,7 +64,11 @@ public class PlayerController : MonoBehaviour
 			{
 				//DealDamage
 				//ApplyProperty
-				return;
+				playerSoundManager.PlayBasicAttackHitSound();
+			}
+			else
+			{
+				playerSoundManager.PlayBasicAttackMissSound();
 			}
 		}
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
-	public const float PLAYER_VIEW_Y_OFFSET = 0.9f; // The height at which the camera is bound to
+	public const float PLAYER_VIEW_Y_OFFSET = 1.8f; // The height at which the camera is bound to
 
 	public float xMouseSensitivity = 45.0f;
 	public float yMouseSensitivity = 45.0f;
