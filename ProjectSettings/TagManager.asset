@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PlayerHUD
+  - MidPunchHitbox
+  - JumpKickHitbox
+  - SlideKickHitbox
+  - Enemy
+  - Breakable
   layers:
   - Default
   - TransparentFX

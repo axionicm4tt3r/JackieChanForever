@@ -19,7 +19,7 @@ public class PlayerQuakeMovement : MonoBehaviour
 	private CharacterController characterController;
 
 	private Vector3 moveDirectionNormalized = Vector3.zero;
-	private Vector3 playerVelocity = Vector3.zero;
+	public Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
 	private float playerTopVelocity = 0.0f;
 
 	private bool wishJump = false;
