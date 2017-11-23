@@ -38,11 +38,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4215498645123982}
-  - component: {fileID: 114693709125291462}
-  - component: {fileID: 114700187900392008}
-  - component: {fileID: 114050753277268324}
   - component: {fileID: 143162374636705588}
+  - component: {fileID: 114700187900392008}
   - component: {fileID: 114295706727139742}
+  - component: {fileID: 114050753277268324}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -136,11 +135,14 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130459233875592}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae6f7cef10723494585576a6ee25bdeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  xMouseSensitivity: 45
+  yMouseSensitivity: 45
+  playerViewYOffset: 0.9
 --- !u!114 &114295706727139742
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -152,101 +154,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cde055c18e2432b44a89229bdbef7afb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerView: {fileID: 4724950592248332}
-  playerViewYOffset: 0.9
-  xMouseSensitivity: 45
-  yMouseSensitivity: 45
   gravity: 20
-  friction: 6
-  moveSpeed: 15
-  runAcceleration: 30
-  runDeacceleration: 21
+  groudFriction: 6
+  moveSpeed: 9
+  runAcceleration: 16
+  runDeacceleration: 11
   airAcceleration: 0.02
   airDecceleration: 0.02
   airControl: 0.3
   sideStrafeAcceleration: 50
   sideStrafeSpeed: 1
-  jumpSpeed: 8
+  jumpSpeed: 6
   moveScale: 1
-  style:
-    m_Name: 
-    m_Normal:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Hover:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Active:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Focused:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnNormal:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnHover:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnActive:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_OnFocused:
-      m_Background: {fileID: 0}
-      m_ScaledBackgrounds: []
-      m_TextColor: {r: 0, g: 0, b: 0, a: 1}
-    m_Border:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Margin:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Padding:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Overflow:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
-    m_Font: {fileID: 0}
-    m_FontSize: 0
-    m_FontStyle: 0
-    m_Alignment: 0
-    m_WordWrap: 0
-    m_RichText: 1
-    m_TextClipping: 0
-    m_ImagePosition: 0
-    m_ContentOffset: {x: 0, y: 0}
-    m_FixedWidth: 0
-    m_FixedHeight: 0
-    m_StretchWidth: 1
-    m_StretchHeight: 0
-  fpsDisplayRate: 4
---- !u!114 &114693709125291462
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1162274536680252}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ad344d0b18714d4a923d80ae73dad9f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114700187900392008
 MonoBehaviour:
   m_ObjectHideFlags: 1

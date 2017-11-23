@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+	public const float PLAYER_VIEW_Y_OFFSET = 0.9f; // The height at which the camera is bound to
+
 	public float xMouseSensitivity = 45.0f;
 	public float yMouseSensitivity = 45.0f;
-	public float playerViewYOffset = 0.9f; // The height at which the camera is bound to
 
 	private float rotX = 0.0f;
 	private float rotY = 0.0f;
@@ -19,7 +20,7 @@ public class PlayerCamera : MonoBehaviour
 		// Put the camera inside the capsule collider
 		transform.position = new Vector3(
 			transform.root.position.x,
-			transform.root.position.y + playerViewYOffset,
+			transform.root.position.y + PLAYER_VIEW_Y_OFFSET,
 			transform.root.position.z);
 	}
 
@@ -27,10 +28,10 @@ public class PlayerCamera : MonoBehaviour
 	{
 		//Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
 		//Set the camera's position to the transform
-		transform.position = new Vector3(
-			transform.root.position.x,
-			transform.root.position.y + playerViewYOffset,
-			transform.root.position.z);
+		//transform.position = new Vector3(
+		//	transform.root.position.x,
+		//	transform.root.position.y + PLAYER_VIEW_Y_OFFSET,
+		//	transform.root.position.z);
 	}
 
 	internal void Look(Vector2 input)
