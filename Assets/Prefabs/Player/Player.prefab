@@ -60,7 +60,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4000383256369480}
-  - component: {fileID: 136924547716420714}
+  - component: {fileID: 65712125315625960}
   m_Layer: 0
   m_Name: SlideKickHitbox
   m_TagString: SlideKickHitbox
@@ -76,7 +76,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4004462497343722}
-  - component: {fileID: 136571019517000670}
+  - component: {fileID: 65047831509441912}
   m_Layer: 0
   m_Name: MidPunchHitbox
   m_TagString: MidPunchHitbox
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4370365486389610}
-  - component: {fileID: 136326299605329692}
+  - component: {fileID: 65606255319005970}
   m_Layer: 0
   m_Name: JumpKickHitbox
   m_TagString: JumpKickHitbox
@@ -204,6 +204,42 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!65 &65047831509441912
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1937679395239944}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 0.5, z: 2.5}
+  m_Center: {x: 0, y: 0, z: 0.5}
+--- !u!65 &65606255319005970
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1951653538013950}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 1.5, z: 2}
+  m_Center: {x: 0, y: 0, z: 0.25}
+--- !u!65 &65712125315625960
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1486320063413386}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.25, y: 1.25, z: 1.75}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!81 &81864974090846992
 AudioListener:
   m_ObjectHideFlags: 1
@@ -222,7 +258,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.8
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -393,45 +429,6 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1130459233875592}
   m_Enabled: 1
---- !u!136 &136326299605329692
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1951653538013950}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.75
-  m_Height: 1.75
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!136 &136571019517000670
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1937679395239944}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.6
-  m_Height: 2
-  m_Direction: 0
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!136 &136924547716420714
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486320063413386}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.75
-  m_Height: 1.75
-  m_Direction: 0
-  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!143 &143162374636705588
 CharacterController:
   m_ObjectHideFlags: 1

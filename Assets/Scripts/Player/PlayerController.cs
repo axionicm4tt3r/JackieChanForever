@@ -7,9 +7,9 @@ public class PlayerController : MonoBehaviour
 {
 	public GameObject PlayerHUD;
 	public PlayerSoundManager playerSoundManager;
-	public CapsuleCollider MidPunchHitbox;
-	public CapsuleCollider JumpKickHitbox;
-	public CapsuleCollider SlideKickHitbox;
+	public BoxCollider MidPunchHitbox;
+	public BoxCollider JumpKickHitbox;
+	public BoxCollider SlideKickHitbox;
 
 	public float basicAttackCooldown = 0.3f;
 
@@ -25,9 +25,9 @@ public class PlayerController : MonoBehaviour
 
 		playerSoundManager = GetComponent<PlayerSoundManager>();
 
-		MidPunchHitbox = GameObject.FindGameObjectWithTag("MidPunchHitbox").GetComponent<CapsuleCollider>();
-		JumpKickHitbox = GameObject.FindGameObjectWithTag("JumpKickHitbox").GetComponent<CapsuleCollider>();
-		SlideKickHitbox = GameObject.FindGameObjectWithTag("SlideKickHitbox").GetComponent<CapsuleCollider>();
+		MidPunchHitbox = GameObject.FindGameObjectWithTag("MidPunchHitbox").GetComponent<BoxCollider>();
+		JumpKickHitbox = GameObject.FindGameObjectWithTag("JumpKickHitbox").GetComponent<BoxCollider>();
+		SlideKickHitbox = GameObject.FindGameObjectWithTag("SlideKickHitbox").GetComponent<BoxCollider>();
 	}
 
 	// Update is called once per frame
@@ -53,12 +53,13 @@ public class PlayerController : MonoBehaviour
 	{
 		Debug.Log("Punch!");
 
-		Vector3 bottom = MidPunchHitbox.transform.position;
-		Vector3 top = MidPunchHitbox.transform.position + new Vector3(0, MidPunchHitbox.height, 0);
-		float radius = MidPunchHitbox.radius;
+		Vector3 size = MidPunchHitbox.transform.TransformVector(MidPunchHitbox.size / 2);
+		size.x = Mathf.Abs(size.x);
+		size.y = Mathf.Abs(size.y);
+		size.z = Mathf.Abs(size.z);
+		Collider[] results = Physics.OverlapBox(MidPunchHitbox.transform.position, size, MidPunchHitbox.transform.rotation);
 
-		Collider[] allOverlappingColliders = Physics.OverlapCapsule(bottom, top, radius);
-		foreach (Collider collider in allOverlappingColliders)
+		foreach (Collider collider in results)
 		{
 			if (collider.gameObject.tag == "Enemy" || collider.gameObject.tag == "Breakable")
 			{
