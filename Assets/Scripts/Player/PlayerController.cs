@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
 		size.x = Mathf.Abs(size.x);
 		size.y = Mathf.Abs(size.y);
 		size.z = Mathf.Abs(size.z);
-		Collider[] results = Physics.OverlapBox(MidPunchHitbox.transform.position, size, MidPunchHitbox.transform.rotation);
+		Collider[] results = Physics.OverlapBox(MidPunchHitbox.transform.position, size, Quaternion.identity);
 
 		foreach (Collider collider in results)
 		{

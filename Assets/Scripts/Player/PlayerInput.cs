@@ -5,11 +5,13 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
 	PlayerController playerController;
+	PlayerMovement playerMovement;
 	PlayerCamera playerCamera;
-	
+
 	void Start()
 	{
 		playerController = GetComponent<PlayerController>();
+		playerMovement = GetComponent<PlayerMovement>();
 		playerCamera = Camera.main.GetComponent<PlayerCamera>();
 	}
 
@@ -23,6 +25,17 @@ public class PlayerInput : MonoBehaviour
 		if (Input.GetButtonDown("Fire1"))
 		{
 			playerController.Attack();
+		}
+
+		if (Input.GetButton("Crouch"))
+		{
+			Debug.Log("Crouching");
+			playerMovement.GoToCrouching();
+		}
+		else if (!Input.GetButton("Crouch"))
+		{
+			Debug.Log("No longer crouching");
+			playerMovement.GoToStanding();
 		}
 	}
 }

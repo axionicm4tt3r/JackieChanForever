@@ -7,7 +7,6 @@ public class PlayerCameraHeadbob : MonoBehaviour
 
 	private CharacterController playerController;
 
-	private float midpoint = PlayerCamera.PLAYER_VIEW_Y_OFFSET;
 	private float timer = 0.0f;
 
 	private void Start()
@@ -22,6 +21,7 @@ public class PlayerCameraHeadbob : MonoBehaviour
 
 	private void Headbob()
 	{
+		float midpoint = PlayerCamera.currentViewYOffset;
 		float waveslice = 0.0f;
 
 		float horizontal = Input.GetAxis("Horizontal");

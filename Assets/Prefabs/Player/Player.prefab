@@ -370,7 +370,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravity: 20
   groudFriction: 6
+  changeStanceSpeed: 7
   moveSpeed: 9
+  moveSpeedCrouched: 5
   runAcceleration: 16
   runDeacceleration: 11
   airAcceleration: 0.02
@@ -380,7 +382,6 @@ MonoBehaviour:
   sideStrafeSpeed: 1
   jumpSpeed: 6
   moveScale: 1
-  playerVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &114381729323677420
 MonoBehaviour:
   m_ObjectHideFlags: 1

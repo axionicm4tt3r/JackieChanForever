@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public class PlayerQuakeMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
 	public float gravity = 20.0f;
-	public float groudFriction = 6; 
+	public float groudFriction = 6;
 
-	public float moveSpeed = 7.0f;                // Ground move speed
+	public float changeStanceSpeed = 7.0f;
+	public float moveSpeed = 9.0f;                // Ground move speed
+	public float moveSpeedCrouched = 5.0f;        // Ground move speed while crouched
 	public float runAcceleration = 14.0f;         // Ground accel
 	public float runDeacceleration = 10.0f;       // Deacceleration that occurs when running on the ground
 	public float airAcceleration = 2.0f;          // Air accel
@@ -14,15 +17,17 @@ public class PlayerQuakeMovement : MonoBehaviour
 	public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
 	public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
 	public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
+
 	public float moveScale = 1.0f;
 
 	private CharacterController characterController;
 
 	private Vector3 moveDirectionNormalized = Vector3.zero;
-	public Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
+	private Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
 	private float playerTopVelocity = 0.0f;
 
 	private bool wishJump = false;
+	private bool isCrouched = false;
 
 	private float playerFriction = 0.0f;
 
@@ -49,6 +54,7 @@ public class PlayerQuakeMovement : MonoBehaviour
 			playerTopVelocity = playerVelocity.magnitude;
 	}
 
+	#region QuakeMovementLogic
 	private void SetMovementDir()
 	{
 		playerInputVector.z = Input.GetAxisRaw("Vertical");
@@ -75,7 +81,7 @@ public class PlayerQuakeMovement : MonoBehaviour
 		wishDirection = transform.TransformDirection(wishDirection);
 
 		float wishSpeed = wishDirection.magnitude;
-		wishSpeed *= moveSpeed;
+		wishSpeed *= (isCrouched ? moveSpeedCrouched : moveSpeed);
 
 		wishDirection.Normalize();
 		moveDirectionNormalized = wishDirection;
@@ -150,10 +156,10 @@ public class PlayerQuakeMovement : MonoBehaviour
 		wishDirection.Normalize();
 		moveDirectionNormalized = wishDirection;
 
-		var wishspeed = wishDirection.magnitude;
-		wishspeed *= moveSpeed;
+		var wishSpeed = wishDirection.magnitude;
+		wishSpeed *= (isCrouched ? moveSpeedCrouched : moveSpeed);
 
-		Accelerate(wishDirection, wishspeed, runAcceleration);
+		Accelerate(wishDirection, wishSpeed, runAcceleration);
 
 		playerVelocity.y = 0;
 
@@ -202,6 +208,39 @@ public class PlayerQuakeMovement : MonoBehaviour
 
 		playerVelocity.x += accelerationSpeed * wishDirection.x;
 		playerVelocity.z += accelerationSpeed * wishDirection.z;
+	}
+	#endregion
+
+	internal void GoToCrouching()
+	{
+		isCrouched = true;
+
+		if (PlayerCamera.currentViewYOffset > PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET)
+		{
+			PlayerCamera.currentViewYOffset -= changeStanceSpeed * Time.deltaTime;
+			if (PlayerCamera.currentViewYOffset < PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET)
+			{
+				PlayerCamera.currentViewYOffset = PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET;
+			}
+
+			characterController.height = PlayerCamera.currentViewYOffset;
+		}
+	}
+
+	internal void GoToStanding()
+	{
+		isCrouched = false;
+
+		if (PlayerCamera.currentViewYOffset < PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET)
+		{
+			PlayerCamera.currentViewYOffset += changeStanceSpeed * Time.deltaTime;
+			if (PlayerCamera.currentViewYOffset > PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET)
+			{
+				PlayerCamera.currentViewYOffset = PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET;
+			}
+
+			characterController.height = PlayerCamera.currentViewYOffset;
+		}
 	}
 
 	/*
