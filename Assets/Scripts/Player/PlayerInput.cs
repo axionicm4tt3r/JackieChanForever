@@ -1,15 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+	CharacterController characterController;
 	PlayerController playerController;
 	PlayerMovement playerMovement;
 	PlayerCamera playerCamera;
 
+	public float crouchTime = 0f;
+	public float jumpTime = 0f;
+
 	void Start()
 	{
+		characterController = GetComponent<CharacterController>();
 		playerController = GetComponent<PlayerController>();
 		playerMovement = GetComponent<PlayerMovement>();
 		playerCamera = Camera.main.GetComponent<PlayerCamera>();
@@ -29,13 +32,27 @@ public class PlayerInput : MonoBehaviour
 
 		if (Input.GetButton("Crouch"))
 		{
-			Debug.Log("Crouching");
 			playerMovement.GoToCrouching();
+			crouchTime += Time.deltaTime;
 		}
 		else if (!Input.GetButton("Crouch"))
 		{
-			Debug.Log("No longer crouching");
 			playerMovement.GoToStanding();
+			crouchTime = 0;
+		}
+
+		HandlePlayerIsGroundedTime();
+	}
+
+	private void HandlePlayerIsGroundedTime()
+	{
+		if (characterController.isGrounded)
+		{
+			jumpTime = 0;
+		}
+		else if (jumpTime < PlayerController.JUMP_KICK_ALLOWANCE_TIME)
+		{
+			jumpTime += Time.deltaTime;
 		}
 	}
 }

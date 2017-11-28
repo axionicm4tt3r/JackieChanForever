@@ -17,11 +17,13 @@ public class PlayerMovement : MonoBehaviour
 	public float sideStrafeAcceleration = 50.0f;  // How fast acceleration occurs to get up to sideStrafeSpeed when
 	public float sideStrafeSpeed = 1.0f;          // What the max speed to generate when side strafing
 	public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
-
 	public float moveScale = 1.0f;
+
+	public bool moveAllowed = true;
 
 	private CharacterController characterController;
 
+	private Vector3 playerInputVector;
 	private Vector3 moveDirectionNormalized = Vector3.zero;
 	private Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
 	private float playerTopVelocity = 0.0f;
@@ -31,8 +33,6 @@ public class PlayerMovement : MonoBehaviour
 
 	private float playerFriction = 0.0f;
 
-	private Vector3 playerInputVector;
-
 	private void Start()
 	{
 		characterController = GetComponent<CharacterController>();
@@ -41,12 +41,15 @@ public class PlayerMovement : MonoBehaviour
 	private void Update()
 	{
 		QueueJump();
-		if (characterController.isGrounded)
-			GroundMove();
-		else if (!characterController.isGrounded)
-			AirMove();
+		if (moveAllowed)
+		{
+			if (characterController.isGrounded)
+				GroundMove();
+			else if (!characterController.isGrounded)
+				AirMove();
 
-		characterController.Move(playerVelocity * Time.deltaTime);
+			characterController.Move(playerVelocity * Time.deltaTime);
+		}
 
 		Vector3 udp = playerVelocity;
 		udp.y = 0.0f;
