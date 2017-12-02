@@ -16,7 +16,7 @@ public class PlayerSoundManager : MonoBehaviour
 
 	public void PlayJumpAttackHitSound()
 	{
-		var randomIndex = Random.Range(0, basicAttackHitSounds.Length);
+		var randomIndex = 1;//Random.Range(0, basicAttackHitSounds.Length);
 		playerAudioSource.PlayOneShot(basicAttackHitSounds[randomIndex]);
 	}
 
@@ -28,7 +28,7 @@ public class PlayerSoundManager : MonoBehaviour
 
 	public void PlaySlideAttackHitSound()
 	{
-		var randomIndex = Random.Range(0, basicAttackHitSounds.Length);
+		var randomIndex = 1;//Random.Range(0, basicAttackHitSounds.Length);
 		playerAudioSource.PlayOneShot(basicAttackHitSounds[randomIndex]);
 	}
 

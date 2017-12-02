@@ -30,7 +30,7 @@ public class PlayerInput : MonoBehaviour
 			playerController.Attack();
 		}
 
-		if (Input.GetButton("Crouch"))
+		if (Input.GetButton("Crouch") || playerController.playerState == PlayerController.PlayerState.SlideKicking)
 		{
 			playerMovement.GoToCrouching();
 			crouchTime += Time.deltaTime;

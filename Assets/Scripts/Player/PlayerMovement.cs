@@ -19,8 +19,10 @@ public class PlayerMovement : MonoBehaviour
 	public float jumpSpeed = 8.0f;                // The speed at which the character's up axis gains when hitting jump
 	public float moveScale = 1.0f;
 
-	public bool moveAllowed = true;
+	public float jumpKickVelocity = 18f;
+	public float slideKickVelocity = 14f;
 
+	private PlayerController playerController;
 	private CharacterController characterController;
 
 	private Vector3 playerInputVector;
@@ -36,25 +38,37 @@ public class PlayerMovement : MonoBehaviour
 	private void Start()
 	{
 		characterController = GetComponent<CharacterController>();
+		playerController = GetComponent<PlayerController>();
 	}
 
 	private void Update()
 	{
-		QueueJump();
-		if (moveAllowed)
+		switch (playerController.playerState)
 		{
-			if (characterController.isGrounded)
-				GroundMove();
-			else if (!characterController.isGrounded)
-				AirMove();
+			case PlayerController.PlayerState.FreeMove:
+				QueueJump();
 
-			characterController.Move(playerVelocity * Time.deltaTime);
+				if (characterController.isGrounded)
+					GroundMove();
+				else if (!characterController.isGrounded)
+					AirMove();
+
+				characterController.Move(playerVelocity * Time.deltaTime);
+
+				Vector3 udp = playerVelocity;
+				udp.y = 0.0f;
+				if (playerVelocity.magnitude > playerTopVelocity)
+					playerTopVelocity = playerVelocity.magnitude;
+				break;
+			case PlayerController.PlayerState.JumpKicking:
+				playerVelocity = transform.forward * jumpKickVelocity;
+				characterController.Move(playerVelocity * Time.deltaTime);
+				break;
+			case PlayerController.PlayerState.SlideKicking:
+				playerVelocity = transform.forward * slideKickVelocity;
+				characterController.Move(playerVelocity * Time.deltaTime);
+				break;
 		}
-
-		Vector3 udp = playerVelocity;
-		udp.y = 0.0f;
-		if (playerVelocity.magnitude > playerTopVelocity)
-			playerTopVelocity = playerVelocity.magnitude;
 	}
 
 	#region QuakeMovementLogic

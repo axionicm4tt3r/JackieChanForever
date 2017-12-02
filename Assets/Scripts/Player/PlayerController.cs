@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,17 +10,22 @@ public class PlayerController : MonoBehaviour
 	public BoxCollider JumpKickHitbox;
 	public BoxCollider SlideKickHitbox;
 
+	private Animator playerUIAnimator;
 	private PlayerSoundManager playerSoundManager;
 	private PlayerInput playerInput;
 	private PlayerMovement playerMovement;
 
+	public PlayerState playerState;
+
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
+	public float jumpKickAttackMotionTime = 0.25f;
 	public float slideKickAttackCooldown = 0.5f;
+	public float slideKickAttackMotionTime = 0.4f;
 
-	private float cooldown = 0f;
+	private float attackCooldown = 0f;
+	private float attackMotionTime = 0f;
 
-	// Use this for initialization
 	void Start()
 	{
 		if (!GameObject.FindGameObjectWithTag("PlayerHUD"))
@@ -31,144 +33,113 @@ public class PlayerController : MonoBehaviour
 			Instantiate(PlayerHUD);
 		}
 
+		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
 		playerSoundManager = GetComponent<PlayerSoundManager>();
 		playerInput = GetComponent<PlayerInput>();
 		playerMovement = GetComponent<PlayerMovement>();
 
-		MidPunchHitbox = GameObject.FindGameObjectWithTag("MidPunchHitbox").GetComponent<BoxCollider>();
-		JumpKickHitbox = GameObject.FindGameObjectWithTag("JumpKickHitbox").GetComponent<BoxCollider>();
-		SlideKickHitbox = GameObject.FindGameObjectWithTag("SlideKickHitbox").GetComponent<BoxCollider>();
+		MidPunchHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.MidPunchHitbox).GetComponent<BoxCollider>();
+		JumpKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.JumpKickHitbox).GetComponent<BoxCollider>();
+		SlideKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.SlideKickHitbox).GetComponent<BoxCollider>();
 	}
 
-	// Update is called once per frame
 	void Update()
 	{
-		if (cooldown > 0)
+		if (attackCooldown > 0)
+			attackCooldown -= Time.deltaTime;
+
+		if (attackMotionTime <= 0)
 		{
-			cooldown -= Time.deltaTime;
+			playerState = PlayerState.FreeMove;
+			attackMotionTime = 0;
+			ResetAnimatorParameters();
 		}
+		else
+			attackMotionTime -= Time.deltaTime;
+	}
+
+	private void ResetAnimatorParameters()
+	{
+		playerUIAnimator.SetBool("BasicAttacking", false);
+		playerUIAnimator.SetBool("JumpKicking", false);
+		playerUIAnimator.SetBool("SlideKicking", false);
 	}
 
 	internal void Attack()
 	{
-		//Determine what kind of input we have over here
-		//For now just BasicAttack
-		if (playerInput.crouchTime > 0.02 && playerInput.crouchTime < SLIDE_KICK_ALLOWANCE_TIME && cooldown <= 0)
+		if (attackCooldown <= 0)
 		{
-			PerformAttack(AttackType.SlideKick);
-		}
-		else if (playerInput.jumpTime > 0.02 && playerInput.jumpTime < JUMP_KICK_ALLOWANCE_TIME && cooldown <= 0)
-		{
-			PerformAttack(AttackType.JumpKick);
-		}
-		else if (cooldown <= 0)
-		{
-			PerformAttack(AttackType.BasicAttack);
+			if (playerInput.crouchTime > 0.03 && playerInput.crouchTime < SLIDE_KICK_ALLOWANCE_TIME)
+				PerformSlideKickAttack();
+
+			else if (playerInput.jumpTime > 0.03 && playerInput.jumpTime < JUMP_KICK_ALLOWANCE_TIME)
+				PerformJumpKickAttack();
+
+			else
+				PerformBasicAttack();
 		}
 	}
 
-	private void PerformAttack(AttackType attackType)
+	private void PerformSlideKickAttack()
 	{
-		BoxCollider attackCollider = null;
-		switch (attackType)
-		{
-			case AttackType.JumpKick:
-				attackCollider = JumpKickHitbox;
-				break;
-			case AttackType.SlideKick:
-				attackCollider = SlideKickHitbox;
-				break;
-			case AttackType.BasicAttack:
-				attackCollider = MidPunchHitbox;
-				break;
-		}
+		Debug.Log("SlideKick!");
+		playerState = PlayerState.SlideKicking;
+		attackCooldown = slideKickAttackCooldown;
+		attackMotionTime = slideKickAttackMotionTime;
+		playerUIAnimator.SetBool("SlideKicking", true);
+	}
 
-		if (attackCollider == null)
-		{
-			Debug.Log("There was an error. The attack collider was null");
-		}
+	private void PerformJumpKickAttack()
+	{
+		Debug.Log("JumpKick!");
+		playerState = PlayerState.JumpKicking;
+		attackCooldown = jumpKickAttackCooldown;
+		attackMotionTime = jumpKickAttackMotionTime;
+		playerUIAnimator.SetBool("JumpKicking", true);
+	}
 
-		Vector3 size = attackCollider.transform.TransformVector(attackCollider.size / 2);
-		size.x = Mathf.Abs(size.x);
-		size.y = Mathf.Abs(size.y);
-		size.z = Mathf.Abs(size.z);
-		Collider[] results = Physics.OverlapBox(attackCollider.transform.position, size, attackCollider.transform.rotation);
+	private void PerformBasicAttack()
+	{
+		Debug.Log("BasicAttack!");
+		bool hitEnemy = false;
+
+		Collider[] results = CheckHitboxForEnemies(MidPunchHitbox);
 
 		foreach (Collider collider in results)
 		{
-			switch (attackType)
+			if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
 			{
-				case AttackType.JumpKick:
-					HandleJumpKick(collider);
-					break;
-				case AttackType.SlideKick:
-					HandleSlideKick(collider);
-					break;
-				case AttackType.BasicAttack:
-					HandleBasicAttack(collider);
-					break;
+				//DealDamage
+				//ApplyProperty
+				hitEnemy = true;
 			}
 		}
-	}
 
-	private void HandleJumpKick(Collider collider)
-	{
-		Debug.Log("JumpKick!");
-
-		if (collider.gameObject.tag == "Enemy" || collider.gameObject.tag == "Breakable")
-		{
-			//DealDamage
-			//ApplyProperty
+		if (hitEnemy)
 			playerSoundManager.PlayBasicAttackHitSound();
-		}
 		else
-		{
 			playerSoundManager.PlayBasicAttackMissSound();
-		}
 
-		cooldown = jumpKickAttackCooldown;
+		attackCooldown = basicAttackCooldown;
+		playerUIAnimator.SetBool("BasicAttacking", true);
+		playerUIAnimator.SetInteger("BasicAttackIndex", Random.Range(0, 2));
 	}
 
-	private void HandleSlideKick(Collider collider)
+	private Collider[] CheckHitboxForEnemies(BoxCollider collider)
 	{
-		Debug.Log("SlideKick!");
-
-		if (collider.gameObject.tag == "Enemy" || collider.gameObject.tag == "Breakable")
-		{
-			//DealDamage
-			//ApplyProperty
-			playerSoundManager.PlayBasicAttackHitSound();
-		}
-		else
-		{
-			playerSoundManager.PlayBasicAttackMissSound();
-		}
-
-		cooldown = slideKickAttackCooldown;
+		Vector3 size = collider.size / 2;
+		size.x = Mathf.Abs(size.x);
+		size.y = Mathf.Abs(size.y);
+		size.z = Mathf.Abs(size.z);
+		ExtDebug.DrawBox(collider.transform.position + collider.transform.forward * 0.5f, size, collider.transform.rotation, Color.blue);
+		Collider[] results = Physics.OverlapBox(collider.transform.position + collider.transform.forward * 0.5f, size, collider.transform.rotation);
+		return results;
 	}
 
-	private void HandleBasicAttack(Collider collider)
+	public enum PlayerState
 	{
-		Debug.Log("Punch!");
-
-		if (collider.gameObject.tag == "Enemy" || collider.gameObject.tag == "Breakable")
-		{
-			//DealDamage
-			//ApplyProperty
-			playerSoundManager.PlayBasicAttackHitSound();
-		}
-		else
-		{
-			playerSoundManager.PlayBasicAttackMissSound();
-		}
-
-		cooldown = basicAttackCooldown;
-	}
-
-	enum AttackType
-	{
-		BasicAttack,
-		JumpKick,
-		SlideKick
+		FreeMove,
+		JumpKicking,
+		SlideKicking
 	}
 }

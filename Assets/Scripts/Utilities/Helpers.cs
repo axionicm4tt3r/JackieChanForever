@@ -4,15 +4,17 @@ public static class Helpers {
 
     public class Tags
     {
-        public const string CameraFollowTarget = "CameraLookTarget";
-        public const string CameraPositionPivot = "CameraPositionPivot";
-        public const string MovingPlatform = "MovingPlatform";
-        public const string Spell = "Spell";
-        public const string Player = "Player";
-        public const string PlayerHUD = "PlayerHUD";
-    }
+		public const string Breakable = "Breakable";
+		public const string Enemy = "Enemy";
+		public const string PlayerCamera = "MainCamera";
+		public const string Player = "Player";
+		public const string PlayerHUD = "PlayerHUD";
+		public const string MidPunchHitbox = "MidPunchHitbox";
+		public const string JumpKickHitbox = "JumpKickHitbox";
+		public const string SlideKickHitbox = "SlideKickHitbox";
+	}
 
-    public static GameObject FindObjectInChildren(this GameObject gameObject, string gameObjectName)
+	public static GameObject FindObjectInChildren(this GameObject gameObject, string gameObjectName)
     {
         Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
         foreach (Transform item in children)
