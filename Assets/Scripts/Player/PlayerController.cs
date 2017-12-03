@@ -17,9 +17,9 @@ public class PlayerController : MonoBehaviour
 
 	public PlayerState playerState;
 
-	public float basicAttackCooldown = 0.3f;
+	public float basicAttackCooldown = 0.25f;
 	public float jumpKickAttackCooldown = 0.5f;
-	public float jumpKickAttackMotionTime = 0.25f;
+	public float jumpKickAttackMotionTime = 0.2f;
 	public float slideKickAttackCooldown = 0.5f;
 	public float slideKickAttackMotionTime = 0.4f;
 

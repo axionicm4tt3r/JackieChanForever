@@ -2,6 +2,7 @@
 
 public class PlayerSlideKickHitbox : MonoBehaviour
 {
+	public float slideKickHitEnemyKnockbackVelocity = 18f;
 
 	BoxCollider slideKickHitbox;
 	PlayerController playerController;
@@ -22,8 +23,8 @@ public class PlayerSlideKickHitbox : MonoBehaviour
 
 		if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
 		{
-			//DealDamage
-			//ApplyProperty
+			var enemyAI = collider.gameObject.GetComponent<EnemyAI>();
+			enemyAI.ApplyKnockbackEffect(transform.forward, slideKickHitEnemyKnockbackVelocity);
 			playerSoundManager.PlaySlideAttackHitSound();
 		}
 	}
