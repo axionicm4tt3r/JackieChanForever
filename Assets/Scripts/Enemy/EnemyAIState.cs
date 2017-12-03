@@ -3,5 +3,6 @@
 	Idle,
 	Aggro,
 	Dead,
-	KnockedBack
+	KnockedBack,
+	Staggered
 }

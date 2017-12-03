@@ -377,7 +377,7 @@ MonoBehaviour:
   JumpKickHitbox: {fileID: 0}
   SlideKickHitbox: {fileID: 0}
   playerState: 0
-  basicAttackCooldown: 0.5
+  basicAttackCooldown: 0.3
   jumpKickAttackCooldown: 0.5
   jumpKickAttackMotionTime: 0.4
   slideKickAttackCooldown: 0.5
@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d524360bf41d4a24e8922d43ae00c157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bobbingSpeed: 0.18
+  bobbingSpeed: 0.15
   bobbingAmount: 0.1
 --- !u!114 &114700187900392008
 MonoBehaviour:

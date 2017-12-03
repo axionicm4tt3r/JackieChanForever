@@ -16,7 +16,7 @@ public class BumpEnemyAI : EnemyAI
 		{
 			Die();
 		}
-		else if (!status.IsKnockedBack())
+		else if (status.IsFreeMoving())
 		{
 			float distanceToPlayer = (new Vector2(transform.position.x, transform.position.z) - new Vector2(player.position.x, player.position.z)).magnitude;
 			if (distanceToPlayer < AggroDistance)

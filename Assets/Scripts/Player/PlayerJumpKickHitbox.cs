@@ -2,8 +2,6 @@
 
 public class PlayerJumpKickHitbox : MonoBehaviour
 {
-	public float jumpKickHitEnemyKnockbackVelocity = 25f;
-
 	BoxCollider jumpKickHitbox;
 	PlayerController playerController;
 	PlayerSoundManager playerSoundManager;
@@ -24,7 +22,8 @@ public class PlayerJumpKickHitbox : MonoBehaviour
 		if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
 		{
 			var enemyAI = collider.gameObject.GetComponent<EnemyAI>();
-			enemyAI.ApplyKnockbackEffect(transform.forward, jumpKickHitEnemyKnockbackVelocity);
+			enemyAI.ApplyKnockbackEffect(transform.forward, PlayerController.JumpKickHitKnockbackVelocity);
+			enemyAI.status.TakeDamage(PlayerController.JumpKickHitDamage);
 			playerSoundManager.PlayJumpAttackHitSound();
 		}
 	}

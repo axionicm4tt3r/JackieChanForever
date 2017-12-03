@@ -5,25 +5,29 @@ public class EnemyStatus : MonoBehaviour {
 
     [SerializeField]
     protected float Health;
+
+	private EnemyAI enemyAI;
+
 	public EnemyAIState state { get; private set; }
 
     void Start () {
+		enemyAI = GetComponent<EnemyAI>();
         state = EnemyAIState.Idle;
     }
 
-    void Update () {
+	void Update () {
 		
 	}
 
-    #region HealthState
-    protected void TakeDamage(float damage)
+	#region HealthState
+	internal void TakeDamage(float damage)
     {
         Health -= damage;
         if (Health <= 0)
             Die();
     }
 
-    protected virtual void Die()
+    internal virtual void Die()
     {
         state = EnemyAIState.Dead;
         Destroy(gameObject);
@@ -51,6 +55,16 @@ public class EnemyStatus : MonoBehaviour {
 		return state == EnemyAIState.KnockedBack;
 	}
 
+	internal bool IsStaggered()
+	{
+		return state == EnemyAIState.Staggered;
+	}
+
+	internal bool IsFreeMoving()
+	{
+		return !(IsStaggered() || IsKnockedBack());
+	}
+
 	public void AggroOnPlayer()
     {
         state = EnemyAIState.Aggro;
@@ -64,6 +78,11 @@ public class EnemyStatus : MonoBehaviour {
 	public void BecomeKnockedBack()
 	{
 		state = EnemyAIState.KnockedBack;
+	}
+
+	internal void BecomeStaggered()
+	{
+		state = EnemyAIState.Staggered;
 	}
 	#endregion
 }

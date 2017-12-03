@@ -5,6 +5,12 @@ public class PlayerController : MonoBehaviour
 	public const float JUMP_KICK_ALLOWANCE_TIME = 0.2f;
 	public const float SLIDE_KICK_ALLOWANCE_TIME = 0.2f;
 
+	public static float BasicAttackHitDamage = 5f;
+	public static float JumpKickHitDamage = 18f;
+	public static float JumpKickHitKnockbackVelocity = 25f;
+	public static float SlideKickHitDamage = 12f;
+	public static float SlideKickHitKnockbackVelocity = 18f;
+
 	public GameObject PlayerHUD;
 	public BoxCollider MidPunchHitbox;
 	public BoxCollider JumpKickHitbox;
@@ -17,11 +23,11 @@ public class PlayerController : MonoBehaviour
 
 	public PlayerState playerState;
 
-	public float basicAttackCooldown = 0.25f;
+	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
-	public float jumpKickAttackMotionTime = 0.2f;
+	public float jumpKickAttackMotionTime = 0.4f;
 	public float slideKickAttackCooldown = 0.5f;
-	public float slideKickAttackMotionTime = 0.4f;
+	public float slideKickAttackMotionTime = 0.6f;
 
 	private float attackCooldown = 0f;
 	private float attackMotionTime = 0f;
@@ -109,9 +115,11 @@ public class PlayerController : MonoBehaviour
 		{
 			if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
 			{
-				//DealDamage
-				//ApplyProperty
 				hitEnemy = true;
+
+				var enemyAI = collider.gameObject.GetComponent<EnemyAI>();
+				enemyAI.ApplyStagger();
+				enemyAI.status.TakeDamage(BasicAttackHitDamage);
 			}
 		}
 
