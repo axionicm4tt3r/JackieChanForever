@@ -1746,28 +1746,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 598454014}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &612433667 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1408715053243034, guid: 38c9385a71d65934dacae87686b13614,
-    type: 2}
-  m_PrefabInternal: {fileID: 1151099293}
---- !u!95 &612433668
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 612433667}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ff2a148245ebb4442ba1aedc62893bb9, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &639396930
 GameObject:
   m_ObjectHideFlags: 0
@@ -3304,10 +3282,6 @@ Prefab:
     - target: {fileID: 4787664667279990, guid: 38c9385a71d65934dacae87686b13614, type: 2}
       propertyPath: m_RootOrder
       value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 1408715053243034, guid: 38c9385a71d65934dacae87686b13614, type: 2}
-      propertyPath: m_Name
-      value: Miku
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 38c9385a71d65934dacae87686b13614, type: 2}
