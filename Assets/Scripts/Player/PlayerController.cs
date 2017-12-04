@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
 		SlideKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.SlideKickHitbox).GetComponent<BoxCollider>();
 	}
 
-	void Update()
+	void LateUpdate()
 	{
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;
