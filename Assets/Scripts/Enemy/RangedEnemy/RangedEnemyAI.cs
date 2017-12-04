@@ -25,12 +25,12 @@ public class RangedEnemyAI : EnemyAI
 		{
 			Die();
 		}
-		else if (!status.IsKnockedBack())
+		else if (status.IsFreeMoving())
 		{
 			if (lastShotTime > 0)
 				lastShotTime -= Time.deltaTime;
 
-			float distanceToPlayer = (transform.position - player.position).sqrMagnitude;
+			float distanceToPlayer = (transform.position - player.position).magnitude;
 			if (distanceToPlayer < AggroDistance)
 				Aggro();
 			else
