@@ -4,8 +4,11 @@ using UnityEngine.AI;
 public abstract class EnemyAI : MonoBehaviour
 {
 	public float knockbackRecoveryTimer = 0.2f;
+	private float knockbackRecoveryFraction = 3f;
 	private float currentKnockbackRecoveryTime = 0f;
+
 	public float staggerRecoveryTimer = 0.2f;
+	private float staggerKnockbackVelocity = 2f;
 	private float currentStaggerRecoveryTime = 0f;
 
 	internal Animator animator;
@@ -18,7 +21,7 @@ public abstract class EnemyAI : MonoBehaviour
 
 	public virtual void Start()
 	{
-		animator = gameObject.GetComponent<Animator>();
+		animator = gameObject.GetComponentInChildren<Animator>();
 		status = gameObject.GetComponent<EnemyStatus>();
 		navAgent = gameObject.GetComponent<NavMeshAgent>();
 		player = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).transform;
@@ -34,7 +37,7 @@ public abstract class EnemyAI : MonoBehaviour
 		}
 		else if (currentKnockbackRecoveryTime <= 0 && status.IsKnockedBack())
 		{
-			navAgent.velocity = navAgent.velocity / 2;
+			navAgent.velocity = navAgent.velocity / knockbackRecoveryFraction;
 			animator.SetBool("KnockedBack", false);
 			status.BecomeIdle();
 		}
@@ -47,6 +50,7 @@ public abstract class EnemyAI : MonoBehaviour
 		else if (currentStaggerRecoveryTime <= 0 && status.IsStaggered())
 		{
 			animator.SetBool("Staggered", false);
+			navAgent.velocity = -transform.forward * staggerKnockbackVelocity;
 			status.BecomeIdle();
 		}
 	}

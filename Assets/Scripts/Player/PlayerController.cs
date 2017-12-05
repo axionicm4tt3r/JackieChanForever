@@ -66,7 +66,6 @@ public class PlayerController : MonoBehaviour
 
 	private void ResetAnimatorParameters()
 	{
-		playerUIAnimator.SetBool("BasicAttacking", false);
 		playerUIAnimator.SetBool("JumpKicking", false);
 		playerUIAnimator.SetBool("SlideKicking", false);
 	}
@@ -129,8 +128,8 @@ public class PlayerController : MonoBehaviour
 			playerSoundManager.PlayBasicAttackMissSound();
 
 		attackCooldown = basicAttackCooldown;
-		playerUIAnimator.SetBool("BasicAttacking", true);
 		playerUIAnimator.SetInteger("BasicAttackIndex", Random.Range(0, 2));
+		playerUIAnimator.SetTrigger("BasicAttacking");
 	}
 
 	private Collider[] CheckHitboxForEnemies(BoxCollider collider)
