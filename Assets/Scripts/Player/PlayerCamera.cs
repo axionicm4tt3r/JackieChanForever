@@ -40,7 +40,7 @@ public class PlayerCamera : MonoBehaviour
 	{
 		if (Cursor.lockState != CursorLockMode.Locked)
 		{
-			if (Input.GetButtonDown("Fire1"))
+			if (Input.GetButtonDown("PrimaryFire"))
 				Cursor.lockState = CursorLockMode.Locked;
 		}
 

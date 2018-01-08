@@ -5,13 +5,15 @@ public class PlayerCameraHeadbob : MonoBehaviour
 	public float bobbingSpeed = 0.18f;
 	public float bobbingAmount = 0.2f;
 
-	private CharacterController playerController;
+    private PlayerInput playerInput;
+    private PlayerMovement playerMovement;
 
-	private float timer = 0.0f;
+    private float timer = 0.0f;
 
 	private void Start()
 	{
-		playerController = gameObject.GetComponentInParent<CharacterController>();
+        playerInput = gameObject.GetComponentInParent<PlayerInput>();
+        playerMovement = gameObject.GetComponentInParent<PlayerMovement>();
 	}
 
 	void Update()
@@ -44,7 +46,8 @@ public class PlayerCameraHeadbob : MonoBehaviour
 		}
 		if (waveslice != 0)
 		{
-			float translateChange = waveslice * bobbingAmount;
+            var playerMaxSpeed = playerInput.IsCrouched ? playerMovement.moveSpeed : playerMovement.moveSpeedCrouched;
+            float translateChange = waveslice * bobbingAmount * (playerMovement.playerVelocity.magnitude / playerMaxSpeed);
 			float totalAxes = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
 			totalAxes = Mathf.Clamp(totalAxes, 0.0f, 1.0f);
 			translateChange = totalAxes * translateChange;

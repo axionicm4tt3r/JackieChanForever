@@ -20,13 +20,15 @@ public class PlayerController : MonoBehaviour
 	private PlayerSoundManager playerSoundManager;
 	private PlayerInput playerInput;
 	private PlayerMovement playerMovement;
+    private PlayerInteractionManager playerInteractionManager;
 
 	public PlayerState playerState;
 
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
 	public float jumpKickAttackMotionTime = 0.4f;
-	public float slideKickAttackCooldown = 0.5f;
+
+    public float slideKickAttackCooldown = 0.5f;
 	public float slideKickAttackMotionTime = 0.6f;
 
 	private float attackCooldown = 0f;
@@ -43,8 +45,9 @@ public class PlayerController : MonoBehaviour
 		playerSoundManager = GetComponent<PlayerSoundManager>();
 		playerInput = GetComponent<PlayerInput>();
 		playerMovement = GetComponent<PlayerMovement>();
+        playerInteractionManager = GetComponent<PlayerInteractionManager>();
 
-		MidPunchHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.MidPunchHitbox).GetComponent<BoxCollider>();
+        MidPunchHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.MidPunchHitbox).GetComponent<BoxCollider>();
 		JumpKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.JumpKickHitbox).GetComponent<BoxCollider>();
 		SlideKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.SlideKickHitbox).GetComponent<BoxCollider>();
 	}
@@ -70,9 +73,18 @@ public class PlayerController : MonoBehaviour
 		playerUIAnimator.SetBool("SlideKicking", false);
 	}
 
-	internal void Attack()
+    internal void Interact()
+    {
+        playerInteractionManager.Interact();
+    }
+
+    internal void Attack()
 	{
-		if (attackCooldown <= 0)
+        if (playerInteractionManager.Grabbing)
+        {
+            playerInteractionManager.Throw();
+        }
+		else if (attackCooldown <= 0)
 		{
 			if (playerInput.crouchTime > 0.03 && playerInput.crouchTime < SLIDE_KICK_ALLOWANCE_TIME)
 				PerformSlideKickAttack();
@@ -112,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
 		foreach (Collider collider in results)
 		{
-			if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
+			if (collider.gameObject.tag == Helpers.Tags.Enemy)
 			{
 				hitEnemy = true;
 
@@ -128,7 +140,7 @@ public class PlayerController : MonoBehaviour
 			playerSoundManager.PlayBasicAttackMissSound();
 
 		attackCooldown = basicAttackCooldown;
-		playerUIAnimator.SetInteger("BasicAttackIndex", Random.Range(0, 2));
+		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
 		playerUIAnimator.SetTrigger("BasicAttacking");
 	}
 

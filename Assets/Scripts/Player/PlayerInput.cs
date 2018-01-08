@@ -10,6 +10,8 @@ public class PlayerInput : MonoBehaviour
 	public float crouchTime = 0f;
 	public float jumpTime = 0f;
 
+    public bool IsCrouched { get { return crouchTime > 0; } }
+
 	void Start()
 	{
 		characterController = GetComponent<CharacterController>();
@@ -25,10 +27,15 @@ public class PlayerInput : MonoBehaviour
 		var mouseLookVector = new Vector2(mouseXInput, mouseYInput);
 		playerCamera.Look(mouseLookVector);
 
-		if (Input.GetButtonDown("Fire1"))
+		if (Input.GetButtonDown("PrimaryFire"))
 		{
 			playerController.Attack();
 		}
+
+        if (Input.GetButtonDown("Interact"))
+        {
+            playerController.Interact();
+        }
 
 		if (Input.GetButton("Crouch") || playerController.playerState == PlayerController.PlayerState.SlideKicking)
 		{

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SpriteBillboarder : MonoBehaviour {
 
-	Vector3 directionToCamera;
 	// Use this for initialization
 	void Start () {
 
@@ -22,6 +21,6 @@ public class SpriteBillboarder : MonoBehaviour {
 		Vector3 playerPositionXZ = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
 		Quaternion facePlayerAngles = Quaternion.LookRotation(transform.position - playerPositionXZ, Vector3.up);
 
-		transform.rotation = facePlayerAngles;//Quaternion.Euler(currentEulerAngles.x, currentEulerAngles.y, currentEulerAngles.z);
+		transform.rotation = facePlayerAngles;
 	}
 }

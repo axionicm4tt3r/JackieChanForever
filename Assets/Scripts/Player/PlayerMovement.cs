@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private Vector3 playerInputVector;
 	private Vector3 moveDirectionNormalized = Vector3.zero;
-	private Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
+	public Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
 	private float playerTopVelocity = 0.0f;
 
 	private bool wishJump = false;
