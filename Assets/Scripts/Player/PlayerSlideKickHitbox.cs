@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerSlideKickHitbox : MonoBehaviour
 {
@@ -6,8 +7,10 @@ public class PlayerSlideKickHitbox : MonoBehaviour
 	PlayerController playerController;
 	PlayerSoundManager playerSoundManager;
 
-	// Use this for initialization
-	void Start()
+    List<EnemyAI> enemiesHit = new List<EnemyAI>();
+
+    // Use this for initialization
+    void Start()
 	{
 		slideKickHitbox = GetComponent<BoxCollider>();
 		playerController = GetComponentInParent<PlayerController>();
@@ -22,9 +25,19 @@ public class PlayerSlideKickHitbox : MonoBehaviour
 		if (collider.gameObject.tag == Helpers.Tags.Enemy || collider.gameObject.tag == Helpers.Tags.Breakable)
 		{
 			var enemyAI = collider.gameObject.GetComponent<EnemyAI>();
-			enemyAI.ApplyKnockbackEffect(transform.forward, PlayerController.SlideKickHitKnockbackVelocity);
-			enemyAI.status.TakeDamage(PlayerController.SlideKickHitDamage);
-			playerSoundManager.PlaySlideAttackHitSound();
-		}
-	}
+            if (!enemiesHit.Contains(enemyAI))
+            {
+                enemiesHit.Add(enemyAI);
+                enemyAI.status.TakeDamage(PlayerController.SlideKickHitDamage);
+                playerSoundManager.PlaySlideAttackHitSound();
+            }
+
+            enemyAI.ApplyKnockbackEffect(transform.forward, PlayerController.SlideKickHitKnockbackVelocity);
+        }
+    }
+
+    public void ClearEnemiesHit()
+    {
+        enemiesHit.Clear();
+    }
 }

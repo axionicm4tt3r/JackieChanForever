@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
 
 	public GameObject PlayerHUD;
 	public BoxCollider MidPunchHitbox;
-	public BoxCollider JumpKickHitbox;
-	public BoxCollider SlideKickHitbox;
+	public PlayerJumpKickHitbox JumpKickHitbox;
+	public PlayerSlideKickHitbox SlideKickHitbox;
 
 	private Animator playerUIAnimator;
 	private PlayerSoundManager playerSoundManager;
@@ -48,8 +48,8 @@ public class PlayerController : MonoBehaviour
         playerInteractionManager = GetComponent<PlayerInteractionManager>();
 
         MidPunchHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.MidPunchHitbox).GetComponent<BoxCollider>();
-		JumpKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.JumpKickHitbox).GetComponent<BoxCollider>();
-		SlideKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.SlideKickHitbox).GetComponent<BoxCollider>();
+		JumpKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.JumpKickHitbox).GetComponent<PlayerJumpKickHitbox>();
+		SlideKickHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.SlideKickHitbox).GetComponent<PlayerSlideKickHitbox>();
 	}
 
 	void LateUpdate()
@@ -61,7 +61,9 @@ public class PlayerController : MonoBehaviour
 		{
 			playerState = PlayerState.FreeMove;
 			attackMotionTime = 0;
-			ResetAnimatorParameters();
+            JumpKickHitbox.ClearEnemiesHit();
+            SlideKickHitbox.ClearEnemiesHit();
+            ResetAnimatorParameters();
 		}
 		else
 			attackMotionTime -= Time.deltaTime;

@@ -7,6 +7,7 @@ public class PlayerCameraHeadbob : MonoBehaviour
 
     private PlayerInput playerInput;
     private PlayerMovement playerMovement;
+    private PlayerController playerController;
 
     private float timer = 0.0f;
 
@@ -14,9 +15,10 @@ public class PlayerCameraHeadbob : MonoBehaviour
 	{
         playerInput = gameObject.GetComponentInParent<PlayerInput>();
         playerMovement = gameObject.GetComponentInParent<PlayerMovement>();
-	}
+        playerController = gameObject.GetComponentInParent<PlayerController>();
+    }
 
-	void Update()
+    void Update()
 	{
 		Headbob();
 	}
@@ -26,9 +28,15 @@ public class PlayerCameraHeadbob : MonoBehaviour
 		float midpoint = PlayerCamera.currentViewYOffset;
 		float waveslice = 0.0f;
 
-		float horizontal = Input.GetAxis("Horizontal");
-		float vertical = Input.GetAxis("Vertical");
+        float horizontal = 0f;
+        float vertical = 0f;
 
+        if (playerController.playerState == PlayerController.PlayerState.FreeMove)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+        }
+	
 		Vector3 cSharpConversion = transform.localPosition;
 
 		if (Mathf.Abs(horizontal) == 0 && Mathf.Abs(vertical) == 0)
