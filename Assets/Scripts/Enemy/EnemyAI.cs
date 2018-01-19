@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class EnemyAI : MonoBehaviour
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(EnemyStatus))]
+[RequireComponent(typeof(NavMeshAgent))]
+public abstract class EnemyAI : MonoBehaviour, IAttackable
 {
-	public float knockbackRecoveryTimer = 0.2f;
 	private float knockbackRecoveryFraction = 3f;
 	private float currentKnockbackRecoveryTime = 0f;
 
-	public float staggerRecoveryTimer = 0.2f;
 	private float staggerKnockbackVelocity = 2f;
-	private float currentStaggerRecoveryTime = 0f;
+	private float currentStaggerRecoveryTime = 0.1f;
 
 	internal Animator animator;
 	internal EnemyStatus status;
@@ -55,19 +56,28 @@ public abstract class EnemyAI : MonoBehaviour
 		}
 	}
 
-	public void ApplyStagger()
+	public void ReceiveAttack(float damage)
 	{
-		status.BecomeStaggered();
-		currentStaggerRecoveryTime = staggerRecoveryTimer;
-		animator.SetBool("Staggered", true);
+		status.TakeDamage(damage);
 	}
 
-	public void ApplyKnockbackEffect(Vector3 knockbackDirection, float knockbackVelocity)
+	public void ReceiveStaggerAttack(float damage, float staggerRecoveryTime)
+	{
+		status.BecomeStaggered();
+		currentStaggerRecoveryTime = staggerRecoveryTime;
+		animator.SetBool("Staggered", true);
+
+		status.TakeDamage(damage);
+	}
+
+	public void ReceiveKnockbackAttack(float damage, Vector3 knockbackDirection, float knockbackVelocity, float knockbackTime)
 	{
 		status.BecomeKnockedBack();
-		currentKnockbackRecoveryTime = knockbackRecoveryTimer;
+		currentKnockbackRecoveryTime = knockbackTime;
 		animator.SetBool("KnockedBack", true);
 		navAgent.velocity = knockbackDirection * knockbackVelocity;
+
+		status.TakeDamage(damage);
 	}
 
 	internal virtual void Aggro()

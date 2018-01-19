@@ -2,8 +2,8 @@
 
 public static class Helpers {
 
-    public class Tags
-    {
+	public class Tags
+	{
 		public const string Breakable = "Breakable";
 		public const string Enemy = "Enemy";
 		public const string PlayerCamera = "MainCamera";
@@ -15,35 +15,35 @@ public static class Helpers {
 	}
 
 	public static GameObject FindObjectInChildren(this GameObject gameObject, string gameObjectName)
-    {
-        Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
-        foreach (Transform item in children)
-        {
-            if (item.name == gameObjectName)
-            {
-                return item.gameObject;
-            }
-        }
+	{
+		Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
+		foreach (Transform item in children)
+		{
+			if (item.name == gameObjectName)
+			{
+				return item.gameObject;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public static GameObject FindTaggedObjectInChildren(this GameObject gameObject, string tag)
-    {
-        Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
-        foreach (Transform item in children)
-        {
-            if (item.tag == tag)
-            {
-                return item.gameObject;
-            }
-        }
+	public static GameObject FindTaggedObjectInChildren(this GameObject gameObject, string tag)
+	{
+		Transform[] children = gameObject.GetComponentsInChildren<Transform>(true);
+		foreach (Transform item in children)
+		{
+			if (item.tag == tag)
+			{
+				return item.gameObject;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public static void DebugDirectionRay(this Transform transform)
-    {
-        Debug.DrawRay(transform.position, transform.forward, Color.red, 0.1f);
-    }
+	public static void DebugDirectionRay(this Transform transform)
+	{
+		Debug.DrawRay(transform.position, transform.forward, Color.red, 0.1f);
+	}
 }

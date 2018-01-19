@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 82409070505159658}
   - component: {fileID: 114798771744214850}
   - component: {fileID: 114266896608397766}
+  - component: {fileID: 114611215730509340}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -404,9 +405,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerHUD: {fileID: 1384215381972844, guid: ae42fe6e354dd9d489d5f90b8e05df3a, type: 2}
-  MidPunchHitbox: {fileID: 0}
-  JumpKickHitbox: {fileID: 0}
-  SlideKickHitbox: {fileID: 0}
   playerState: 0
   basicAttackCooldown: 0.3
   jumpKickAttackCooldown: 0.5
@@ -437,7 +435,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a538c7a3a20190e4baf719b91d87f2e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerThrowPower: 25
 --- !u!114 &114295706727139742
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -479,6 +476,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bobbingSpeed: 0.15
   bobbingAmount: 0.1
+--- !u!114 &114611215730509340
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1162274536680252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58d9dce1e7dc7849af12851d230fb06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114700187900392008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -500,7 +508,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1951653538013950}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43012c6d5a7b90145a4febdd91376223, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b6d10dca45cca1429658d13a1a9b28a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114798771744214850
@@ -528,7 +536,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1486320063413386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2787f8daaedd6cf45b95a010a533bbb1, type: 3}
+  m_Script: {fileID: 11500000, guid: eaf2c722e719cae42b8af3a56bf8fabc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!124 &124933691074785736

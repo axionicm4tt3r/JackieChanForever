@@ -5,20 +5,20 @@ public class PlayerCameraHeadbob : MonoBehaviour
 	public float bobbingSpeed = 0.18f;
 	public float bobbingAmount = 0.2f;
 
-    private PlayerInput playerInput;
-    private PlayerMovement playerMovement;
-    private PlayerController playerController;
+	private PlayerInputManager playerInput;
+	private PlayerMovementManager playerMovement;
+	private PlayerController playerController;
 
-    private float timer = 0.0f;
+	private float timer = 0.0f;
 
 	private void Start()
 	{
-        playerInput = gameObject.GetComponentInParent<PlayerInput>();
-        playerMovement = gameObject.GetComponentInParent<PlayerMovement>();
-        playerController = gameObject.GetComponentInParent<PlayerController>();
-    }
+		playerInput = gameObject.GetComponentInParent<PlayerInputManager>();
+		playerMovement = gameObject.GetComponentInParent<PlayerMovementManager>();
+		playerController = gameObject.GetComponentInParent<PlayerController>();
+	}
 
-    void Update()
+	void Update()
 	{
 		Headbob();
 	}
@@ -28,14 +28,14 @@ public class PlayerCameraHeadbob : MonoBehaviour
 		float midpoint = PlayerCamera.currentViewYOffset;
 		float waveslice = 0.0f;
 
-        float horizontal = 0f;
-        float vertical = 0f;
+		float horizontal = 0f;
+		float vertical = 0f;
 
-        if (playerController.playerState == PlayerController.PlayerState.FreeMove)
-        {
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxis("Vertical");
-        }
+		if (playerController.playerState == PlayerController.PlayerState.FreeMove)
+		{
+			horizontal = Input.GetAxis("Horizontal");
+			vertical = Input.GetAxis("Vertical");
+		}
 	
 		Vector3 cSharpConversion = transform.localPosition;
 
@@ -54,8 +54,8 @@ public class PlayerCameraHeadbob : MonoBehaviour
 		}
 		if (waveslice != 0)
 		{
-            var playerMaxSpeed = playerInput.IsCrouched ? playerMovement.moveSpeed : playerMovement.moveSpeedCrouched;
-            float translateChange = waveslice * bobbingAmount * (playerMovement.playerVelocity.magnitude / playerMaxSpeed);
+			var playerMaxSpeed = playerInput.IsCrouched ? playerMovement.moveSpeed : playerMovement.moveSpeedCrouched;
+			float translateChange = waveslice * bobbingAmount * (playerMovement.playerVelocity.magnitude / playerMaxSpeed);
 			float totalAxes = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
 			totalAxes = Mathf.Clamp(totalAxes, 0.0f, 1.0f);
 			translateChange = totalAxes * translateChange;

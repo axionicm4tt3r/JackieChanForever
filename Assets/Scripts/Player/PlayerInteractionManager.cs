@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class PlayerInteractionManager : MonoBehaviour
 {
+    private Camera playerCamera;
+
     private Breakable grabbedObject;
     private bool objectGrabbed = false;
     private Transform grabbedLocation;
-    private float playerInteractionRange = 4f;
-    public float playerThrowPower = 25f;
 
-    private Camera playerCamera;
+    private float playerInteractionRange = 4f;
+    private float playerThrowPower = 25f;
 
     void Start()
     {

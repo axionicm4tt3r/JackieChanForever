@@ -1,19 +1,21 @@
 ﻿using System;
 using UnityEngine;
 
-public class EnemyStatus : MonoBehaviour {
+[RequireComponent(typeof(EnemyAI))]
+public class EnemyStatus : MonoBehaviour
+{
 
-    [SerializeField]
-    protected float Health;
+	[SerializeField]
+	protected float Health;
 
 	private EnemyAI enemyAI;
 
 	public EnemyAIState state { get; private set; }
 
-    void Start () {
+	void Start () {
 		enemyAI = GetComponent<EnemyAI>();
-        state = EnemyAIState.Idle;
-    }
+		state = EnemyAIState.Idle;
+	}
 
 	void Update () {
 		
@@ -21,34 +23,34 @@ public class EnemyStatus : MonoBehaviour {
 
 	#region HealthState
 	internal void TakeDamage(float damage)
-    {
-        Health -= damage;
-        if (Health <= 0)
-            Die();
-    }
+	{
+		Health -= damage;
+		if (Health <= 0)
+			Die();
+	}
 
-    internal virtual void Die()
-    {
-        state = EnemyAIState.Dead;
-        Destroy(gameObject);
-    }
-    #endregion
+	internal virtual void Die()
+	{
+		state = EnemyAIState.Dead;
+		Destroy(gameObject);
+	}
+	#endregion
 
-    #region AIState
-    public bool IsDead()
-    {
-        return state == EnemyAIState.Dead;
-    }
+	#region AIState
+	public bool IsDead()
+	{
+		return state == EnemyAIState.Dead;
+	}
 
-    public bool IsAggro()
-    {
-        return state == EnemyAIState.Aggro;
-    }
+	public bool IsAggro()
+	{
+		return state == EnemyAIState.Aggro;
+	}
 
-    public bool IsIdle()
-    {
-        return state == EnemyAIState.Idle;
-    }
+	public bool IsIdle()
+	{
+		return state == EnemyAIState.Idle;
+	}
 
 	public bool IsKnockedBack()
 	{
@@ -66,14 +68,14 @@ public class EnemyStatus : MonoBehaviour {
 	}
 
 	public void AggroOnPlayer()
-    {
-        state = EnemyAIState.Aggro;
-    }
+	{
+		state = EnemyAIState.Aggro;
+	}
 
-    public void BecomeIdle()
-    {
-        state = EnemyAIState.Idle;
-    }
+	public void BecomeIdle()
+	{
+		state = EnemyAIState.Idle;
+	}
 
 	public void BecomeKnockedBack()
 	{

@@ -1,22 +1,22 @@
 ﻿using UnityEngine;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInputManager : MonoBehaviour
 {
 	CharacterController characterController;
 	PlayerController playerController;
-	PlayerMovement playerMovement;
+	PlayerMovementManager playerMovement;
 	PlayerCamera playerCamera;
 
 	public float crouchTime = 0f;
 	public float jumpTime = 0f;
 
-    public bool IsCrouched { get { return crouchTime > 0; } }
+	public bool IsCrouched { get { return crouchTime > 0; } }
 
 	void Start()
 	{
 		characterController = GetComponent<CharacterController>();
 		playerController = GetComponent<PlayerController>();
-		playerMovement = GetComponent<PlayerMovement>();
+		playerMovement = GetComponent<PlayerMovementManager>();
 		playerCamera = Camera.main.GetComponent<PlayerCamera>();
 	}
 
@@ -32,10 +32,10 @@ public class PlayerInput : MonoBehaviour
 			playerController.Attack();
 		}
 
-        if (Input.GetButtonDown("Interact"))
-        {
-            playerController.Interact();
-        }
+		if (Input.GetButtonDown("Interact"))
+		{
+			playerController.Interact();
+		}
 
 		if (Input.GetButton("Crouch") || playerController.playerState == PlayerController.PlayerState.SlideKicking)
 		{
