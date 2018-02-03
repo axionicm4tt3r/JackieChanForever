@@ -12,24 +12,16 @@ public class PlayerInteractionManager : MonoBehaviour
     private float playerInteractionRange = 4f;
     private float playerThrowPower = 25f;
 
-    void Start()
+    void Awake()
     {
         grabbedLocation = Helpers.FindObjectInChildren(gameObject, "GrabbedLocation").transform;
-        InitialiseCamera();
+        playerCamera = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerCamera).GetComponent<Camera>();
     }
 
     public bool Grabbing { get { return objectGrabbed; } }
 
-    private void InitialiseCamera()
-    {
-        playerCamera = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerCamera).GetComponent<Camera>();
-    }
-
     public void Interact()
     {
-        if (!playerCamera)
-            InitialiseCamera();
-
         if (objectGrabbed)
         {
             Drop();

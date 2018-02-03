@@ -7,12 +7,12 @@ public class PlayerInputManager : MonoBehaviour
 	PlayerMovementManager playerMovement;
 	PlayerCamera playerCamera;
 
-	public float crouchTime = 0f;
-	public float jumpTime = 0f;
+	[HideInInspector] public float crouchTime = 0f;
+	[HideInInspector] public float jumpTime = 0f;
 
 	public bool IsCrouched { get { return crouchTime > 0; } }
 
-	void Start()
+	void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
 		playerController = GetComponent<PlayerController>();

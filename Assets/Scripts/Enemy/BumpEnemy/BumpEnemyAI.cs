@@ -8,7 +8,7 @@ public class BumpEnemyAI : EnemyAI
 		base.Start();
 	}
 
-	public override void Update()
+	public override void Update() //Remove this code
 	{
 		base.Update();
 
@@ -16,29 +16,9 @@ public class BumpEnemyAI : EnemyAI
 		{
 			Die();
 		}
-		else if (status.IsFreeMoving())
-		{
-			float distanceToPlayer = (new Vector2(transform.position.x, transform.position.z) - new Vector2(player.position.x, player.position.z)).magnitude;
-			if (distanceToPlayer < AggroDistance)
-				Aggro();
-			else
-				DeAggro();
-		}
 	}
 
-	internal override void Aggro()
-	{
-		base.Aggro();
-		navAgent.isStopped = false;
-	}
-
-	internal override void DeAggro()
-	{
-		base.DeAggro();
-		navAgent.isStopped = true;
-	}
-
-	internal override void Die()
+	internal override void Die() //Remove this code
 	{
 		base.Die();
 	}

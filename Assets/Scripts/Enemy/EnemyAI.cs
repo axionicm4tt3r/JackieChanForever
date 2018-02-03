@@ -12,6 +12,8 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	private float staggerKnockbackVelocity = 2f;
 	private float currentStaggerRecoveryTime = 0.1f;
 
+	private Vector3 staggerDirection;
+
 	internal Animator animator;
 	internal EnemyStatus status;
 	internal NavMeshAgent navAgent;
@@ -40,7 +42,7 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		{
 			navAgent.velocity = navAgent.velocity / knockbackRecoveryFraction;
 			animator.SetBool("KnockedBack", false);
-			status.BecomeIdle();
+			status.BecomeFreeMoving();
 		}
 
 		if (currentStaggerRecoveryTime > 0)
@@ -51,8 +53,8 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		else if (currentStaggerRecoveryTime <= 0 && status.IsStaggered())
 		{
 			animator.SetBool("Staggered", false);
-			navAgent.velocity = -transform.forward * staggerKnockbackVelocity;
-			status.BecomeIdle();
+			navAgent.velocity = staggerDirection * staggerKnockbackVelocity;
+			status.BecomeFreeMoving();
 		}
 	}
 
@@ -61,9 +63,10 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		status.TakeDamage(damage);
 	}
 
-	public void ReceiveStaggerAttack(float damage, float staggerRecoveryTime)
+	public void ReceiveStaggerAttack(float damage, Vector3 staggerDirection, float staggerRecoveryTime)
 	{
 		status.BecomeStaggered();
+		this.staggerDirection = staggerDirection;
 		currentStaggerRecoveryTime = staggerRecoveryTime;
 		animator.SetBool("Staggered", true);
 
@@ -80,24 +83,7 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		status.TakeDamage(damage);
 	}
 
-	internal virtual void Aggro()
-	{
-		navAgent.SetDestination(player.position);
-		if (status.IsDead() || status.IsAggro())
-			return;
-
-		status.AggroOnPlayer();
-	}
-
-	internal virtual void DeAggro()
-	{
-		if (status.IsDead() || status.IsIdle())
-			return;
-
-		status.BecomeIdle();
-	}
-
-	internal virtual void Die()
+	internal virtual void Die() //Pull this code and put it into the state logic
 	{
 		navAgent.isStopped = true;
 	}

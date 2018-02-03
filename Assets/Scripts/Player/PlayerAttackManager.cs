@@ -43,7 +43,7 @@ public class PlayerAttackManager : MonoBehaviour
 
         foreach (IAttackable attackableComponent in results)
         {
-            attackableComponent.ReceiveStaggerAttack(BasicAttackDamage, BasicAttackStaggerTime);
+            attackableComponent.ReceiveStaggerAttack(BasicAttackDamage, transform.forward, BasicAttackStaggerTime);
         }
 
         if (hitEnemy)

@@ -14,11 +14,7 @@ public class EnemyStatus : MonoBehaviour
 
 	void Start () {
 		enemyAI = GetComponent<EnemyAI>();
-		state = EnemyAIState.Idle;
-	}
-
-	void Update () {
-		
+		state = EnemyAIState.FreeMoving;
 	}
 
 	#region HealthState
@@ -42,16 +38,6 @@ public class EnemyStatus : MonoBehaviour
 		return state == EnemyAIState.Dead;
 	}
 
-	public bool IsAggro()
-	{
-		return state == EnemyAIState.Aggro;
-	}
-
-	public bool IsIdle()
-	{
-		return state == EnemyAIState.Idle;
-	}
-
 	public bool IsKnockedBack()
 	{
 		return state == EnemyAIState.KnockedBack;
@@ -62,19 +48,14 @@ public class EnemyStatus : MonoBehaviour
 		return state == EnemyAIState.Staggered;
 	}
 
-	internal bool IsFreeMoving()
-	{
-		return !(IsStaggered() || IsKnockedBack());
-	}
+    internal bool IsFreeMoving()
+    {
+        return state == EnemyAIState.FreeMoving;
+    }
 
-	public void AggroOnPlayer()
+	public void BecomeFreeMoving()
 	{
-		state = EnemyAIState.Aggro;
-	}
-
-	public void BecomeIdle()
-	{
-		state = EnemyAIState.Idle;
+		state = EnemyAIState.FreeMoving;
 	}
 
 	public void BecomeKnockedBack()

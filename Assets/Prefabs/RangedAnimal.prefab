@@ -29,6 +29,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1571231915241382
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4609423527540954}
+  m_Layer: 0
+  m_Name: Eyes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1620260912972764
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,6 +72,7 @@ GameObject:
   - component: {fileID: 114975794566675756}
   - component: {fileID: 114141194715885134}
   - component: {fileID: 195778832901376874}
+  - component: {fileID: 114351322587006216}
   m_Layer: 0
   m_Name: RangedAnimal
   m_TagString: Enemy
@@ -96,14 +112,28 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1644231186396704}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 32.5, y: 0.66, z: 23}
+  m_LocalRotation: {x: -0, y: -0.65636194, z: -0, w: 0.7544462}
+  m_LocalPosition: {x: 27.81, y: 0.66, z: 23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4067479238756328}
   - {fileID: 4342735360657058}
+  - {fileID: 4609423527540954}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -82.046005, z: 0}
+--- !u!4 &4609423527540954
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1571231915241382}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4432466065734200}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &54099317983267784
 Rigidbody:
@@ -149,6 +179,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 50
+--- !u!114 &114351322587006216
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1644231186396704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd2b623334205384a98dbc56b7e53c84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: {fileID: 11400000, guid: 88352ec2831a453408069b4f3363ff0c, type: 2}
+  enemyStats: {fileID: 11400000, guid: 0e2473b7d8cb8c34786877946e8d31c6, type: 2}
+  eyes: {fileID: 4609423527540954}
+  remainState: {fileID: 11400000, guid: 42d6f8e6612a7ee4391abfefc2fe68dd, type: 2}
+  navMeshAgent: {fileID: 0}
+  enemyAI: {fileID: 0}
+  nextWayPoint: 0
+  chaseTarget: {fileID: 0}
+  stateTimeElapsed: 0
 --- !u!114 &114375017216164534
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -160,6 +210,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7888c576c638ba94e98c9d97fde2760c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sprite_front: {fileID: 21300000, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_front_left: {fileID: 21300010, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_left: {fileID: 21300004, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_rear_left: {fileID: 21300014, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_rear: {fileID: 21300006, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_rear_right: {fileID: 21300012, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_right: {fileID: 21300002, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
+  sprite_right_front: {fileID: 21300008, guid: 1a76805b43249c64db2aa68996fbaae5, type: 3}
 --- !u!114 &114975794566675756
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -171,8 +229,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5e8ae4b0a3edae47a319c2390c8978f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackRecoveryTimer: 0.2
-  staggerRecoveryTimer: 0.2
   AggroDistance: 25
   FireRate: 1.5
   ProjectilePrefab: {fileID: 4021058446948024, guid: 48fafb1844b77a946b6ee93e8f00a400,
@@ -203,7 +259,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 10
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

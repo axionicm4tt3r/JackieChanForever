@@ -21,47 +21,18 @@ public class RangedEnemyAI : EnemyAI
 	{
 		base.Update();
 
-		if (status.IsDead())
+		if (status.IsDead()) //Remove this code
 		{
 			Die();
 		}
-		else if (status.IsFreeMoving())
-		{
-			if (lastShotTime > 0)
-				lastShotTime -= Time.deltaTime;
-
-			float distanceToPlayer = (transform.position - player.position).magnitude;
-			if (distanceToPlayer < AggroDistance)
-				Aggro();
-			else
-				DeAggro();
-
-			if (lastShotTime <= 0 && status.IsAggro())
-				Shoot();
-
-			if (status.IsAggro())
-			{
-				transform.LookAt(new Vector3(player.position.x, transform.position.y, player.position.z));
-			}
-		}
 	}
 
-	internal override void Aggro()
-	{
-		base.Aggro();
-	}
-
-	internal override void DeAggro()
-	{
-		base.DeAggro();
-	}
-
-	internal override void Die()
+	internal override void Die() //Remove this code
 	{
 		base.Die();
 	}
 
-	private void Shoot()
+	public void Shoot()
 	{
 		lastShotTime = FireRate;
 		var playerCentrePosition = (player.position + new Vector3(0, player.GetComponent<CharacterController>().height / 2, 0));

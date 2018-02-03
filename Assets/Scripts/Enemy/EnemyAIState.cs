@@ -1,7 +1,6 @@
 ﻿public enum EnemyAIState
 {
-	Idle,
-	Aggro,
+	FreeMoving,
 	Dead,
 	KnockedBack,
 	Staggered
