@@ -48,10 +48,10 @@ public class EnemyStatus : MonoBehaviour
 		return state == EnemyAIState.Staggered;
 	}
 
-    internal bool IsFreeMoving()
-    {
-        return state == EnemyAIState.FreeMoving;
-    }
+	internal bool IsFreeMoving()
+	{
+		return state == EnemyAIState.FreeMoving;
+	}
 
 	public void BecomeFreeMoving()
 	{

@@ -9,7 +9,7 @@ TagManager:
   - JumpKickHitbox
   - SlideKickHitbox
   - Enemy
-  - Breakable
+  - Interactable
   layers:
   - Default
   - TransparentFX
@@ -19,9 +19,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - PlayerHitbox
+  - Enemy
+  - Interactable
   - 
   - 
   - 

@@ -19,10 +19,7 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	internal NavMeshAgent navAgent;
 	internal Transform player;
 
-	[SerializeField]
-	internal float AggroDistance;
-
-	public virtual void Start()
+	public virtual void Awake()
 	{
 		animator = gameObject.GetComponentInChildren<Animator>();
 		status = gameObject.GetComponent<EnemyStatus>();

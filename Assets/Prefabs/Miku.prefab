@@ -25,13 +25,13 @@ GameObject:
   - component: {fileID: 114839242479037174}
   - component: {fileID: 195170352109230334}
   - component: {fileID: 114143869207669466}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Miku
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1436336229719374
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 212350702216482466}
   - component: {fileID: 95623112774200526}
   - component: {fileID: 114182000289687618}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,7 +58,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4647787404448716}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1408715053243034}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.5, y: 1, z: 27}
+  m_LocalPosition: {x: 20.5, y: 1, z: 27}
   m_LocalScale: {x: 0.13, y: 0.13, z: 0.1}
   m_Children:
   - {fileID: 4098999433876196}
@@ -157,6 +157,7 @@ MonoBehaviour:
   enemyAI: {fileID: 0}
   nextWayPoint: 0
   chaseTarget: {fileID: 0}
+  targetLastKnownPosition: {x: 0, y: 0, z: 0}
   stateTimeElapsed: 0
 --- !u!114 &114182000289687618
 MonoBehaviour:
@@ -169,7 +170,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7888c576c638ba94e98c9d97fde2760c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprites: []
+  sprite_front: {fileID: 0}
+  sprite_front_left: {fileID: 0}
+  sprite_left: {fileID: 0}
+  sprite_rear_left: {fileID: 0}
+  sprite_rear: {fileID: 0}
+  sprite_rear_right: {fileID: 0}
+  sprite_right: {fileID: 0}
+  sprite_right_front: {fileID: 0}
 --- !u!114 &114532729059294334
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -181,7 +189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c18fb58bad72e74ba59d47dcec0c9cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AggroDistance: 25
 --- !u!114 &114839242479037174
 MonoBehaviour:
   m_ObjectHideFlags: 1

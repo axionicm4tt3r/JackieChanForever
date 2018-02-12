@@ -12,6 +12,7 @@ public class ChaseAction : Action
 
     private void Chase(StateController controller)
     {
+        controller.navMeshAgent.stoppingDistance = controller.enemyStats.enemySightedStoppingDistance;
         controller.navMeshAgent.destination = controller.chaseTarget.position;
         controller.navMeshAgent.isStopped = false;
     }

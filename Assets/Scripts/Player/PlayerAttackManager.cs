@@ -26,7 +26,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     List<IAttackable> enemiesHit = new List<IAttackable>();
 
-    void Start()
+    void Awake()
     {
         playerController = GetComponentInParent<PlayerController>();
         playerSoundManager = GetComponentInParent<PlayerSoundManager>();
@@ -107,15 +107,6 @@ public static class PlayerAttackManagerExtensions
 {
     public static IAttackable GetAttackableComponent(this GameObject gameObject)
     {
-        //bool enemyResult = gameObject.tag == Helpers.Tags.Enemy;
-        //if (enemyResult)
-        //    return gameObject.GetComponentInChildren<EnemyStatus>();
-
-        //bool breakableResult = gameObject.tag == Helpers.Tags.Breakable;
-        //if (breakableResult)
-        //    return gameObject.GetComponentInChildren<Breakable>();
-
-        //return null;
         return gameObject.GetComponentInChildren<IAttackable>();
     }
 }

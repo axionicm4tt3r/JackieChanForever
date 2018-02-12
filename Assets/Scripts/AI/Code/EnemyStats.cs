@@ -7,16 +7,20 @@ public class EnemyStats : ScriptableObject
 {
 
     public float moveSpeed = 1;
-    public float lookRange = 40f;
-    public float lookSphereCastRadius = 1f;
+    public float fieldOfVisionDistance = 25f;
+    public float fieldOfVisionAngle = 90f;
+    //public float lookSphereCastRadius = 10f; //Fix this
 
     public float attackRange = 1f;
     public float attackRate = 1f;
     public float attackForce = 15f;
     public int attackDamage = 50;
 
-    public float walkAroundTimeDelay = 2.5f;
+    public float enemySightedStoppingDistance = 2.5f;
+    public float walkAroundTimeDelay = 6f;
 
-    public float searchDuration = 4f;
+    public float searchDuration = 15f;
     public float searchingTurnSpeed = 120f;
+
+    [HideInInspector] public float waypointStoppingDistance = 0.5f;
 }

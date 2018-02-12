@@ -6,20 +6,21 @@ public class StateController : MonoBehaviour
 {
 
     public State currentState;
-    public EnemyStats enemyStats; //Need to set up enemy stats
-    public Transform eyes; //Need eyes
-    public State remainState; //Need remainInState
+    public EnemyStats enemyStats; 
+    public Transform eyes; 
+    public State remainState; 
 
 
     [HideInInspector] public NavMeshAgent navMeshAgent;
     [HideInInspector] public EnemyAI enemyAI; 
-    //[HideInInspector] public List<Transform> wayPointList;
     [HideInInspector] public int nextWayPoint;
     [HideInInspector] public Transform chaseTarget;
+    [HideInInspector] public Vector3 targetLastKnownPosition;
     [HideInInspector] public float stateTimeElapsed;
 
     private bool aiActive;
 
+    private float debugWireSphereRadius = 1f;
 
     void Awake()
     {
@@ -33,7 +34,6 @@ public class StateController : MonoBehaviour
     }
 
     public void SetupAI(bool aiActivationFromTankManager)
-    //public void SetupAI(bool aiActivationFromTankManager, List<Transform> wayPointsFromTankManager)
     {
         //wayPointList = wayPointsFromTankManager;
         aiActive = aiActivationFromTankManager;
@@ -59,7 +59,7 @@ public class StateController : MonoBehaviour
         if (currentState != null && eyes != null)
         {
             Gizmos.color = currentState.sceneGizmoColor;
-            Gizmos.DrawWireSphere(eyes.position, enemyStats.lookSphereCastRadius);
+            Gizmos.DrawWireSphere(eyes.position, debugWireSphereRadius);
         }
     }
 

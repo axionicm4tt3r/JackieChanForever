@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Name: BasicMeleeEnemyStats
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  lookRange: 40
-  lookSphereCastRadius: 1
+  fieldOfVisionDistance: 25
+  fieldOfVisionAngle: 90
   attackRange: 1
   attackRate: 1
   attackForce: 15
   attackDamage: 50
+  enemySightedStoppingDistance: 2.5
   walkAroundTimeDelay: 0.8
   searchDuration: 4
   searchingTurnSpeed: 120
+  waypointStoppingDistance: 0.5

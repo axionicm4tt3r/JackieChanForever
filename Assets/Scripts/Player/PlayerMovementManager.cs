@@ -24,6 +24,7 @@ public class PlayerMovementManager : MonoBehaviour
 
 	private PlayerController playerController;
 	private CharacterController characterController;
+	private PlayerInputManager playerInputManager;
 
 	private Vector3 playerInputVector;
 	private Vector3 moveDirectionNormalized = Vector3.zero;
@@ -31,14 +32,14 @@ public class PlayerMovementManager : MonoBehaviour
 	private float playerTopVelocity = 0.0f;
 
 	private bool wishJump = false;
-	private bool isCrouched = false;
 
 	private float playerFriction = 0.0f;
 
-	private void Start()
+	private void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
 		playerController = GetComponent<PlayerController>();
+		playerInputManager = GetComponent<PlayerInputManager>();
 	}
 
 	private void Update()
@@ -49,9 +50,9 @@ public class PlayerMovementManager : MonoBehaviour
 				QueueJump();
 
 				if (characterController.isGrounded)
-					GroundMove();
+				{ GroundMove(); Debug.Log("GroundMoving"); }
 				else if (!characterController.isGrounded)
-					AirMove();
+				{ AirMove(); Debug.Log("AirMoving"); }
 
 				characterController.Move(playerVelocity * Time.deltaTime);
 
@@ -90,7 +91,6 @@ public class PlayerMovementManager : MonoBehaviour
 	{
 		float wishVelocity = airAcceleration;
 		float acceleration;
-		float scale = CommandScale();
 
 		SetMovementDir();
 
@@ -98,11 +98,10 @@ public class PlayerMovementManager : MonoBehaviour
 		wishDirection = transform.TransformDirection(wishDirection);
 
 		float wishSpeed = wishDirection.magnitude;
-		wishSpeed *= (isCrouched ? moveSpeedCrouched : moveSpeed);
+		wishSpeed *= (playerInputManager.IsCrouched ? moveSpeedCrouched : moveSpeed);
 
 		wishDirection.Normalize();
 		moveDirectionNormalized = wishDirection;
-		wishSpeed *= scale;
 
 		// CPM: Aircontrol
 		float wishspeed2 = wishSpeed;
@@ -166,15 +165,13 @@ public class PlayerMovementManager : MonoBehaviour
 		else
 			ApplyFriction(0);
 
-		float scale = CommandScale();
-
 		var wishDirection = new Vector3(playerInputVector.x, 0, playerInputVector.z);
 		wishDirection = transform.TransformDirection(wishDirection);
 		wishDirection.Normalize();
 		moveDirectionNormalized = wishDirection;
 
 		var wishSpeed = wishDirection.magnitude;
-		wishSpeed *= (isCrouched ? moveSpeedCrouched : moveSpeed);
+		wishSpeed *= (playerInputManager.IsCrouched ? moveSpeedCrouched : moveSpeed);
 
 		Accelerate(wishDirection, wishSpeed, runAcceleration);
 
@@ -230,8 +227,6 @@ public class PlayerMovementManager : MonoBehaviour
 
 	internal void GoToCrouching()
 	{
-		isCrouched = true;
-
 		if (PlayerCamera.currentViewYOffset > PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET)
 		{
 			PlayerCamera.currentViewYOffset -= changeStanceSpeed * Time.deltaTime;
@@ -246,8 +241,6 @@ public class PlayerMovementManager : MonoBehaviour
 
 	internal void GoToStanding()
 	{
-		isCrouched = false;
-
 		if (PlayerCamera.currentViewYOffset < PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET)
 		{
 			PlayerCamera.currentViewYOffset += changeStanceSpeed * Time.deltaTime;

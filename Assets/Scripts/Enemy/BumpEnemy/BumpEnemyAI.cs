@@ -3,9 +3,9 @@ using UnityEngine.AI;
 
 public class BumpEnemyAI : EnemyAI
 {
-	public override void Start()
+	public override void Awake()
 	{
-		base.Start();
+		base.Awake();
 	}
 
 	public override void Update() //Remove this code

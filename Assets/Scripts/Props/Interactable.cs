@@ -2,16 +2,16 @@
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class Breakable : MonoBehaviour, IAttackable
+public class Interactable : MonoBehaviour, IAttackable
 {
 	[ReadOnly]
 	public bool grabbed;
 
 	#region AttackProperties
-	public static float ThrownBreakableDamageVelocityThreshold = 5f;
-	public static float ThrownBreakableDamage = 18f;
-	public static float ThrownBreakableKnockbackVelocity = 25f;
-	public static float ThrownBreakableKnockbackTime = 0.2f;
+	public static float ThrownInteractableDamageVelocityThreshold = 5f;
+	public static float ThrownInteractableDamage = 18f;
+	public static float ThrownInteractableKnockbackVelocity = 25f;
+	public static float ThrownInteractableKnockbackTime = 0.2f;
 	#endregion
 
 	private Transform grabbedLocation;
@@ -35,17 +35,17 @@ public class Breakable : MonoBehaviour, IAttackable
 
 	public void ReceiveAttack(float damage)
 	{
-		//Needs Breakable status to take damage
+		//Needs Interactable status to take damage
 	}
 
 	public void ReceiveStaggerAttack(float damage, Vector3 staggerDirection, float staggerTime)
 	{
-		//Needs Breakable status to take damage
+		//Needs Interactable status to take damage
 	}
 
 	public void ReceiveKnockbackAttack(float damage, Vector3 knockbackDirection, float knockbackVelocity, float knockbackTime)
 	{
-		//Needs Breakable status to take damage
+		//Needs Interactable status to take damage
 		this.rigidbody.velocity = knockbackDirection * knockbackVelocity / rigidbody.mass; //Something like this
 	}
 
@@ -74,8 +74,8 @@ public class Breakable : MonoBehaviour, IAttackable
 			var direction = (collision.gameObject.transform.position - transform.position).normalized;
 			var currentVelocity = rigidbody.velocity.magnitude;
 
-			if (currentVelocity >= ThrownBreakableDamageVelocityThreshold)
-				attackableComponent.ReceiveKnockbackAttack(ThrownBreakableDamage, direction, ThrownBreakableKnockbackVelocity, ThrownBreakableKnockbackTime);
+			if (currentVelocity >= ThrownInteractableDamageVelocityThreshold)
+				attackableComponent.ReceiveKnockbackAttack(ThrownInteractableDamage, direction, ThrownInteractableKnockbackVelocity, ThrownInteractableKnockbackTime);
 		}
 	}
 }

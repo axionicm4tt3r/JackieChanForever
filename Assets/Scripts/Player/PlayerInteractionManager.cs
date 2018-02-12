@@ -5,7 +5,7 @@ public class PlayerInteractionManager : MonoBehaviour
 {
     private Camera playerCamera;
 
-    private Breakable grabbedObject;
+    private Interactable grabbedObject;
     private bool objectGrabbed = false;
     private Transform grabbedLocation;
 
@@ -31,10 +31,11 @@ public class PlayerInteractionManager : MonoBehaviour
             Ray screenRay = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             screenRay.direction *= playerInteractionRange;
             RaycastHit hitInfo;
+            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox);
 
-            if (Physics.Raycast(screenRay, out hitInfo, playerInteractionRange))
+            if (Physics.Raycast(screenRay, out hitInfo, playerInteractionRange, layerMask))
             {
-                Breakable newLiftedObject = hitInfo.collider.gameObject.GetComponent<Breakable>();
+                Interactable newLiftedObject = hitInfo.collider.gameObject.GetComponent<Interactable>();
                 if (newLiftedObject == null)
                     return;
                 else
@@ -45,7 +46,7 @@ public class PlayerInteractionManager : MonoBehaviour
         }
     }
 
-    private void Grab(Breakable newLiftedObject)
+    private void Grab(Interactable newLiftedObject)
     {
         objectGrabbed = true;
         grabbedObject = newLiftedObject;

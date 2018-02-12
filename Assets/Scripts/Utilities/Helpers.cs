@@ -4,7 +4,7 @@ public static class Helpers {
 
 	public class Tags
 	{
-		public const string Breakable = "Breakable";
+		public const string Interactable = "Interactable";
 		public const string Enemy = "Enemy";
 		public const string PlayerCamera = "MainCamera";
 		public const string Player = "Player";
@@ -12,6 +12,13 @@ public static class Helpers {
 		public const string MidPunchHitbox = "MidPunchHitbox";
 		public const string JumpKickHitbox = "JumpKickHitbox";
 		public const string SlideKickHitbox = "SlideKickHitbox";
+	}
+
+	public class Layers
+	{
+		public const string Interactable = "Interactable";
+		public const string Enemy = "Enemy";
+		public const string PlayerHitbox = "PlayerHitbox";
 	}
 
 	public static GameObject FindObjectInChildren(this GameObject gameObject, string gameObjectName)

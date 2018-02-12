@@ -3,17 +3,15 @@ using UnityEngine.AI;
 
 public class RangedEnemyAI : EnemyAI
 {
-	[SerializeField]
-	private float FireRate;
-	[SerializeField]
-	private Transform ProjectilePrefab;
+	public float FireRate;
+	public Transform ProjectilePrefab;
 
 	private Transform shotSource;
 	private float lastShotTime;
 
-	public override void Start()
+	public override void Awake()
 	{
-		base.Start();
+		base.Awake();
 		shotSource = this.gameObject.FindObjectInChildren("ShotSource").transform;
 	}
 

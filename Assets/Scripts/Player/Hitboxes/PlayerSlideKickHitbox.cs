@@ -12,7 +12,7 @@ public class PlayerSlideKickHitbox : MonoBehaviour
 		playerAttackManager = GetComponentInParent<PlayerAttackManager>();
 	}
 
-	public void OnTriggerEnter(Collider collider)
+	public void OnTriggerStay(Collider collider)
 	{
 		if (!(playerController.playerState == PlayerController.PlayerState.SlideKicking))
 			return;

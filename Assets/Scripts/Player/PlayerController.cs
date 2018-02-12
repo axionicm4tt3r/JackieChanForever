@@ -25,11 +25,11 @@ public class PlayerController : MonoBehaviour
 	private float attackCooldown = 0f;
 	private float attackMotionTime = 0f;
 
-	void Start()
+	void Awake()
 	{
 		if (!GameObject.FindGameObjectWithTag("PlayerHUD"))
 		{
-			Instantiate(PlayerHUD);
+			PlayerHUD = Instantiate(PlayerHUD) as GameObject;
 		}
 
 		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
