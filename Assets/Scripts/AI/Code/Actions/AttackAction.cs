@@ -16,7 +16,7 @@ public class AttackAction : Action
 
         Debug.DrawRay(controller.eyes.position, controller.eyes.forward.normalized * controller.enemyStats.attackRange, Color.red);
 
-        if (CanSeePlayer(controller, out playerTransform))
+        if (controller.CanSeePlayer(out playerTransform))
         {
             if (controller.CheckIfCountDownElapsed(controller.enemyStats.attackRate))
             {
@@ -29,27 +29,5 @@ public class AttackAction : Action
             //3) idle...
             //4) strafe around player
         }
-    }
-
-    private bool CanSeePlayer(StateController controller, out Transform playerTransform)
-    {
-        RaycastHit hit;
-        Vector3 rayDirection = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerCamera).transform.position - controller.eyes.transform.position;
-
-        if ((Vector3.Angle(rayDirection, controller.eyes.transform.forward)) <= controller.enemyStats.fieldOfVisionAngle * 0.5f)
-        {
-            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox);
-            if (Physics.Raycast(controller.eyes.transform.position, rayDirection, out hit, controller.enemyStats.fieldOfVisionDistance, layerMask))
-            {
-                if (hit.transform.tag == Helpers.Tags.Player || hit.transform.tag == Helpers.Tags.PlayerCamera)
-                {
-                    playerTransform = hit.transform;
-                    return true;
-                }
-            }
-        }
-
-        playerTransform = null;
-        return false;
     }
 }

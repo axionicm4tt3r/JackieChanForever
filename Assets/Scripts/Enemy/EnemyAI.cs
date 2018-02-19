@@ -6,7 +6,10 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class EnemyAI : MonoBehaviour, IAttackable
 {
-	private float knockbackRecoveryFraction = 3f;
+	public bool isAlerted;
+    public bool wasAttacked;
+
+    private float knockbackRecoveryFraction = 3f;
 	private float currentKnockbackRecoveryTime = 0f;
 
 	private float staggerKnockbackVelocity = 2f;
@@ -80,7 +83,7 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		status.TakeDamage(damage);
 	}
 
-	internal virtual void Die() //Pull this code and put it into the state logic
+	internal virtual void Die()
 	{
 		navAgent.isStopped = true;
 	}

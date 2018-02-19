@@ -5,11 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "PluggableAI/EnemyStats")]
 public class EnemyStats : ScriptableObject
 {
-
     public float moveSpeed = 1;
     public float fieldOfVisionDistance = 25f;
     public float fieldOfVisionAngle = 90f;
-    //public float lookSphereCastRadius = 10f; //Fix this
 
     public float attackRange = 1f;
     public float attackRate = 1f;
@@ -23,4 +21,5 @@ public class EnemyStats : ScriptableObject
     public float searchingTurnSpeed = 120f;
 
     [HideInInspector] public float waypointStoppingDistance = 0.5f;
+    [HideInInspector] public float alertAlliesRadius = 10f;
 }

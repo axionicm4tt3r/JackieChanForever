@@ -21,6 +21,8 @@ public class EnemyStatus : MonoBehaviour
 	internal void TakeDamage(float damage)
 	{
 		Health -= damage;
+		enemyAI.wasAttacked = true;
+
 		if (Health <= 0)
 			Die();
 	}

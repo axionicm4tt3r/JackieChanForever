@@ -31,7 +31,8 @@ public class PlayerInteractionManager : MonoBehaviour
             Ray screenRay = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
             screenRay.direction *= playerInteractionRange;
             RaycastHit hitInfo;
-            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox);
+
+            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox, "IgnoreRaycast");
 
             if (Physics.Raycast(screenRay, out hitInfo, playerInteractionRange, layerMask))
             {
