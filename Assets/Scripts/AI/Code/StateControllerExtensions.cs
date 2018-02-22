@@ -36,6 +36,7 @@ public static class StateControllerExtensions
         {
             StateController enemyController = collider.gameObject.GetComponent<StateController>();
             enemyController.chaseTarget = controller.chaseTarget;
+            enemyController.targetLastKnownPosition = controller.targetLastKnownPosition;
             enemyController.enemyAI.isAlerted = true;
         }
 

@@ -69,6 +69,7 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		this.staggerDirection = staggerDirection;
 		currentStaggerRecoveryTime = staggerRecoveryTime;
 		animator.SetBool("Staggered", true);
+        navAgent.enabled = true;
         navAgent.velocity = staggerDirection * staggerKnockbackVelocity;
         navAgent.updateRotation = false;
 
@@ -81,7 +82,8 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 
 		currentKnockbackRecoveryTime = knockbackTime;
 		animator.SetBool("KnockedBack", true);
-		navAgent.velocity = knockbackDirection * knockbackVelocity;
+        navAgent.enabled = true;
+        navAgent.velocity = knockbackDirection * knockbackVelocity;
         navAgent.updateRotation = false;
 
 		status.TakeDamage(damage);
