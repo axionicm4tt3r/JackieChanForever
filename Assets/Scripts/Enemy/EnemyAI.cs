@@ -35,28 +35,27 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	{
 		if (currentKnockbackRecoveryTime > 0)
 		{
-			status.BecomeKnockedBack();
-			currentKnockbackRecoveryTime -= Time.deltaTime;
+            currentKnockbackRecoveryTime -= Time.deltaTime;
 		}
 		else if (currentKnockbackRecoveryTime <= 0 && status.IsKnockedBack())
 		{
 			navAgent.velocity = navAgent.velocity / knockbackRecoveryFraction;
-			animator.SetBool("KnockedBack", false);
-			status.BecomeFreeMoving();
+            navAgent.updateRotation = true;
+            animator.SetBool("KnockedBack", false);
+            status.BecomeFreeMoving();
 		}
 
 		if (currentStaggerRecoveryTime > 0)
 		{
-			status.BecomeStaggered();
-			currentStaggerRecoveryTime -= Time.deltaTime;
+            currentStaggerRecoveryTime -= Time.deltaTime;
 		}
 		else if (currentStaggerRecoveryTime <= 0 && status.IsStaggered())
 		{
 			animator.SetBool("Staggered", false);
-			navAgent.velocity = staggerDirection * staggerKnockbackVelocity;
-			status.BecomeFreeMoving();
-		}
-	}
+            navAgent.updateRotation = true;
+            status.BecomeFreeMoving();
+        }
+    }
 
 	public void ReceiveAttack(float damage)
 	{
@@ -66,19 +65,24 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	public void ReceiveStaggerAttack(float damage, Vector3 staggerDirection, float staggerRecoveryTime)
 	{
 		status.BecomeStaggered();
+
 		this.staggerDirection = staggerDirection;
 		currentStaggerRecoveryTime = staggerRecoveryTime;
 		animator.SetBool("Staggered", true);
+        navAgent.velocity = staggerDirection * staggerKnockbackVelocity;
+        navAgent.updateRotation = false;
 
-		status.TakeDamage(damage);
+        status.TakeDamage(damage);
 	}
 
 	public void ReceiveKnockbackAttack(float damage, Vector3 knockbackDirection, float knockbackVelocity, float knockbackTime)
 	{
 		status.BecomeKnockedBack();
+
 		currentKnockbackRecoveryTime = knockbackTime;
 		animator.SetBool("KnockedBack", true);
 		navAgent.velocity = knockbackDirection * knockbackVelocity;
+        navAgent.updateRotation = false;
 
 		status.TakeDamage(damage);
 	}

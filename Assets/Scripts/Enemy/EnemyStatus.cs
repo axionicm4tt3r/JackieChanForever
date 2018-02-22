@@ -12,6 +12,8 @@ public class EnemyStatus : MonoBehaviour
 
 	public EnemyAIState state { get; private set; }
 
+	public string stateName { get { return state.ToString(); } }
+
 	void Start () {
 		enemyAI = GetComponent<EnemyAI>();
 		state = EnemyAIState.FreeMoving;
