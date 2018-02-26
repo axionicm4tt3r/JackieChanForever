@@ -19,6 +19,12 @@ public static class Helpers {
 		public const string Interactable = "Interactable";
 		public const string Enemy = "Enemy";
 		public const string PlayerHitbox = "PlayerHitbox";
+		public const string Projectile = "Projectile";
+	}
+
+	public class Timers
+	{
+		public const string AttackRate = "AttackRate";
 	}
 
 	public static GameObject FindObjectInChildren(this GameObject gameObject, string gameObjectName)

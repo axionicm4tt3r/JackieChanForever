@@ -3,11 +3,9 @@ using UnityEngine.AI;
 
 public class RangedEnemyAI : EnemyAI
 {
-	public float FireRate;
 	public Transform ProjectilePrefab;
 
 	private Transform shotSource;
-	private float lastShotTime;
 
 	public override void Awake()
 	{
@@ -30,10 +28,16 @@ public class RangedEnemyAI : EnemyAI
 		base.Die();
 	}
 
-	public void Shoot()
+	public override void Attack(float damage)
 	{
-		lastShotTime = FireRate;
-		var playerCentrePosition = (player.position + new Vector3(0, player.GetComponent<CharacterController>().height / 2, 0));
-		GameObject.Instantiate(ProjectilePrefab, shotSource.position, Quaternion.LookRotation(playerCentrePosition - shotSource.position));
-	}
+		base.Attack(damage);
+
+        //var playerCentrePosition = (player.position + new Vector3(0, player.GetComponent<CharacterController>().height / 2, 0));
+        //var projectile = Instantiate(ProjectilePrefab, shotSource.position, Quaternion.LookRotation(playerCentrePosition - shotSource.position));
+        var projectile = Instantiate(ProjectilePrefab, shotSource.position, transform.rotation);
+        var projectileScript = projectile.GetComponent<Projectile>();
+
+        projectileScript.damage = damage;
+        projectileScript.parentId = gameObject.GetInstanceID();
+    }
 }

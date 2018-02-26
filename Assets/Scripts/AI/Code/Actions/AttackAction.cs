@@ -18,16 +18,18 @@ public class AttackAction : Action
 
         if (controller.CanSeePlayer(out playerTransform))
         {
-            if (controller.CheckIfCountDownElapsed(controller.enemyStats.attackRate))
+            if (controller.CheckRepeatTimers(Helpers.Timers.AttackRate, controller.enemyStats.attackRate))
             {
                 Debug.Log("Attack!");
-                //controller.enemyAI.Attack(controller.enemyStats.attackForce, controller.enemyStats.attackRate); //Play attack animation, do damage
+                controller.enemyAI.Attack(controller.enemyStats.attackDamage); //Play attack animation, do damage
             }
-            //else 
-            //1) dodge...
-            //2) block...
-            //3) idle...
-            //4) strafe around player
+            else
+            {
+                //1) dodge...
+                //2) block...
+                //3) idle...
+                //4) strafe around player}
+            }
         }
     }
 }

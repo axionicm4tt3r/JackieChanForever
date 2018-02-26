@@ -1,31 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Projectile : MonoBehaviour {
 
-	public float fireballMaxVelocity = 15f;
-	public float fireballAcceleration = 12f;
+	public float maxVelocity = 15f;
+	public float acceleration = 24f;
+
+	[HideInInspector] public float damage;
+	[HideInInspector] public int parentId;
+
 	Rigidbody fireballRigidbody;
 
-	// Use this for initialization
-	void Start () 
+	void Awake () 
 	{
 		fireballRigidbody = GetComponent<Rigidbody>();
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
-		fireballRigidbody.velocity += transform.forward * (fireballRigidbody.velocity.magnitude + (fireballAcceleration * Time.deltaTime));
-
-		if (fireballRigidbody.velocity.magnitude >= fireballMaxVelocity)
-		{
-			fireballRigidbody.velocity = fireballRigidbody.velocity.normalized * fireballMaxVelocity;
-		}
+		fireballRigidbody.velocity += transform.forward * acceleration * Time.fixedDeltaTime;
+		fireballRigidbody.velocity = Vector3.ClampMagnitude(fireballRigidbody.velocity, maxVelocity);
 	}
 
-	void OnCollisionEnter()
+	void OnTriggerEnter(Collider collider)
 	{
-		Destroy(this.gameObject);
+		var attackableComponent = collider.gameObject.GetAttackableComponent();
+		Debug.Log($"Colliding with {collider.gameObject.name}");
+
+		if (attackableComponent != null && collider.gameObject.GetInstanceID() != parentId)
+		{
+			attackableComponent.ReceiveAttack(damage);
+		}
+		else
+		{
+			Debug.Log("No attackable component on object");
+		}
+
+		if (collider.gameObject.GetInstanceID() != parentId)
+			Destroy(this.gameObject);
 	}
 }

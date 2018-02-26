@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
 		playerInteractionManager = GetComponent<PlayerInteractionManager>();
 	}
 
-	void LateUpdate()
+	void Update()
 	{
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;

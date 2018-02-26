@@ -848,7 +848,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4432466065734200, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.57216716
+      value: 0.69500285
       objectReference: {fileID: 0}
     - target: {fileID: 4432466065734200, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
       propertyPath: m_LocalRotation.z
@@ -856,7 +856,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4432466065734200, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.820137
+      value: -0.719007
       objectReference: {fileID: 0}
     - target: {fileID: 4432466065734200, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
       propertyPath: m_RootOrder
@@ -866,9 +866,9 @@ Prefab:
       propertyPath: m_Name
       value: RangedAnimal (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 1644231186396704, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
-      propertyPath: m_IsActive
-      value: 1
+    - target: {fileID: 4432466065734200, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 271.945
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 18e42399c41a9c142820d3b11076d6f8, type: 2}
@@ -915,10 +915,6 @@ Prefab:
     - target: {fileID: 1408715053243034, guid: 38c9385a71d65934dacae87686b13614, type: 2}
       propertyPath: m_Name
       value: Miku (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1408715053243034, guid: 38c9385a71d65934dacae87686b13614, type: 2}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 38c9385a71d65934dacae87686b13614, type: 2}

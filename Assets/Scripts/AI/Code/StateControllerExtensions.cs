@@ -10,7 +10,7 @@ public static class StateControllerExtensions
 
         if ((Vector3.Angle(rayDirection, controller.eyes.transform.forward)) <= controller.enemyStats.fieldOfVisionAngle * 0.5f)
         {
-            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox, Helpers.Layers.Enemy, "IgnoreRaycast");
+            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox, Helpers.Layers.Enemy, Helpers.Layers.Projectile, "IgnoreRaycast");
             if (Physics.Raycast(controller.eyes.transform.position, rayDirection, out hit, controller.enemyStats.fieldOfVisionDistance, layerMask))
             {
                 if (hit.transform.tag == Helpers.Tags.Player || hit.transform.tag == Helpers.Tags.PlayerCamera)

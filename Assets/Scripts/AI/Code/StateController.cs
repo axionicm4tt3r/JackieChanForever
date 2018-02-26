@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,6 +18,7 @@ public class StateController : MonoBehaviour
     [HideInInspector] public Transform chaseTarget;
     [HideInInspector] public Vector3 targetLastKnownPosition;
     [HideInInspector] public float stateTimeElapsed;
+    [HideInInspector] public ConcurrentDictionary<string, float> stateRepeatTimers = new ConcurrentDictionary<string, float>();
 
     private bool aiActive;
 
@@ -51,6 +53,7 @@ public class StateController : MonoBehaviour
     {
         if (!aiActive)
             return;
+        ElapseStateRepeatTimers();
         currentState.UpdateState(this);
     }
 
@@ -72,10 +75,32 @@ public class StateController : MonoBehaviour
         }
     }
 
+    public bool CheckRepeatTimers(string name, float duration)
+    {
+        if (!stateRepeatTimers.ContainsKey(name))
+            stateRepeatTimers.TryAdd(name, 0f);
+
+        if (stateRepeatTimers[name] >= duration)
+        {
+            stateRepeatTimers[name] = 0f;
+            return true;
+        }
+
+        return false;
+    }
+
     public bool CheckIfCountDownElapsed(float duration)
     {
         stateTimeElapsed += Time.deltaTime;
         return (stateTimeElapsed >= duration);
+    }
+
+    private void ElapseStateRepeatTimers()
+    {
+        foreach (var key in stateRepeatTimers.Keys)
+        {
+            stateRepeatTimers[key] += Time.deltaTime;
+        }
     }
 
     private void OnExitState()
