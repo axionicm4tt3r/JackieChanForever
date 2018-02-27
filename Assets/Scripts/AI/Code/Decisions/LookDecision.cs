@@ -19,7 +19,6 @@ public class LookDecision : Decision
 
         if (controller.CanSeePlayer(out playerTransform))
         {
-            Debug.Log("Going to the player now");
             controller.chaseTarget = playerTransform;
             controller.targetLastKnownPosition = playerTransform.position;
             controller.AlertNearbyEnemies();

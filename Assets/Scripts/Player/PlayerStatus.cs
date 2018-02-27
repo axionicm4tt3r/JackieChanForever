@@ -1,21 +1,18 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyAI))]
-public class EnemyStatus : MonoBehaviour
+public class PlayerStatus : MonoBehaviour
 {
-
 	[SerializeField]
-	protected float Health;
-
-	private EnemyAI enemyAI;
+	public float MaxHealth;
+	[ReadOnly]
+	public float Health;
 
 	public EntityHealthState state { get; private set; }
 
 	public string stateName { get { return state.ToString(); } }
 
 	void Start () {
-		enemyAI = GetComponent<EnemyAI>();
 		state = EntityHealthState.FreeMoving;
 	}
 
@@ -23,7 +20,6 @@ public class EnemyStatus : MonoBehaviour
 	internal void TakeDamage(float damage)
 	{
 		Health -= damage;
-		enemyAI.wasAttacked = true;
 
 		if (Health <= 0)
 			Die();
@@ -32,11 +28,10 @@ public class EnemyStatus : MonoBehaviour
 	internal virtual void Die()
 	{
 		state = EntityHealthState.Dead;
-		Destroy(gameObject);
 	}
 	#endregion
 
-	#region AIState
+	#region PlayerState
 	public bool IsDead()
 	{
 		return state == EntityHealthState.Dead;

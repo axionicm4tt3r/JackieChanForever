@@ -20,6 +20,7 @@ public class RespondToDamageDecision : Decision
             return true;
         }
 
+        //Add the delay 
         return false;
     }
 }

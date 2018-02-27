@@ -88,9 +88,12 @@ public class PlayerAttackManager : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
-            var attackableComponent = collider.gameObject.GetAttackableComponent();
-            if (attackableComponent != null)
-                results.Add(attackableComponent);
+            if (collider.tag != Helpers.Tags.Player)
+            {
+                var attackableComponent = collider.gameObject.GetAttackableComponent();
+                if (attackableComponent != null)
+                    results.Add(attackableComponent);
+            }
         }
 
         hasEnemy = results.Count > 0;

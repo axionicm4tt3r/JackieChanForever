@@ -20,7 +20,6 @@ public class AttackAction : Action
         {
             if (controller.CheckRepeatTimers(Helpers.Timers.AttackRate, controller.enemyStats.attackRate))
             {
-                Debug.Log("Attack!");
                 controller.enemyAI.Attack(controller.enemyStats.attackDamage); //Play attack animation, do damage
             }
             else

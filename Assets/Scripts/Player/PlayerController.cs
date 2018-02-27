@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IAttackable
 {
 	public const float JUMP_KICK_ALLOWANCE_TIME = 0.2f;
 	public const float SLIDE_KICK_ALLOWANCE_TIME = 0.2f;
@@ -8,11 +8,13 @@ public class PlayerController : MonoBehaviour
 	public GameObject PlayerHUD;
 
 	private Animator playerUIAnimator;
+	private PlayerStatus playerStatus;
 	private PlayerInputManager playerInputManager;
 	private PlayerMovementManager playerMovementManager;
 	private PlayerAttackManager playerAttackManager;
 	private PlayerInteractionManager playerInteractionManager;
 
+	[ReadOnly]
 	public PlayerState playerState;
 
 	public float basicAttackCooldown = 0.3f;
@@ -21,6 +23,12 @@ public class PlayerController : MonoBehaviour
 
 	public float slideKickAttackCooldown = 0.5f;
 	public float slideKickAttackMotionTime = 0.6f;
+
+	private float knockbackRecoveryFraction = 3f;
+	private float currentKnockbackRecoveryTime = 0f;
+
+	private float staggerKnockbackVelocity = 2f;
+	private float currentStaggerRecoveryTime = 0.1f;
 
 	private float attackCooldown = 0f;
 	private float attackMotionTime = 0f;
@@ -33,6 +41,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
+		playerStatus = GetComponent<PlayerStatus>();
 		playerInputManager = GetComponent<PlayerInputManager>();
 		playerMovementManager = GetComponent<PlayerMovementManager>();
 		playerAttackManager = GetComponent<PlayerAttackManager>();
@@ -59,6 +68,33 @@ public class PlayerController : MonoBehaviour
 	{
 		playerUIAnimator.SetBool("JumpKicking", false);
 		playerUIAnimator.SetBool("SlideKicking", false);
+	}
+
+	public void ReceiveAttack(float damage)
+	{
+		playerStatus.TakeDamage(damage);
+	}
+
+	public void ReceiveStaggerAttack(float damage, Vector3 staggerDirection, float staggerRecoveryTime)
+	{
+		playerStatus.BecomeStaggered();
+
+		currentStaggerRecoveryTime = staggerRecoveryTime;
+		//animator.SetBool("Staggered", true);
+		playerMovementManager.playerVelocity = staggerDirection * staggerKnockbackVelocity;
+
+		playerStatus.TakeDamage(damage);
+	}
+
+	public void ReceiveKnockbackAttack(float damage, Vector3 knockbackDirection, float knockbackVelocity, float knockbackTime)
+	{
+		playerStatus.BecomeKnockedBack();
+
+		currentKnockbackRecoveryTime = knockbackTime;
+		//animator.SetBool("KnockedBack", true);
+		playerMovementManager.playerVelocity = knockbackDirection * knockbackVelocity;
+
+		playerStatus.TakeDamage(damage);
 	}
 
 	internal void Interact()

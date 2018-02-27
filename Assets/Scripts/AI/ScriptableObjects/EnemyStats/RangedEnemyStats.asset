@@ -17,9 +17,10 @@ MonoBehaviour:
   attackRange: 1
   attackRate: 1
   attackForce: 15
-  attackDamage: 50
+  attackDamage: 10
   enemySightedStoppingDistance: 10
   walkAroundTimeDelay: 0.8
   searchDuration: 4
   searchingTurnSpeed: 120
   waypointStoppingDistance: 0.5
+  alertAlliesRadius: 10

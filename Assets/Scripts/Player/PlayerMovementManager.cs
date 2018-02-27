@@ -28,6 +28,8 @@ public class PlayerMovementManager : MonoBehaviour
 
 	private Vector3 playerInputVector;
 	private Vector3 moveDirectionNormalized = Vector3.zero;
+
+	[ReadOnly]
 	public Vector3 playerVelocity = Vector3.zero; // Reference this to get the movement of the player - make a local vector of it
 	private float playerTopVelocity = 0.0f;
 
