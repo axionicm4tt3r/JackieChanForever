@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Animator))]
@@ -20,14 +21,12 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	internal Animator animator;
 	internal EnemyStatus status;
 	internal NavMeshAgent navAgent;
-	internal Transform player;
 
 	public virtual void Awake()
 	{
 		animator = gameObject.GetComponentInChildren<Animator>();
 		status = gameObject.GetComponent<EnemyStatus>();
 		navAgent = gameObject.GetComponent<NavMeshAgent>();
-		player = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).transform;
 		navAgent.isStopped = true;
 	}
 
@@ -92,6 +91,31 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 		navAgent.updateRotation = false;
 
 		status.TakeDamage(damage);
+	}
+
+	public List<IAttackable> CheckInstantFrameHitboxForPlayer(BoxCollider hitbox, out bool hasEnemy)
+	{
+		Vector3 size = hitbox.size / 2;
+		size.x = Mathf.Abs(size.x);
+		size.y = Mathf.Abs(size.y);
+		size.z = Mathf.Abs(size.z);
+		ExtDebug.DrawBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, Color.blue);
+		int layerMask = LayerMask.GetMask(Helpers.Layers.Player);
+		Collider[] colliders = Physics.OverlapBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, layerMask);
+		var results = new List<IAttackable>();
+
+		foreach (Collider collider in colliders)
+		{
+			if (collider.tag == Helpers.Tags.Player)
+			{
+				var attackableComponent = collider.gameObject.GetAttackableComponent();
+				if (attackableComponent != null)
+					results.Add(attackableComponent);
+			}
+		}
+
+		hasEnemy = results.Count > 0;
+		return results;
 	}
 
 	internal virtual void Die()

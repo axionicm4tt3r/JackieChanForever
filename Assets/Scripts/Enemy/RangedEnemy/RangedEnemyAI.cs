@@ -32,12 +32,12 @@ public class RangedEnemyAI : EnemyAI
 	{
 		base.Attack(damage);
 
-        //var playerCentrePosition = (player.position + new Vector3(0, player.GetComponent<CharacterController>().height / 2, 0));
-        //var projectile = Instantiate(ProjectilePrefab, shotSource.position, Quaternion.LookRotation(playerCentrePosition - shotSource.position));
-        var projectile = Instantiate(ProjectilePrefab, shotSource.position, transform.rotation);
-        var projectileScript = projectile.GetComponent<Projectile>();
+		//var playerCentrePosition = (player.position + new Vector3(0, player.GetComponent<CharacterController>().height / 2, 0));
+		//var projectile = Instantiate(ProjectilePrefab, shotSource.position, Quaternion.LookRotation(playerCentrePosition - shotSource.position));
+		var projectile = Instantiate(ProjectilePrefab, shotSource.position, transform.rotation);
+		var projectileScript = projectile.GetComponent<Projectile>();
 
-        projectileScript.damage = damage;
-        projectileScript.parentId = gameObject.GetInstanceID();
-    }
+		projectileScript.damage = damage;
+		projectileScript.parentId = gameObject.GetInstanceID();
+	}
 }

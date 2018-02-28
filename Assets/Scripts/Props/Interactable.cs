@@ -45,7 +45,6 @@ public class Interactable : MonoBehaviour, IAttackable
 
 	public void ReceiveKnockbackAttack(float damage, Vector3 knockbackDirection, float knockbackVelocity, float knockbackTime)
 	{
-		//Needs Interactable status to take damage
 		this.rigidbody.velocity = knockbackDirection * knockbackVelocity / rigidbody.mass; //Something like this
 	}
 
@@ -67,9 +66,8 @@ public class Interactable : MonoBehaviour, IAttackable
 
 	public void OnCollisionEnter(Collision collision)
 	{
-		Debug.Log("Damaging Enemy with a Throwable!");
 		var attackableComponent = collision.gameObject.GetAttackableComponent();
-		if (attackableComponent != null)
+		if (attackableComponent != null && collision.gameObject.tag != Helpers.Tags.Player)
 		{
 			var direction = (collision.gameObject.transform.position - transform.position).normalized;
 			var currentVelocity = rigidbody.velocity.magnitude;

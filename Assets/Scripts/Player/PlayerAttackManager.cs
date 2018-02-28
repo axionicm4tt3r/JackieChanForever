@@ -83,7 +83,8 @@ public class PlayerAttackManager : MonoBehaviour
         size.y = Mathf.Abs(size.y);
         size.z = Mathf.Abs(size.z);
         ExtDebug.DrawBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, Color.blue);
-        Collider[] colliders = Physics.OverlapBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation);
+        int layerMask = LayerMask.GetMask(Helpers.Layers.Enemy, Helpers.Layers.Interactable);
+        Collider[] colliders = Physics.OverlapBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, layerMask);
         var results = new List<IAttackable>();
 
         foreach (Collider collider in colliders)

@@ -10,6 +10,7 @@ TagManager:
   - SlideKickHitbox
   - Enemy
   - Interactable
+  - EnemyHitbox
   layers:
   - Default
   - TransparentFX
@@ -23,8 +24,8 @@ TagManager:
   - Enemy
   - Interactable
   - Projectile
-  - 
-  - 
+  - Player
+  - EnemyHitbox
   - 
   - 
   - 

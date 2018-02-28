@@ -10,7 +10,7 @@ public static class StateControllerExtensions
 
         if ((Vector3.Angle(rayDirection, controller.eyes.transform.forward)) <= controller.enemyStats.fieldOfVisionAngle * 0.5f)
         {
-            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox, Helpers.Layers.Enemy, Helpers.Layers.Projectile, "IgnoreRaycast");
+            var layerMask = LayerMask.GetMask("Default", Helpers.Layers.Player);
             if (Physics.Raycast(controller.eyes.transform.position, rayDirection, out hit, controller.enemyStats.fieldOfVisionDistance, layerMask))
             {
                 if (hit.transform.tag == Helpers.Tags.Player || hit.transform.tag == Helpers.Tags.PlayerCamera)
@@ -35,6 +35,10 @@ public static class StateControllerExtensions
         foreach (Collider collider in enemyColliders)
         {
             StateController enemyController = collider.gameObject.GetComponent<StateController>();
+            if (enemyController == controller)
+                continue;
+
+            Debug.Log($"EnemyController: {enemyController.gameObject.name} / CurrentController: {controller.gameObject.name}");
             enemyController.chaseTarget = controller.chaseTarget;
             enemyController.targetLastKnownPosition = controller.targetLastKnownPosition;
             enemyController.enemyAI.isAlerted = true;

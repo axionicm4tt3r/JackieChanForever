@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 114798771744214850}
   - component: {fileID: 114266896608397766}
   - component: {fileID: 114611215730509340}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -406,7 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f368890f6af4479d6c5f3b2cf0c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerHUD: {fileID: 1712986481247698, guid: 501f18d8698855844bc21cfc631c1325, type: 2}
+  PlayerHUD: {fileID: 1536770228554084, guid: 14bbb78c3da652542a07eb6aff098e62, type: 2}
   playerState: 0
   basicAttackCooldown: 0.3
   jumpKickAttackCooldown: 0.5

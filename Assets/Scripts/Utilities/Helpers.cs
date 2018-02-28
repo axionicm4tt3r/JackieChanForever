@@ -12,13 +12,16 @@ public static class Helpers {
 		public const string MidPunchHitbox = "MidPunchHitbox";
 		public const string JumpKickHitbox = "JumpKickHitbox";
 		public const string SlideKickHitbox = "SlideKickHitbox";
+		public const string EnemyHitbox = "EnemyHitbox";
 	}
 
 	public class Layers
 	{
 		public const string Interactable = "Interactable";
 		public const string Enemy = "Enemy";
+		public const string Player = "Player";
 		public const string PlayerHitbox = "PlayerHitbox";
+		public const string EnemyHitbox = "EnemyHitbox";
 		public const string Projectile = "Projectile";
 	}
 

@@ -16,7 +16,7 @@ public class WalkAroundAction : Action
         {
             //Find a new point to walk to and resume the walk
             //controller.navMeshAgent.isStopped = false;
-            Debug.Log("Walking around...");
+            //Debug.Log("Walking around...");
         }
     }
 }
