@@ -38,7 +38,7 @@ public static class StateControllerExtensions
             if (enemyController == controller)
                 continue;
 
-            Debug.Log($"EnemyController: {enemyController.gameObject.name} / CurrentController: {controller.gameObject.name}");
+            //Debug.Log($"EnemyController: {enemyController.gameObject.name} / CurrentController: {controller.gameObject.name}");
             enemyController.chaseTarget = controller.chaseTarget;
             enemyController.targetLastKnownPosition = controller.targetLastKnownPosition;
             enemyController.enemyAI.isAlerted = true;

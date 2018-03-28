@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerSlideKickHitbox : MonoBehaviour
+public class PlayerHitboxScanner : MonoBehaviour
 {
 	PlayerController playerController;
 	PlayerAttackManager playerAttackManager;
@@ -14,11 +14,20 @@ public class PlayerSlideKickHitbox : MonoBehaviour
 
 	public void OnTriggerStay(Collider collider)
 	{
-		if (!(playerController.playerState == PlayerController.PlayerState.SlideKicking))
-			return;
-
 		var attackableComponent = collider.gameObject.GetAttackableComponent();
 		if (attackableComponent != null)
-			playerAttackManager.SlideKick(attackableComponent);
+		{
+			switch(playerController.attackState)
+			{
+				case AttackState.JumpKicking:
+					playerAttackManager.JumpKick(attackableComponent);
+					break;
+				case AttackState.SlideKicking:
+					playerAttackManager.SlideKick(attackableComponent);
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }

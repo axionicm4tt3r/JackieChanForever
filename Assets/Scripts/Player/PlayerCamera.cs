@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
-	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 1.8f; // The height at which the camera is bound to
-	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 0.9f; // The height at which the camera is bound to
-	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET; // The height at which the camera is bound to
+	//Move to PlayerConstants class or something
+	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 2.0f;
+	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 1.0f;
+	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET;
 
 	public float xMouseSensitivity = 45.0f;
 	public float yMouseSensitivity = 45.0f;
@@ -13,9 +14,12 @@ public class PlayerCamera : MonoBehaviour
 	private float rotX = 0.0f;
 	private float rotY = 0.0f;
 
-	// Use this for initialization
-	void Start ()
+	private PlayerInputManager playerInputManager;
+
+	void Awake ()
 	{
+		playerInputManager = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).GetComponent<PlayerInputManager>();
+
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 
@@ -28,15 +32,10 @@ public class PlayerCamera : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		//Need to move the camera after the player has been moved because otherwise the camera will clip the player if going fast enough and will always be 1 frame behind.
-		//Set the camera's position to the transform
-		//transform.position = new Vector3(
-		//	transform.root.position.x,
-		//	transform.root.position.y + currentViewYOffset,
-		//	transform.root.position.z);
+		MouseLook();
 	}
 
-	internal void Look(Vector2 input)
+	internal void MouseLook()
 	{
 		if (Cursor.lockState != CursorLockMode.Locked)
 		{
@@ -44,8 +43,8 @@ public class PlayerCamera : MonoBehaviour
 				Cursor.lockState = CursorLockMode.Locked;
 		}
 
-		rotX -= input.y * xMouseSensitivity * 0.02f;
-		rotY += input.x * yMouseSensitivity * 0.02f;
+		rotX -= playerInputManager.Current.MouseInput.y * xMouseSensitivity * 0.02f;
+		rotY += playerInputManager.Current.MouseInput.x * yMouseSensitivity * 0.02f;
 
 		if (rotX < -90)
 			rotX = -90;

@@ -2,64 +2,49 @@
 
 public class PlayerInputManager : MonoBehaviour
 {
-	CharacterController characterController;
+	SuperCharacterController characterController;
 	PlayerController playerController;
-	PlayerMovementManager playerMovement;
+	PlayerStateMachine playerStateMachine;
 	PlayerCamera playerCamera;
 
-	[HideInInspector] public float crouchTime = 0f;
-	[HideInInspector] public float jumpTime = 0f;
-
-	public bool IsCrouched { get { return crouchTime > 0; } }
+	public PlayerInput Current;
 
 	void Awake()
 	{
-		characterController = GetComponent<CharacterController>();
+		characterController = GetComponent<SuperCharacterController>();
 		playerController = GetComponent<PlayerController>();
-		playerMovement = GetComponent<PlayerMovementManager>();
+		playerStateMachine = GetComponent<PlayerStateMachine>();
 		playerCamera = Camera.main.GetComponent<PlayerCamera>();
 	}
 
 	void Update()
 	{
-		var mouseXInput = Input.GetAxisRaw("Mouse X");
-		var mouseYInput = Input.GetAxisRaw("Mouse Y");
-		var mouseLookVector = new Vector2(mouseXInput, mouseYInput);
-		playerCamera.Look(mouseLookVector);
+		Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+		Vector2 mouseInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
-		if (Input.GetButtonDown("PrimaryFire"))
-		{
-			playerController.Attack();
-		}
+		bool jumpInput = Input.GetButtonDown("Jump");
+		bool crouchInput = Input.GetButton("Crouch");
+		bool primaryFireInput = Input.GetButtonDown("PrimaryFire");
+		bool interactInput = Input.GetButtonDown("Interact");
 
-		if (Input.GetButtonDown("Interact"))
+		Current = new PlayerInput()
 		{
-			playerController.Interact();
-		}
-
-		if (Input.GetButton("Crouch") || playerController.playerState == PlayerController.PlayerState.SlideKicking)
-		{
-			playerMovement.GoToCrouching();
-			crouchTime += Time.deltaTime;
-		}
-		else if (!Input.GetButton("Crouch"))
-		{
-			playerMovement.GoToStanding();
-			crouchTime = 0;
-		}
-
-		HandlePlayerIsGroundedTime();
+			MoveInput = moveInput,
+			MouseInput = mouseInput,
+			JumpInput = jumpInput,
+			CrouchInput = crouchInput,
+			PrimaryFireInput = primaryFireInput,
+			InteractInput = interactInput
+		};
 	}
 
-	private void HandlePlayerIsGroundedTime()
+	public struct PlayerInput
 	{
-		if (characterController.isGrounded)
-		{
-			jumpTime = 0;
-		}
-		else if (jumpTime < PlayerController.JUMP_KICK_ALLOWANCE_TIME)
-		{
-			jumpTime += Time.deltaTime;
-		}
+		public Vector3 MoveInput;
+		public Vector2 MouseInput;
+		public bool JumpInput;
+		public bool CrouchInput;
+		public bool PrimaryFireInput;
+		public bool InteractInput;
 	}
 }

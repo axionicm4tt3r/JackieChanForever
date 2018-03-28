@@ -9,9 +9,9 @@ public static class Helpers {
 		public const string PlayerCamera = "MainCamera";
 		public const string Player = "Player";
 		public const string PlayerHUD = "PlayerHUD";
-		public const string MidPunchHitbox = "MidPunchHitbox";
-		public const string JumpKickHitbox = "JumpKickHitbox";
-		public const string SlideKickHitbox = "SlideKickHitbox";
+		public const string PlayerHitbox = "MidPunchHitbox";
+		//public const string JumpKickHitbox = "JumpKickHitbox";
+		//public const string SlideKickHitbox = "SlideKickHitbox";
 		public const string EnemyHitbox = "EnemyHitbox";
 	}
 

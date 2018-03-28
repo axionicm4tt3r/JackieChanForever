@@ -10,12 +10,12 @@ public class PlayerController : MonoBehaviour, IAttackable
 	private Animator playerUIAnimator;
 	private PlayerStatus playerStatus;
 	private PlayerInputManager playerInputManager;
-	private PlayerMovementManager playerMovementManager;
+	private PlayerStateMachine playerStateMachine;
 	private PlayerAttackManager playerAttackManager;
 	private PlayerInteractionManager playerInteractionManager;
 
 	[ReadOnly]
-	public PlayerState playerState;
+	public AttackState attackState;
 
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
 		playerStatus = GetComponent<PlayerStatus>();
 		playerInputManager = GetComponent<PlayerInputManager>();
-		playerMovementManager = GetComponent<PlayerMovementManager>();
+		playerStateMachine = GetComponent<PlayerStateMachine>();
 		playerAttackManager = GetComponent<PlayerAttackManager>();
 		playerInteractionManager = GetComponent<PlayerInteractionManager>();
 	}
@@ -53,15 +53,24 @@ public class PlayerController : MonoBehaviour, IAttackable
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;
 
-		if (attackMotionTime <= 0 && playerState != PlayerState.FreeMove)
+		if (attackMotionTime <= 0 && attackState != AttackState.Idle)
 		{
-			playerState = PlayerState.FreeMove;
+			attackState = AttackState.Idle;
 			attackMotionTime = 0;
 			playerAttackManager.ClearEnemiesHit();
 			ResetAnimatorParameters();
 		}
 		else
 			attackMotionTime -= Time.deltaTime;
+	}
+
+	void LateUpdate()
+	{
+		if (playerInputManager.Current.PrimaryFireInput)
+			Attack();
+
+		if (playerInputManager.Current.InteractInput)
+			Interact();
 	}
 
 	private void ResetAnimatorParameters()
@@ -81,7 +90,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 		currentStaggerRecoveryTime = staggerRecoveryTime;
 		//animator.SetBool("Staggered", true);
-		playerMovementManager.playerVelocity = staggerDirection * staggerKnockbackVelocity;
+		playerStateMachine.moveDirection += staggerDirection * staggerKnockbackVelocity;
 
 		playerStatus.TakeDamage(damage);
 	}
@@ -92,7 +101,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 		currentKnockbackRecoveryTime = knockbackTime;
 		//animator.SetBool("KnockedBack", true);
-		playerMovementManager.playerVelocity = knockbackDirection * knockbackVelocity;
+		playerStateMachine.moveDirection += knockbackDirection * knockbackVelocity;
 
 		playerStatus.TakeDamage(damage);
 	}
@@ -110,12 +119,10 @@ public class PlayerController : MonoBehaviour, IAttackable
 		}
 		else if (attackCooldown <= 0)
 		{
-			if (playerInputManager.crouchTime > 0.03 && playerInputManager.crouchTime < SLIDE_KICK_ALLOWANCE_TIME)
+			if ((PlayerStates)playerStateMachine.CurrentState == PlayerStates.CrouchRunning && playerStateMachine.TimeSinceEnteringCurrentState < SLIDE_KICK_ALLOWANCE_TIME)
 				PerformSlideKickAttack();
-
-			else if (playerInputManager.jumpTime > 0.03 && playerInputManager.jumpTime < JUMP_KICK_ALLOWANCE_TIME)
+			else if ((PlayerStates)playerStateMachine.CurrentState == PlayerStates.Jumping && playerStateMachine.TimeSinceEnteringCurrentState < JUMP_KICK_ALLOWANCE_TIME)
 				PerformJumpKickAttack();
-
 			else
 				PerformBasicAttack();
 		}
@@ -124,7 +131,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 	private void PerformSlideKickAttack()
 	{
 		Debug.Log("SlideKick!");
-		playerState = PlayerState.SlideKicking; //State allows the triggers in the hitbox
+		attackState = AttackState.SlideKicking; //State allows the triggers in the hitbox
 		attackMotionTime = slideKickAttackMotionTime;
 
 		attackCooldown = slideKickAttackCooldown;
@@ -134,7 +141,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 	private void PerformJumpKickAttack()
 	{
 		Debug.Log("JumpKick!");
-		playerState = PlayerState.JumpKicking; //State allows the triggers in the hitbox
+		attackState = AttackState.JumpKicking; //State allows the triggers in the hitbox
 		attackMotionTime = jumpKickAttackMotionTime;
 
 		attackCooldown = jumpKickAttackCooldown;
@@ -150,11 +157,11 @@ public class PlayerController : MonoBehaviour, IAttackable
 		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
 		playerUIAnimator.SetTrigger("BasicAttacking");
 	}
+}
 
-	public enum PlayerState
-	{
-		FreeMove,
-		JumpKicking,
-		SlideKicking
-	}
+public enum AttackState
+{
+	Idle,
+	JumpKicking,
+	SlideKicking
 }
