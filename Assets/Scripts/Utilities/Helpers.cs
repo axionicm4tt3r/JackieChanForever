@@ -10,8 +10,6 @@ public static class Helpers {
 		public const string Player = "Player";
 		public const string PlayerHUD = "PlayerHUD";
 		public const string PlayerHitbox = "MidPunchHitbox";
-		//public const string JumpKickHitbox = "JumpKickHitbox";
-		//public const string SlideKickHitbox = "SlideKickHitbox";
 		public const string EnemyHitbox = "EnemyHitbox";
 	}
 
@@ -61,5 +59,10 @@ public static class Helpers {
 	public static void DebugDirectionRay(this Transform transform)
 	{
 		Debug.DrawRay(transform.position, transform.forward, Color.red, 0.1f);
+	}
+
+	public static AngleDirection Direction(float angle)
+	{
+		return (AngleDirection)(Mathf.Round(angle / 45) * 45f);
 	}
 }

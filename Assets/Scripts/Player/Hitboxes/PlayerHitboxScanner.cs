@@ -19,10 +19,10 @@ public class PlayerHitboxScanner : MonoBehaviour
 		{
 			switch(playerController.attackState)
 			{
-				case AttackState.JumpKicking:
+				case PlayerAttackState.JumpKicking:
 					playerAttackManager.JumpKick(attackableComponent);
 					break;
-				case AttackState.SlideKicking:
+				case PlayerAttackState.SlideKicking:
 					playerAttackManager.SlideKick(attackableComponent);
 					break;
 				default:

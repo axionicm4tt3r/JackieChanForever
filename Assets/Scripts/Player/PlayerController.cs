@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 	private PlayerInteractionManager playerInteractionManager;
 
 	[ReadOnly]
-	public AttackState attackState;
+	public PlayerAttackState attackState;
 
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
@@ -53,9 +53,9 @@ public class PlayerController : MonoBehaviour, IAttackable
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;
 
-		if (attackMotionTime <= 0 && attackState != AttackState.Idle)
+		if (attackMotionTime <= 0 && attackState != PlayerAttackState.Idle)
 		{
-			attackState = AttackState.Idle;
+			attackState = PlayerAttackState.Idle;
 			attackMotionTime = 0;
 			playerAttackManager.ClearEnemiesHit();
 			ResetAnimatorParameters();
@@ -119,9 +119,14 @@ public class PlayerController : MonoBehaviour, IAttackable
 		}
 		else if (attackCooldown <= 0)
 		{
-			if ((PlayerStates)playerStateMachine.CurrentState == PlayerStates.CrouchRunning && playerStateMachine.TimeSinceEnteringCurrentState < SLIDE_KICK_ALLOWANCE_TIME)
+			if (playerStateMachine.IsInState(PlayerStates.CrouchRunning) 
+				&& playerStateMachine.TimeSinceEnteringCurrentState < SLIDE_KICK_ALLOWANCE_TIME 
+				&& playerStateMachine.LocalMovementCardinalDirection == AngleDirection.Forward)
 				PerformSlideKickAttack();
-			else if ((PlayerStates)playerStateMachine.CurrentState == PlayerStates.Jumping && playerStateMachine.TimeSinceEnteringCurrentState < JUMP_KICK_ALLOWANCE_TIME)
+
+			else if (playerStateMachine.IsInState(PlayerStates.Jumping) 
+				&& playerStateMachine.TimeSinceEnteringCurrentState < JUMP_KICK_ALLOWANCE_TIME
+				&& playerStateMachine.LocalMovementCardinalDirection == AngleDirection.Forward)
 				PerformJumpKickAttack();
 			else
 				PerformBasicAttack();
@@ -130,38 +135,31 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 	private void PerformSlideKickAttack()
 	{
-		Debug.Log("SlideKick!");
-		attackState = AttackState.SlideKicking; //State allows the triggers in the hitbox
+		//Debug.Log("SlideKick!");
+		attackState = PlayerAttackState.SlideKicking; //State allows the triggers in the hitbox
 		attackMotionTime = slideKickAttackMotionTime;
-
 		attackCooldown = slideKickAttackCooldown;
+
 		playerUIAnimator.SetBool("SlideKicking", true);
 	}
 
 	private void PerformJumpKickAttack()
 	{
-		Debug.Log("JumpKick!");
-		attackState = AttackState.JumpKicking; //State allows the triggers in the hitbox
+		//Debug.Log("JumpKick!");
+		attackState = PlayerAttackState.JumpKicking; //State allows the triggers in the hitbox
 		attackMotionTime = jumpKickAttackMotionTime;
-
 		attackCooldown = jumpKickAttackCooldown;
+
 		playerUIAnimator.SetBool("JumpKicking", true);
 	}
 
 	private void PerformBasicAttack()
 	{
-		Debug.Log("BasicAttack!");
+		//Debug.Log("BasicAttack!");
 		playerAttackManager.BasicAttack(); //Instant frame attack, does calculations in 1 frame
-
 		attackCooldown = basicAttackCooldown;
+
 		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
 		playerUIAnimator.SetTrigger("BasicAttacking");
 	}
-}
-
-public enum AttackState
-{
-	Idle,
-	JumpKicking,
-	SlideKicking
 }

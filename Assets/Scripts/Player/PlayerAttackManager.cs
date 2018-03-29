@@ -20,7 +20,7 @@ public class PlayerAttackManager : MonoBehaviour
     PlayerController playerController;
     PlayerSoundManager playerSoundManager;
 
-    BoxCollider PlayerHitbox;
+    BoxCollider playerHitbox;
 
     List<IAttackable> enemiesHit = new List<IAttackable>();
 
@@ -29,13 +29,13 @@ public class PlayerAttackManager : MonoBehaviour
         playerController = GetComponentInParent<PlayerController>();
         playerSoundManager = GetComponentInParent<PlayerSoundManager>();
 
-        PlayerHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHitbox).GetComponent<BoxCollider>();
+        playerHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHitbox).GetComponent<BoxCollider>();
     }
 
     public void BasicAttack()
     {
         bool hitEnemy = false;
-        List<IAttackable> results = CheckInstantFrameHitboxForEnemies(PlayerHitbox, out hitEnemy);
+        List<IAttackable> results = CheckInstantFrameHitboxForEnemies(playerHitbox, out hitEnemy);
 
         foreach (IAttackable attackableComponent in results)
         {

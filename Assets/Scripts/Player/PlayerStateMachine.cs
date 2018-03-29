@@ -55,17 +55,30 @@ public class PlayerStateMachine : SuperStateMachine
 	public const float AirControl = 0.6f;
 	public const float ChangeStanceSpeed = 0.3f;
 
+	public const float JumpKickVelocity = 18f;
+	public const float SlideKickVelocity = 14f;
+
+	private PlayerController playerController;
+	private PlayerInputManager playerInputManager;
+	private GameObject playerCamera;
 	private SuperCharacterController controller;
 
 	public Vector3 moveDirection;
 	public Vector3 lookDirection { get; private set; }
 
-	private PlayerInputManager playerInputManager;
-	private GameObject playerCamera;
-
 	public Enum CurrentState { get { return currentState; } private set { currentState = value; ChangeState(); } }
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
+
+	public AngleDirection LocalMovementCardinalDirection
+	{
+		get
+		{
+			return Helpers.Direction(Vector2.SignedAngle(new Vector2(moveDirection.x, moveDirection.z), new Vector2(transform.forward.x, transform.forward.z)));
+		}
+	}
+
+	public bool IsInState(PlayerStates state) { return (PlayerStates)CurrentState == state; }
 
 	private void ChangeState()
 	{
@@ -75,11 +88,12 @@ public class PlayerStateMachine : SuperStateMachine
 
 	void Awake()
 	{
+		playerController = gameObject.GetComponent<PlayerController>();
 		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
 		playerCamera = GameObject.FindWithTag(Helpers.Tags.PlayerCamera);
 		lookDirection = transform.forward;
-		currentState = PlayerStates.Standing;
+		CurrentState = PlayerStates.Standing;
 	}
 
 	protected override void EarlyGlobalSuperUpdate()
@@ -89,7 +103,7 @@ public class PlayerStateMachine : SuperStateMachine
 
 	protected override void LateGlobalSuperUpdate()
 	{
-		if (((PlayerStates)CurrentState == PlayerStates.Crouching || (PlayerStates)CurrentState == PlayerStates.CrouchRunning) && playerInputManager.Current.CrouchInput)
+		if (this.IsInState(PlayerStates.Crouching) || this.IsInState(PlayerStates.CrouchRunning))
 			GoToCrouching();
 		else
 			GoToStanding();
@@ -278,6 +292,12 @@ public class PlayerStateMachine : SuperStateMachine
 	#region CrouchRunning
 	void CrouchRunning_SuperUpdate()
 	{
+		if (playerController.attackState == PlayerAttackState.SlideKicking)
+		{
+			moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideKickVelocity, SlideKickVelocity * Time.deltaTime);
+			return;
+		}
+
 		if (playerInputManager.Current.JumpInput)
 		{
 			CurrentState = PlayerStates.Jumping;
@@ -333,7 +353,11 @@ public class PlayerStateMachine : SuperStateMachine
 			return;
 		}
 
-		planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * RunSpeed, AirControl * RunAcceleration * Time.deltaTime);
+		if (playerController.attackState == PlayerAttackState.JumpKicking)
+			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, transform.forward * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
+		else
+			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * RunSpeed, AirControl * RunAcceleration * Time.deltaTime);
+
 		verticalMoveDirection -= controller.up * Gravity * Time.deltaTime;
 
 		moveDirection = planarMoveDirection + verticalMoveDirection;
