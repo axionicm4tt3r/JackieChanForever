@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 	[ReadOnly]
 	public PlayerAttackState attackState;
 
+	public float maximumBlockTime = 0.5f;
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
 	public float jumpKickAttackMotionTime = 0.4f;
@@ -32,6 +33,11 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 	private float attackCooldown = 0f;
 	private float attackMotionTime = 0f;
+	[ReadOnly]
+	public float blockTime = 0f;
+
+	[ReadOnly]
+	public bool blockInputHandled = false;
 
 	void Awake()
 	{
@@ -53,15 +59,21 @@ public class PlayerController : MonoBehaviour, IAttackable
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;
 
-		if (attackMotionTime <= 0 && attackState != PlayerAttackState.Idle)
+		if (blockTime > 0)
+			blockTime -= Time.deltaTime;
+
+		if (attackMotionTime <= 0 && !(attackState == PlayerAttackState.Idle || attackState == PlayerAttackState.Blocking))
 		{
-			attackState = PlayerAttackState.Idle;
-			attackMotionTime = 0;
-			playerAttackManager.ClearEnemiesHit();
-			ResetAnimatorParameters();
+			ResetAttackStateToIdle();
 		}
 		else
 			attackMotionTime -= Time.deltaTime;
+
+		if (blockTime <= 0 && attackState == PlayerAttackState.Blocking)
+		{
+			ResetBlockStateToIdle();
+		}
+
 	}
 
 	void LateUpdate()
@@ -69,14 +81,22 @@ public class PlayerController : MonoBehaviour, IAttackable
 		if (playerInputManager.Current.PrimaryFireInput)
 			Attack();
 
+		if (playerInputManager.Current.SecondaryFireInput)
+			Block();
+		else
+			blockInputHandled = false;
+
 		if (playerInputManager.Current.InteractInput)
 			Interact();
+
+		Debug.Log($"PlayerAttackState = {attackState.ToString()}");
 	}
 
 	private void ResetAnimatorParameters()
 	{
 		playerUIAnimator.SetBool("JumpKicking", false);
 		playerUIAnimator.SetBool("SlideKicking", false);
+		playerUIAnimator.SetBool("Blocking", false);
 	}
 
 	public void ReceiveAttack(float damage)
@@ -109,6 +129,17 @@ public class PlayerController : MonoBehaviour, IAttackable
 	internal void Interact()
 	{
 		playerInteractionManager.Interact();
+	}
+
+	private void Block()
+	{
+		if (attackState == PlayerAttackState.Idle && !blockInputHandled)
+		{
+			attackState = PlayerAttackState.Blocking;
+			blockInputHandled = true;
+			blockTime = maximumBlockTime;
+			playerUIAnimator.SetBool("Blocking", true);
+		}
 	}
 
 	internal void Attack()
@@ -162,4 +193,20 @@ public class PlayerController : MonoBehaviour, IAttackable
 		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
 		playerUIAnimator.SetTrigger("BasicAttacking");
 	}
+
+	private void ResetAttackStateToIdle()
+	{
+		attackState = PlayerAttackState.Idle;
+		attackMotionTime = 0;
+		playerAttackManager.ClearEnemiesHit();
+		ResetAnimatorParameters();
+	}
+
+	private void ResetBlockStateToIdle()
+	{
+		attackState = PlayerAttackState.Idle;
+		blockTime = 0;
+		ResetAnimatorParameters();
+	}
+
 }

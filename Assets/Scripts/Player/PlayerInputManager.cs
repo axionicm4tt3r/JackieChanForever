@@ -2,20 +2,7 @@
 
 public class PlayerInputManager : MonoBehaviour
 {
-	SuperCharacterController characterController;
-	PlayerController playerController;
-	PlayerStateMachine playerStateMachine;
-	PlayerCamera playerCamera;
-
 	public PlayerInput Current;
-
-	void Awake()
-	{
-		characterController = GetComponent<SuperCharacterController>();
-		playerController = GetComponent<PlayerController>();
-		playerStateMachine = GetComponent<PlayerStateMachine>();
-		playerCamera = Camera.main.GetComponent<PlayerCamera>();
-	}
 
 	void Update()
 	{
@@ -25,6 +12,7 @@ public class PlayerInputManager : MonoBehaviour
 		bool jumpInput = Input.GetButtonDown("Jump");
 		bool crouchInput = Input.GetButton("Crouch");
 		bool primaryFireInput = Input.GetButtonDown("PrimaryFire");
+		bool secondaryFireInput = Input.GetButton("SecondaryFire");
 		bool interactInput = Input.GetButtonDown("Interact");
 
 		Current = new PlayerInput()
@@ -34,6 +22,7 @@ public class PlayerInputManager : MonoBehaviour
 			JumpInput = jumpInput,
 			CrouchInput = crouchInput,
 			PrimaryFireInput = primaryFireInput,
+			SecondaryFireInput = secondaryFireInput,
 			InteractInput = interactInput
 		};
 	}
@@ -45,6 +34,7 @@ public class PlayerInputManager : MonoBehaviour
 		public bool JumpInput;
 		public bool CrouchInput;
 		public bool PrimaryFireInput;
+		public bool SecondaryFireInput;
 		public bool InteractInput;
 	}
 }

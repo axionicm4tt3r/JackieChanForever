@@ -60,7 +60,6 @@ public class PlayerStateMachine : SuperStateMachine
 
 	private PlayerController playerController;
 	private PlayerInputManager playerInputManager;
-	private GameObject playerCamera;
 	private SuperCharacterController controller;
 
 	public Vector3 moveDirection;
@@ -91,7 +90,6 @@ public class PlayerStateMachine : SuperStateMachine
 		playerController = gameObject.GetComponent<PlayerController>();
 		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
-		playerCamera = GameObject.FindWithTag(Helpers.Tags.PlayerCamera);
 		lookDirection = transform.forward;
 		CurrentState = PlayerStates.Standing;
 	}

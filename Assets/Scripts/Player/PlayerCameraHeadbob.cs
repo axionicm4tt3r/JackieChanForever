@@ -29,7 +29,7 @@ public class PlayerCameraHeadbob : MonoBehaviour
 		float waveslice = 0.0f;
 
 		float horizontal = playerInputManager.Current.MoveInput.x;
-		float vertical = playerInputManager.Current.MoveInput.y;
+		float vertical = playerInputManager.Current.MoveInput.z;
 	
 		Vector3 cSharpConversion = transform.localPosition;
 
