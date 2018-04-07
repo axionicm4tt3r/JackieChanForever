@@ -17,7 +17,7 @@ public class PlayerAttackManager : MonoBehaviour
     public static float SlideKickKnockbackTime = 0.2f;
     #endregion
 
-    PlayerController playerController;
+    PlayerAttackStateManager playerController;
     PlayerSoundManager playerSoundManager;
 
     BoxCollider playerHitbox;
@@ -26,7 +26,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     void Awake()
     {
-        playerController = GetComponentInParent<PlayerController>();
+        playerController = GetComponentInParent<PlayerAttackStateManager>();
         playerSoundManager = GetComponentInParent<PlayerSoundManager>();
 
         playerHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHitbox).GetComponent<BoxCollider>();

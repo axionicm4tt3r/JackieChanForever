@@ -1,41 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-public class PlayerStateMachine : SuperStateMachine
+public class PlayerMovementStateMachine : SuperStateMachine
 {
-	//public float jumpKickVelocity = 18f;
-	//public float slideKickVelocity = 14f;
-
-	//private void Update()
-	//{
-	//	switch (playerController.playerState)
-	//	{
-	//		case PlayerController.PlayerState.FreeMove:
-	//			QueueJump();
-
-	//			if (MaintainingGround)
-	//			{ GroundMove(); Debug.Log("GroundMoving"); }
-	//			else if (!MaintainingGround)
-	//			{ AirMove(); Debug.Log("AirMoving"); }
-
-	//			characterController.transform.Translate(playerVelocity * Time.deltaTime);
-
-	//			Vector3 udp = playerVelocity;
-	//			udp.y = 0.0f;
-	//			if (playerVelocity.magnitude > playerTopVelocity)
-	//				playerTopVelocity = playerVelocity.magnitude;
-	//			break;
-	//		case PlayerController.PlayerState.JumpKicking:
-	//			playerVelocity = transform.forward * jumpKickVelocity;
-	//			characterController.transform.Translate(playerVelocity * Time.deltaTime);
-	//			break;
-	//		case PlayerController.PlayerState.SlideKicking:
-	//			playerVelocity = transform.forward * slideKickVelocity;
-	//			characterController.transform.Translate(playerVelocity * Time.deltaTime);
-	//			break;
-	//	}
-	//}
-
 	//private void QueueJump()
 	//{
 	//	if (Input.GetButtonDown("Jump") && !wishJump)
@@ -58,7 +25,7 @@ public class PlayerStateMachine : SuperStateMachine
 	public const float JumpKickVelocity = 18f;
 	public const float SlideKickVelocity = 14f;
 
-	private PlayerController playerController;
+	private PlayerAttackStateManager playerController;
 	private PlayerInputManager playerInputManager;
 	private SuperCharacterController controller;
 
@@ -87,7 +54,7 @@ public class PlayerStateMachine : SuperStateMachine
 
 	void Awake()
 	{
-		playerController = gameObject.GetComponent<PlayerController>();
+		playerController = gameObject.GetComponent<PlayerAttackStateManager>();
 		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
 		lookDirection = transform.forward;

@@ -52,7 +52,7 @@ public class PlayerInteractionManager : MonoBehaviour
         objectGrabbed = true;
         grabbedObject = newLiftedObject;
         grabbedObject.Grab(grabbedLocation);
-        Debug.Log("Picked up a new object");
+        //Debug.Log("Picked up a new object");
     }
 
     public void Drop()
@@ -60,7 +60,7 @@ public class PlayerInteractionManager : MonoBehaviour
         objectGrabbed = false;
         grabbedObject.grabbed = false;
         grabbedObject.Drop();
-        Debug.Log("Threw the old object");
+        //Debug.Log("Threw the old object");
     }
 
     public void Throw()

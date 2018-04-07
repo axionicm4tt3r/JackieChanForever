@@ -12,7 +12,7 @@ public class PlayerStatus : MonoBehaviour
 
 	public string stateName { get { return state.ToString(); } }
 
-	void Start () {
+	void Awake () {
 		state = EntityHealthState.FreeMoving;
 	}
 

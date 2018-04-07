@@ -11,14 +11,23 @@ public class PlayerCamera : MonoBehaviour
 	public float xMouseSensitivity = 45.0f;
 	public float yMouseSensitivity = 45.0f;
 
+	public float bobbingSpeed = 0.18f;
+	public float bobbingAmount = 0.2f;
+
 	private float rotX = 0.0f;
 	private float rotY = 0.0f;
 
+	private float timer = 0.0f;
+
 	private PlayerInputManager playerInputManager;
+	private PlayerMovementStateMachine playerStateMachine;
+	private PlayerAttackStateManager playerController;
 
 	void Awake ()
 	{
-		playerInputManager = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).GetComponent<PlayerInputManager>();
+		playerInputManager = gameObject.GetComponentInParent<PlayerInputManager>();
+		playerStateMachine = gameObject.GetComponentInParent<PlayerMovementStateMachine>();
+		playerController = gameObject.GetComponentInParent<PlayerAttackStateManager>();
 
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
@@ -33,6 +42,8 @@ public class PlayerCamera : MonoBehaviour
 	private void LateUpdate()
 	{
 		MouseLook();
+
+		Headbob();
 	}
 
 	internal void MouseLook()
@@ -53,5 +64,55 @@ public class PlayerCamera : MonoBehaviour
 
 		transform.root.rotation = Quaternion.Euler(0, rotY, 0);
 		this.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
+	}
+
+	private void Headbob()
+	{
+		float midpoint = PlayerCamera.currentViewYOffset;
+		float waveslice = 0.0f;
+
+		float horizontal = playerInputManager.Current.MoveInput.x;
+		float vertical = playerInputManager.Current.MoveInput.z;
+
+		Vector3 cSharpConversion = transform.localPosition;
+
+		if (PlayerShouldHeadbob())
+		{
+			timer = Mathf.Lerp(timer, 0.0f, 1 - Mathf.Abs(timer));
+		}
+		else
+		{
+			waveslice = Mathf.Sin(timer);
+			timer = timer + bobbingSpeed;
+			if (timer > Mathf.PI * 2)
+			{
+				timer = timer - (Mathf.PI * 2);
+			}
+		}
+
+		if (waveslice != 0)
+		{
+			var playerMaxSpeed = playerInputManager.Current.CrouchInput ? PlayerMovementStateMachine.RunSpeed : PlayerMovementStateMachine.CrouchSpeed;
+			var planarMovementVector = new Vector2(playerStateMachine.moveDirection.x, playerStateMachine.moveDirection.z);
+			float translateChange = waveslice * bobbingAmount * (planarMovementVector.magnitude / playerMaxSpeed);
+			float totalAxes = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
+			totalAxes = Mathf.Clamp(totalAxes, 0.0f, 1.0f);
+			translateChange = totalAxes * translateChange;
+			cSharpConversion.y = midpoint + translateChange;
+		}
+		else
+		{
+			cSharpConversion.y = midpoint;
+		}
+
+		transform.localPosition = cSharpConversion; //This moves the camera
+	}
+
+	private bool PlayerShouldHeadbob()
+	{
+		return !playerStateMachine.MaintainingGround() ||
+			!(playerController.attackState == PlayerAttackState.Idle ||
+			playerController.attackState == PlayerAttackState.Blocking ||
+			playerController.attackState == PlayerAttackState.Charging);
 	}
 }

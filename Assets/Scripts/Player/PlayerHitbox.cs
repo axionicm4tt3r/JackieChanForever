@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHitboxScanner : MonoBehaviour
+public class PlayerHitbox : MonoBehaviour
 {
-	PlayerController playerController;
+	PlayerAttackStateManager playerController;
 	PlayerAttackManager playerAttackManager;
 
 	void Start()
 	{
-		playerController = GetComponentInParent<PlayerController>();
+		playerController = GetComponentInParent<PlayerAttackStateManager>();
 		playerAttackManager = GetComponentInParent<PlayerAttackManager>();
 	}
 

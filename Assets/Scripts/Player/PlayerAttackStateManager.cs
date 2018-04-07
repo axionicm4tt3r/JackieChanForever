@@ -1,22 +1,23 @@
 ﻿using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IAttackable
+public class PlayerAttackStateManager : MonoBehaviour, IAttackable
 {
 	public const float JUMP_KICK_ALLOWANCE_TIME = 0.2f;
 	public const float SLIDE_KICK_ALLOWANCE_TIME = 0.2f;
 
 	public GameObject PlayerHUD;
 
-	private Animator playerUIAnimator;
 	private PlayerStatus playerStatus;
-	private PlayerInputManager playerInputManager;
-	private PlayerStateMachine playerStateMachine;
+	private PlayerAnimationManager playerAnimationManager;
 	private PlayerAttackManager playerAttackManager;
+	private PlayerInputManager playerInputManager;
 	private PlayerInteractionManager playerInteractionManager;
+	private PlayerMovementStateMachine playerStateMachine;
 
 	[ReadOnly]
 	public PlayerAttackState attackState;
 
+	public float maximumAttackChargeTime = 3f;
 	public float maximumBlockTime = 0.5f;
 	public float basicAttackCooldown = 0.3f;
 	public float jumpKickAttackCooldown = 0.5f;
@@ -33,25 +34,20 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 	private float attackCooldown = 0f;
 	private float attackMotionTime = 0f;
-	[ReadOnly]
-	public float blockTime = 0f;
-
-	[ReadOnly]
-	public bool blockInputHandled = false;
+	private float blockTime = 0f;
+	private bool blockInputHandled = false;
 
 	void Awake()
 	{
 		if (!GameObject.FindGameObjectWithTag("PlayerHUD"))
-		{
 			PlayerHUD = Instantiate(PlayerHUD) as GameObject;
-		}
 
-		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
 		playerStatus = GetComponent<PlayerStatus>();
-		playerInputManager = GetComponent<PlayerInputManager>();
-		playerStateMachine = GetComponent<PlayerStateMachine>();
+		playerAnimationManager = GetComponent<PlayerAnimationManager>();
 		playerAttackManager = GetComponent<PlayerAttackManager>();
+		playerInputManager = GetComponent<PlayerInputManager>();
 		playerInteractionManager = GetComponent<PlayerInteractionManager>();
+		playerStateMachine = GetComponent<PlayerMovementStateMachine>();
 	}
 
 	void Update()
@@ -59,21 +55,17 @@ public class PlayerController : MonoBehaviour, IAttackable
 		if (attackCooldown > 0)
 			attackCooldown -= Time.deltaTime;
 
+		if (attackMotionTime > 0)
+			attackMotionTime -= Time.deltaTime;
+
 		if (blockTime > 0)
 			blockTime -= Time.deltaTime;
 
 		if (attackMotionTime <= 0 && !(attackState == PlayerAttackState.Idle || attackState == PlayerAttackState.Blocking))
-		{
 			ResetAttackStateToIdle();
-		}
-		else
-			attackMotionTime -= Time.deltaTime;
-
+		
 		if (blockTime <= 0 && attackState == PlayerAttackState.Blocking)
-		{
 			ResetBlockStateToIdle();
-		}
-
 	}
 
 	void LateUpdate()
@@ -88,15 +80,6 @@ public class PlayerController : MonoBehaviour, IAttackable
 
 		if (playerInputManager.Current.InteractInput)
 			Interact();
-
-		Debug.Log($"PlayerAttackState = {attackState.ToString()}");
-	}
-
-	private void ResetAnimatorParameters()
-	{
-		playerUIAnimator.SetBool("JumpKicking", false);
-		playerUIAnimator.SetBool("SlideKicking", false);
-		playerUIAnimator.SetBool("Blocking", false);
 	}
 
 	public void ReceiveAttack(float damage)
@@ -138,7 +121,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 			attackState = PlayerAttackState.Blocking;
 			blockInputHandled = true;
 			blockTime = maximumBlockTime;
-			playerUIAnimator.SetBool("Blocking", true);
+			playerAnimationManager.Block();
 		}
 	}
 
@@ -167,21 +150,21 @@ public class PlayerController : MonoBehaviour, IAttackable
 	private void PerformSlideKickAttack()
 	{
 		//Debug.Log("SlideKick!");
-		attackState = PlayerAttackState.SlideKicking; //State allows the triggers in the hitbox
+		attackState = PlayerAttackState.SlideKicking;
 		attackMotionTime = slideKickAttackMotionTime;
 		attackCooldown = slideKickAttackCooldown;
 
-		playerUIAnimator.SetBool("SlideKicking", true);
+		playerAnimationManager.SlideKick();
 	}
 
 	private void PerformJumpKickAttack()
 	{
 		//Debug.Log("JumpKick!");
-		attackState = PlayerAttackState.JumpKicking; //State allows the triggers in the hitbox
+		attackState = PlayerAttackState.JumpKicking;
 		attackMotionTime = jumpKickAttackMotionTime;
 		attackCooldown = jumpKickAttackCooldown;
 
-		playerUIAnimator.SetBool("JumpKicking", true);
+		playerAnimationManager.JumpKick();
 	}
 
 	private void PerformBasicAttack()
@@ -190,8 +173,7 @@ public class PlayerController : MonoBehaviour, IAttackable
 		playerAttackManager.BasicAttack(); //Instant frame attack, does calculations in 1 frame
 		attackCooldown = basicAttackCooldown;
 
-		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
-		playerUIAnimator.SetTrigger("BasicAttacking");
+		playerAnimationManager.BasicAttack();
 	}
 
 	private void ResetAttackStateToIdle()
@@ -199,14 +181,13 @@ public class PlayerController : MonoBehaviour, IAttackable
 		attackState = PlayerAttackState.Idle;
 		attackMotionTime = 0;
 		playerAttackManager.ClearEnemiesHit();
-		ResetAnimatorParameters();
+		playerAnimationManager.ResetAnimatorParameters();
 	}
 
 	private void ResetBlockStateToIdle()
 	{
 		attackState = PlayerAttackState.Idle;
 		blockTime = 0;
-		ResetAnimatorParameters();
+		playerAnimationManager.ResetAnimatorParameters();
 	}
-
 }

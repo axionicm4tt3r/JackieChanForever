@@ -11,7 +11,7 @@ public class PlayerInputManager : MonoBehaviour
 
 		bool jumpInput = Input.GetButtonDown("Jump");
 		bool crouchInput = Input.GetButton("Crouch");
-		bool primaryFireInput = Input.GetButtonDown("PrimaryFire");
+		bool primaryFireInput = Input.GetButton("PrimaryFire");
 		bool secondaryFireInput = Input.GetButton("SecondaryFire");
 		bool interactInput = Input.GetButtonDown("Interact");
 
