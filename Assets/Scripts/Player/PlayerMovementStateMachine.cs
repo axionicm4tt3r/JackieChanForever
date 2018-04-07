@@ -44,7 +44,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 	}
 
-	public bool IsInState(PlayerStates state) { return (PlayerStates)CurrentState == state; }
+	public bool IsInState(PlayerMovementState state) { return (PlayerMovementState)CurrentState == state; }
 
 	private void ChangeState()
 	{
@@ -58,7 +58,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
 		lookDirection = transform.forward;
-		CurrentState = PlayerStates.Standing;
+		CurrentState = PlayerMovementState.Standing;
 	}
 
 	protected override void EarlyGlobalSuperUpdate()
@@ -68,7 +68,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	protected override void LateGlobalSuperUpdate()
 	{
-		if (this.IsInState(PlayerStates.Crouching) || this.IsInState(PlayerStates.CrouchRunning))
+		if (this.IsInState(PlayerMovementState.Crouching) || this.IsInState(PlayerMovementState.CrouchRunning))
 			GoToCrouching();
 		else
 			GoToStanding();
@@ -128,19 +128,19 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	{
 		if (playerInputManager.Current.JumpInput)
 		{
-			CurrentState = PlayerStates.Jumping;
+			CurrentState = PlayerMovementState.Jumping;
 			return;
 		}
 
 		if (playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Crouching;
+			CurrentState = PlayerMovementState.Crouching;
 			return;
 		}
 
 		if (!MaintainingGround())
 		{
-			CurrentState = PlayerStates.Falling;
+			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -148,12 +148,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		{
 			if (!playerInputManager.Current.CrouchInput)
 			{
-				CurrentState = PlayerStates.Running;
+				CurrentState = PlayerMovementState.Running;
 				return;
 			}
 			else if (playerInputManager.Current.CrouchInput)
 			{
-				CurrentState = PlayerStates.CrouchRunning;
+				CurrentState = PlayerMovementState.CrouchRunning;
 				return;
 			}
 		}
@@ -178,19 +178,19 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	{
 		if (playerInputManager.Current.JumpInput)
 		{
-			CurrentState = PlayerStates.Jumping;
+			CurrentState = PlayerMovementState.Jumping;
 			return;
 		}
 
 		if (!playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Standing;
+			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
 
 		if (!MaintainingGround())
 		{
-			CurrentState = PlayerStates.Falling;
+			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -198,12 +198,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		{
 			if (!playerInputManager.Current.CrouchInput)
 			{
-				CurrentState = PlayerStates.Running;
+				CurrentState = PlayerMovementState.Running;
 				return;
 			}
 			else if (playerInputManager.Current.CrouchInput)
 			{
-				CurrentState = PlayerStates.CrouchRunning;
+				CurrentState = PlayerMovementState.CrouchRunning;
 				return;
 			}
 		}
@@ -222,13 +222,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	{
 		if (playerInputManager.Current.JumpInput)
 		{
-			CurrentState = PlayerStates.Jumping;
+			CurrentState = PlayerMovementState.Jumping;
 			return;
 		}
 
 		if (!MaintainingGround())
 		{
-			CurrentState = PlayerStates.Falling;
+			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -238,17 +238,17 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 		else if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.CrouchRunning;
+			CurrentState = PlayerMovementState.CrouchRunning;
 			return;
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Crouching;
+			CurrentState = PlayerMovementState.Crouching;
 			return;
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Standing;
+			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
 	}
@@ -265,13 +265,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		if (playerInputManager.Current.JumpInput)
 		{
-			CurrentState = PlayerStates.Jumping;
+			CurrentState = PlayerMovementState.Jumping;
 			return;
 		}
 
 		if (!MaintainingGround())
 		{
-			CurrentState = PlayerStates.Falling;
+			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -281,17 +281,17 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 		else if (playerInputManager.Current.MoveInput != Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Running;
+			CurrentState = PlayerMovementState.Running;
 			return;
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Crouching;
+			CurrentState = PlayerMovementState.Crouching;
 			return;
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerStates.Standing;
+			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
 	}
@@ -314,7 +314,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (Vector3.Angle(verticalMoveDirection, controller.up) > 90 && AcquiringGround())
 		{
 			moveDirection = planarMoveDirection;
-			CurrentState = PlayerStates.Standing;
+			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
 
@@ -341,7 +341,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (AcquiringGround())
 		{
 			moveDirection = Math3d.ProjectVectorOnPlane(controller.up, moveDirection);
-			CurrentState = PlayerStates.Standing;
+			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
 
@@ -370,4 +370,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	}
 }
 
-public enum PlayerStates { Standing, Crouching, Running, CrouchRunning, Jumping, Falling }
+public enum PlayerMovementState
+{
+	Standing,
+	Crouching,
+	Running,
+	CrouchRunning,
+	Jumping,
+	Falling
+}
