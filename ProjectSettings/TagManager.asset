@@ -5,12 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerHUD
-  - MidPunchHitbox
-  - JumpKickHitbox
-  - SlideKickHitbox
   - Enemy
   - Interactable
   - EnemyHitbox
+  - PlayerHitbox
   layers:
   - Default
   - TransparentFX
