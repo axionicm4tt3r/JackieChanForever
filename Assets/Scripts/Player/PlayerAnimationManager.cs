@@ -3,36 +3,57 @@
 public class PlayerAnimationManager : MonoBehaviour {
 
 	private Animator playerUIAnimator;
+	private Animator playerMotionAnimator;
 
-	void Start () {
+	void Start ()
+	{
 		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
+		playerMotionAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).GetComponent<Animator>();
 	}
 
 	internal void ResetAnimatorParameters()
 	{
-		playerUIAnimator.SetBool("JumpKicking", false);
-		playerUIAnimator.SetBool("SlideKicking", false);
-		playerUIAnimator.SetBool("Blocking", false);
+		SetAnimationBool("JumpKicking", false);
+		SetAnimationBool("SlideKicking", false);
+		SetAnimationBool("Blocking", false);
 	}
 
 	internal void BasicAttack()
 	{
-		playerUIAnimator.SetInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
-		playerUIAnimator.SetTrigger("BasicAttacking");
+		SetAnimationInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
+		SetAnimationTrigger("BasicAttacking");
 	}
 
 	internal void Block()
 	{
-		playerUIAnimator.SetBool("Blocking", true);
+		SetAnimationBool("Blocking", true);
 	}
 
 	internal void JumpKick()
 	{
-		playerUIAnimator.SetBool("JumpKicking", true);
+		SetAnimationBool("JumpKicking", true);
 	}
 
 	internal void SlideKick()
 	{
-		playerUIAnimator.SetBool("SlideKicking", true);
+		SetAnimationBool("SlideKicking", true);
+	}
+
+	private void SetAnimationBool(string name, bool value)
+	{
+		playerUIAnimator.SetBool(name, value);
+		playerMotionAnimator.SetBool(name, value);
+	}
+
+	private void SetAnimationInteger(string name, int value)
+	{
+		playerUIAnimator.SetInteger(name, value);
+		playerMotionAnimator.SetInteger(name, value);
+	}
+
+	private void SetAnimationTrigger(string name)
+	{
+		playerUIAnimator.SetTrigger(name);
+		playerMotionAnimator.SetTrigger(name);
 	}
 }
