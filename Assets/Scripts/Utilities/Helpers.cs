@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-public static class Helpers {
-
+public static class Helpers
+{
 	public class Tags
 	{
 		public const string Interactable = "Interactable";

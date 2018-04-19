@@ -1,4 +1,4 @@
-﻿public enum EntityHealthState
+﻿public enum HealthState
 {
 	FreeMoving,
 	Dead,

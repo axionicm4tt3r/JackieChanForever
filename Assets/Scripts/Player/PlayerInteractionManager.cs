@@ -3,72 +3,78 @@ using UnityEngine;
 
 public class PlayerInteractionManager : MonoBehaviour
 {
-    private Camera playerCamera;
+	private Camera playerCamera;
+	private BoxCollider playerHitbox;
 
-    private Interactable grabbedObject;
-    private bool objectGrabbed = false;
-    private Transform grabbedLocation;
+	private Interactable heldObject;
+	private Transform grabbedLocation;
 
-    private float playerInteractionRange = 4f;
-    private float playerThrowPower = 25f;
+	public float playerThrowPower = 25f;
 
-    void Awake()
-    {
-        grabbedLocation = Helpers.FindObjectInChildren(gameObject, "GrabbedLocation").transform;
-        playerCamera = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerCamera).GetComponent<Camera>();
-    }
+	void Awake()
+	{
+		grabbedLocation = Helpers.FindObjectInChildren(gameObject, "GrabbedLocation").transform;
+		playerCamera = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerCamera).GetComponent<Camera>();
+		playerHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHitbox).GetComponent<BoxCollider>();
+	}
 
-    public bool Grabbing { get { return objectGrabbed; } }
+	public bool HoldingObject { get; private set; } = false;
 
-    public void Interact()
-    {
-        if (objectGrabbed)
-        {
-            Drop();
-        }
-        else
-        {
-            Ray screenRay = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-            screenRay.direction *= playerInteractionRange;
-            RaycastHit hitInfo;
+	public void Interact()
+	{
+		if (HoldingObject)
+		{
+			Drop();
+		}
+		else
+		{
+			GrabInteractableInHitbox();
+		}
+	}
 
-            var layerMask = ~LayerMask.GetMask(Helpers.Layers.PlayerHitbox, "IgnoreRaycast");
+	public void GrabInteractableInHitbox()
+	{
+		Vector3 size = playerHitbox.size / 2;
+		size.x = Mathf.Abs(size.x);
+		size.y = Mathf.Abs(size.y);
+		size.z = Mathf.Abs(size.z);
+		ExtDebug.DrawBox(playerHitbox.transform.position + playerHitbox.transform.forward * 0.5f, size, playerHitbox.transform.rotation, Color.blue);
+		int layerMask = LayerMask.GetMask(Helpers.Layers.Interactable);
+		Collider[] colliders = Physics.OverlapBox(playerHitbox.transform.position + playerHitbox.transform.forward * 0.5f, size, playerHitbox.transform.rotation, layerMask);
 
-            if (Physics.Raycast(screenRay, out hitInfo, playerInteractionRange, layerMask))
-            {
-                Interactable newLiftedObject = hitInfo.collider.gameObject.GetComponent<Interactable>();
-                if (newLiftedObject == null)
-                    return;
-                else
-                {
-                    Grab(newLiftedObject);
-                }
-            }
-        }
-    }
+		foreach (Collider collider in colliders)
+		{
+			Interactable newLiftedObject = collider.gameObject.GetComponent<Interactable>();
+			if (newLiftedObject == null)
+				continue;
+			else
+			{
+				Grab(newLiftedObject);
+				return;
+			}
+		}
+	}
 
-    private void Grab(Interactable newLiftedObject)
-    {
-        objectGrabbed = true;
-        grabbedObject = newLiftedObject;
-        grabbedObject.Grab(grabbedLocation);
-        //Debug.Log("Picked up a new object");
-    }
+	private void Grab(Interactable targetObject)
+	{
+		HoldingObject = true;
+		heldObject = targetObject;
+		heldObject.Grab(grabbedLocation);
+	}
 
-    public void Drop()
-    {
-        objectGrabbed = false;
-        grabbedObject.grabbed = false;
-        grabbedObject.Drop();
-        //Debug.Log("Threw the old object");
-    }
+	public void Drop()
+	{
+		HoldingObject = false;
+		heldObject.grabbed = false;
+		heldObject.Drop();
+	}
 
-    public void Throw()
-    {
-        objectGrabbed = false;
-        grabbedObject.grabbed = false;
-        grabbedObject.Drop();
-        Ray screenRay = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        grabbedObject.GetComponent<Rigidbody>().velocity = screenRay.direction * playerThrowPower;
-    }
+	public void Throw()
+	{
+		HoldingObject = false;
+		heldObject.grabbed = false;
+		heldObject.Drop();
+		Ray screenRay = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+		heldObject.GetComponent<Rigidbody>().velocity = screenRay.direction * playerThrowPower; //Factor in the weight of the object
+	}
 }

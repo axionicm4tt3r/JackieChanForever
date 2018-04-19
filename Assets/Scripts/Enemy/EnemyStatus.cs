@@ -10,13 +10,13 @@ public class EnemyStatus : MonoBehaviour
 
 	private EnemyAI enemyAI;
 
-	public EntityHealthState state { get; private set; }
+	public HealthState state { get; private set; }
 
 	public string stateName { get { return state.ToString(); } }
 
 	void Start () {
 		enemyAI = GetComponent<EnemyAI>();
-		state = EntityHealthState.FreeMoving;
+		state = HealthState.FreeMoving;
 	}
 
 	#region HealthState
@@ -31,7 +31,7 @@ public class EnemyStatus : MonoBehaviour
 
 	internal virtual void Die()
 	{
-		state = EntityHealthState.Dead;
+		state = HealthState.Dead;
 		Destroy(gameObject);
 	}
 	#endregion
@@ -39,37 +39,37 @@ public class EnemyStatus : MonoBehaviour
 	#region AIState
 	public bool IsDead()
 	{
-		return state == EntityHealthState.Dead;
+		return state == HealthState.Dead;
 	}
 
 	public bool IsKnockedBack()
 	{
-		return state == EntityHealthState.KnockedBack;
+		return state == HealthState.KnockedBack;
 	}
 
 	internal bool IsStaggered()
 	{
-		return state == EntityHealthState.Staggered;
+		return state == HealthState.Staggered;
 	}
 
 	internal bool IsFreeMoving()
 	{
-		return state == EntityHealthState.FreeMoving;
+		return state == HealthState.FreeMoving;
 	}
 
 	public void BecomeFreeMoving()
 	{
-		state = EntityHealthState.FreeMoving;
+		state = HealthState.FreeMoving;
 	}
 
 	public void BecomeKnockedBack()
 	{
-		state = EntityHealthState.KnockedBack;
+		state = HealthState.KnockedBack;
 	}
 
 	internal void BecomeStaggered()
 	{
-		state = EntityHealthState.Staggered;
+		state = HealthState.Staggered;
 	}
 	#endregion
 }

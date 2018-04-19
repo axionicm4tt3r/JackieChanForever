@@ -5,10 +5,24 @@ public class PlayerAnimationManager : MonoBehaviour {
 	private Animator playerUIAnimator;
 	private Animator playerMotionAnimator;
 
-	void Start ()
+	private Animator PlayerUIAnimator
 	{
-		playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD).GetComponentInChildren<Animator>();
-		playerMotionAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.Player).GetComponent<Animator>();
+		get
+		{
+			if (playerUIAnimator == null)
+				playerUIAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHUD)?.GetComponentInChildren<Animator>();
+			return playerUIAnimator;
+		}
+	}
+
+	private Animator PlayerMotionAnimator
+	{
+		get
+		{
+			if (playerMotionAnimator == null)
+				playerMotionAnimator = GameObject.FindGameObjectWithTag(Helpers.Tags.Player)?.GetComponent<Animator>();
+			return playerMotionAnimator;
+		}
 	}
 
 	internal void ResetAnimatorParameters()
@@ -22,6 +36,11 @@ public class PlayerAnimationManager : MonoBehaviour {
 	{
 		SetAnimationInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
 		SetAnimationTrigger("BasicAttacking");
+	}
+
+	internal void ChargeAttack()
+	{
+		Debug.Log("TODO: Charge Animation");
 	}
 
 	internal void Block()
@@ -41,19 +60,19 @@ public class PlayerAnimationManager : MonoBehaviour {
 
 	private void SetAnimationBool(string name, bool value)
 	{
-		playerUIAnimator.SetBool(name, value);
-		playerMotionAnimator.SetBool(name, value);
+		PlayerUIAnimator?.SetBool(name, value);
+		PlayerMotionAnimator?.SetBool(name, value);
 	}
 
 	private void SetAnimationInteger(string name, int value)
 	{
-		playerUIAnimator.SetInteger(name, value);
-		playerMotionAnimator.SetInteger(name, value);
+		PlayerUIAnimator?.SetInteger(name, value);
+		PlayerMotionAnimator?.SetInteger(name, value);
 	}
 
 	private void SetAnimationTrigger(string name)
 	{
-		playerUIAnimator.SetTrigger(name);
-		playerMotionAnimator.SetTrigger(name);
+		PlayerUIAnimator?.SetTrigger(name);
+		PlayerMotionAnimator?.SetTrigger(name);
 	}
 }

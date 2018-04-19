@@ -17,7 +17,7 @@ public class PlayerAttackManager : MonoBehaviour
     public static float SlideKickKnockbackTime = 0.2f;
     #endregion
 
-    PlayerAttackStateManager playerController;
+    PlayerAttackStateMachine playerAttackStateMachine;
     PlayerSoundManager playerSoundManager;
 
     BoxCollider playerHitbox;
@@ -26,16 +26,15 @@ public class PlayerAttackManager : MonoBehaviour
 
     void Awake()
     {
-        playerController = GetComponentInParent<PlayerAttackStateManager>();
+        playerAttackStateMachine = GetComponentInParent<PlayerAttackStateMachine>();
         playerSoundManager = GetComponentInParent<PlayerSoundManager>();
-
         playerHitbox = GameObject.FindGameObjectWithTag(Helpers.Tags.PlayerHitbox).GetComponent<BoxCollider>();
     }
 
     public void BasicAttack()
     {
         bool hitEnemy = false;
-        List<IAttackable> results = CheckInstantFrameHitboxForEnemies(playerHitbox, out hitEnemy);
+        List<IAttackable> results = CheckInstantFrameHitboxForEnemies(out hitEnemy);
 
         foreach (IAttackable attackableComponent in results)
         {
@@ -72,15 +71,15 @@ public class PlayerAttackManager : MonoBehaviour
             attackableComponent.ReceiveKnockbackAttack(0f, transform.forward, SlideKickKnockbackVelocity, SlideKickKnockbackTime);
     }
 
-    public List<IAttackable> CheckInstantFrameHitboxForEnemies(BoxCollider hitbox, out bool hasEnemy)
+    public List<IAttackable> CheckInstantFrameHitboxForEnemies(out bool hasEnemy)
     {
-        Vector3 size = hitbox.size / 2;
+        Vector3 size = playerHitbox.size / 2;
         size.x = Mathf.Abs(size.x);
         size.y = Mathf.Abs(size.y);
         size.z = Mathf.Abs(size.z);
-        ExtDebug.DrawBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, Color.blue);
+        ExtDebug.DrawBox(playerHitbox.transform.position + playerHitbox.transform.forward * 0.5f, size, playerHitbox.transform.rotation, Color.blue);
         int layerMask = LayerMask.GetMask(Helpers.Layers.Enemy, Helpers.Layers.Interactable);
-        Collider[] colliders = Physics.OverlapBox(hitbox.transform.position + hitbox.transform.forward * 0.5f, size, hitbox.transform.rotation, layerMask);
+        Collider[] colliders = Physics.OverlapBox(playerHitbox.transform.position + playerHitbox.transform.forward * 0.5f, size, playerHitbox.transform.rotation, layerMask);
         var results = new List<IAttackable>();
 
         foreach (Collider collider in colliders)

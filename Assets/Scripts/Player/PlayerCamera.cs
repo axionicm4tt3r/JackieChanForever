@@ -20,14 +20,14 @@ public class PlayerCamera : MonoBehaviour
 	private float timer = 0.0f;
 
 	private PlayerInputManager playerInputManager;
-	private PlayerMovementStateMachine playerStateMachine;
-	private PlayerAttackStateManager playerController;
+	private PlayerMovementStateMachine playerMovementStateMachine;
+	private PlayerAttackStateMachine playerAttackStateMachine;
 
 	void Awake ()
 	{
 		playerInputManager = gameObject.GetComponentInParent<PlayerInputManager>();
-		playerStateMachine = gameObject.GetComponentInParent<PlayerMovementStateMachine>();
-		playerController = gameObject.GetComponentInParent<PlayerAttackStateManager>();
+		playerMovementStateMachine = gameObject.GetComponentInParent<PlayerMovementStateMachine>();
+		playerAttackStateMachine = gameObject.GetComponentInParent<PlayerAttackStateMachine>();
 
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
@@ -93,7 +93,7 @@ public class PlayerCamera : MonoBehaviour
 		if (waveslice != 0)
 		{
 			var playerMaxSpeed = playerInputManager.Current.CrouchInput ? PlayerMovementStateMachine.RunSpeed : PlayerMovementStateMachine.CrouchSpeed;
-			var planarMovementVector = new Vector2(playerStateMachine.moveDirection.x, playerStateMachine.moveDirection.z);
+			var planarMovementVector = new Vector2(playerMovementStateMachine.moveDirection.x, playerMovementStateMachine.moveDirection.z);
 			float translateChange = waveslice * bobbingAmount * (planarMovementVector.magnitude / playerMaxSpeed);
 			float totalAxes = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
 			totalAxes = Mathf.Clamp(totalAxes, 0.0f, 1.0f);
@@ -110,9 +110,20 @@ public class PlayerCamera : MonoBehaviour
 
 	private bool PlayerShouldHeadbob()
 	{
-		return !playerStateMachine.MaintainingGround() ||
-			!(playerController.attackState == PlayerAttackState.Idle ||
-			playerController.attackState == PlayerAttackState.Blocking ||
-			playerController.attackState == PlayerAttackState.Charging);
+		return !playerMovementStateMachine.MaintainingGround() ||
+			MoveStateDisallowsHeadbob() ||
+			AttackStateDisallowsHeadbob();
+	}
+
+	private bool MoveStateDisallowsHeadbob()
+	{
+		return ((PlayerMovementState)playerMovementStateMachine.CurrentState == PlayerMovementState.Sliding);
+	}
+
+	private bool AttackStateDisallowsHeadbob()
+	{
+		return !((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Idle ||
+					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Blocking ||
+					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Charging);
 	}
 }

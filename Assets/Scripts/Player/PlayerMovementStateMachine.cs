@@ -3,14 +3,6 @@ using UnityEngine;
 
 public class PlayerMovementStateMachine : SuperStateMachine
 {
-	//private void QueueJump()
-	//{
-	//	if (Input.GetButtonDown("Jump") && !wishJump)
-	//		wishJump = true;
-	//	if (Input.GetButtonUp("Jump"))
-	//		wishJump = false;
-	//}
-
 	public const float RunSpeed = 8.0f;
 	public const float RunAcceleration = RunSpeed * 9.0f;
 	public const float RunDeceleration = RunSpeed * 8.0f;
@@ -23,18 +15,25 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	public const float ChangeStanceSpeed = 0.3f;
 
 	public const float JumpKickVelocity = 18f;
-	public const float SlideKickVelocity = 14f;
-
-	private PlayerAttackStateManager playerController;
-	private PlayerInputManager playerInputManager;
-	private SuperCharacterController controller;
+	public const float SlideVelocity = 12f;
+	public const float SlideDuration = 0.6f;
 
 	public Vector3 moveDirection;
 	public Vector3 lookDirection { get; private set; }
 
-	public Enum CurrentState { get { return currentState; } private set { currentState = value; ChangeState(); } }
+	private PlayerAttackStateMachine playerAttackStateMachine;
+	private PlayerInputManager playerInputManager;
+	private SuperCharacterController controller;
+
+	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
+
+	private void ChangeState()
+	{
+		lastState = CurrentState;
+		timeEnteredState = Time.time;
+	}
 
 	public AngleDirection LocalMovementCardinalDirection
 	{
@@ -44,17 +43,19 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 	}
 
-	public bool IsInState(PlayerMovementState state) { return (PlayerMovementState)CurrentState == state; }
-
-	private void ChangeState()
+	public bool LocalMovementIsForwardFacing
 	{
-		lastState = state.currentState;
-		timeEnteredState = Time.time;
+		get {
+			var movement = LocalMovementCardinalDirection;
+			return (movement == AngleDirection.Forward) || 
+				(movement == AngleDirection.ForwardLeft) || 
+				(movement == AngleDirection.ForwardRight);
+		}
 	}
 
 	void Awake()
 	{
-		playerController = gameObject.GetComponent<PlayerAttackStateManager>();
+		playerAttackStateMachine = gameObject.GetComponent<PlayerAttackStateMachine>();
 		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
 		lookDirection = transform.forward;
@@ -68,7 +69,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	protected override void LateGlobalSuperUpdate()
 	{
-		if (this.IsInState(PlayerMovementState.Crouching) || this.IsInState(PlayerMovementState.CrouchRunning))
+		if (IsInCrouchingState())
 			GoToCrouching();
 		else
 			GoToStanding();
@@ -238,7 +239,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 		else if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
-			CurrentState = PlayerMovementState.CrouchRunning;
+			if (LocalMovementIsForwardFacing)
+			{
+
+				CurrentState = PlayerMovementState.Sliding;
+			}
+			else
+				CurrentState = PlayerMovementState.CrouchRunning;
 			return;
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
@@ -257,12 +264,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	#region CrouchRunning
 	void CrouchRunning_SuperUpdate()
 	{
-		if (playerController.attackState == PlayerAttackState.SlideKicking)
-		{
-			moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideKickVelocity, SlideKickVelocity * Time.deltaTime);
-			return;
-		}
-
 		if (playerInputManager.Current.JumpInput)
 		{
 			CurrentState = PlayerMovementState.Jumping;
@@ -297,6 +298,24 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	}
 	#endregion
 
+	#region Sliding
+	void Sliding_SuperUpdate()
+	{
+		if (TimeSinceEnteringCurrentState >= SlideDuration)
+		{
+			CurrentState = PlayerMovementState.CrouchRunning;
+			return;
+		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideVelocity, RunAcceleration * Time.deltaTime);
+	}
+
+	void Sliding_ExitState()
+	{
+
+	}
+	#endregion
+
 	#region Jumping
 	void Jumping_EnterState()
 	{
@@ -318,7 +337,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
-		if (playerController.attackState == PlayerAttackState.JumpKicking)
+		if ((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.JumpKicking)
 			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, transform.forward * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
 		else
 			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * RunSpeed, AirControl * RunAcceleration * Time.deltaTime);
@@ -353,6 +372,14 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	#endregion
 
+
+	private bool IsInCrouchingState()
+	{
+		return (PlayerMovementState)CurrentState == PlayerMovementState.Crouching || 
+			(PlayerMovementState)CurrentState == PlayerMovementState.CrouchRunning || 
+			(PlayerMovementState)CurrentState == PlayerMovementState.Sliding;
+	}
+
 	private void GoToCrouching()
 	{
 		PlayerCamera.currentViewYOffset = Mathf.Lerp(PlayerCamera.currentViewYOffset, PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET,
@@ -372,10 +399,11 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 public enum PlayerMovementState
 {
-	Standing,
-	Crouching,
-	Running,
-	CrouchRunning,
-	Jumping,
-	Falling
+	Standing = 1,
+	Crouching = 2,
+	Running = 3,
+	CrouchRunning = 4,
+	Sliding = 5,
+	Jumping = 6,
+	Falling = 7
 }

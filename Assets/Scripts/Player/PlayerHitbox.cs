@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class PlayerHitbox : MonoBehaviour
 {
-	PlayerAttackStateManager playerController;
+	PlayerAttackStateMachine playerController;
 	PlayerAttackManager playerAttackManager;
 
 	void Start()
 	{
-		playerController = GetComponentInParent<PlayerAttackStateManager>();
+		playerController = GetComponentInParent<PlayerAttackStateMachine>();
 		playerAttackManager = GetComponentInParent<PlayerAttackManager>();
 	}
 
@@ -17,7 +17,7 @@ public class PlayerHitbox : MonoBehaviour
 		var attackableComponent = collider.gameObject.GetAttackableComponent();
 		if (attackableComponent != null)
 		{
-			switch(playerController.attackState)
+			switch((PlayerAttackState)playerController.CurrentState)
 			{
 				case PlayerAttackState.JumpKicking:
 					playerAttackManager.JumpKick(attackableComponent);
