@@ -102,7 +102,7 @@ public class PlayerCamera : MonoBehaviour
 		}
 		else
 		{
-			translateChange = Mathf.MoveTowards(translateChange, 0, bobbingAmount * bobbingSpeed);
+			translateChange = Mathf.MoveTowards(translateChange, 0, bobbingAmount * bobbingSpeed * 2);
 			cSharpConversion.y = midpoint + translateChange;
 		}
 
