@@ -8,8 +8,7 @@ public class PlayerCamera : MonoBehaviour
 	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 0.9f;
 	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET;
 
-	public float xMouseSensitivity = 45.0f;
-	public float yMouseSensitivity = 45.0f;
+	
 
 	public float bobbingSpeed = 0.18f;
 	public float bobbingAmount = 0.2f;
@@ -50,12 +49,12 @@ public class PlayerCamera : MonoBehaviour
 	{
 		if (Cursor.lockState != CursorLockMode.Locked)
 		{
-			if (Input.GetButtonDown("PrimaryFire"))
+			if (Input.GetButtonDown(InputCodes.PrimaryFire))
 				Cursor.lockState = CursorLockMode.Locked;
 		}
 
-		rotX -= playerInputManager.Current.MouseInput.y * xMouseSensitivity * 0.02f;
-		rotY += playerInputManager.Current.MouseInput.x * yMouseSensitivity * 0.02f;
+		rotX -= playerInputManager.Current.MouseInput.y * playerInputManager.X_MouseSensitivity * 0.02f;
+		rotY += playerInputManager.Current.MouseInput.x * playerInputManager.Y_MouseSensitivity * 0.02f;
 
 		if (rotX < -90)
 			rotX = -90;
@@ -125,6 +124,6 @@ public class PlayerCamera : MonoBehaviour
 	{
 		return !((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Idle ||
 					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Blocking ||
-					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Charging);
+					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.ChargingAttack);
 	}
 }

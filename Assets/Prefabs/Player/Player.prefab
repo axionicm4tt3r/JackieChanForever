@@ -323,14 +323,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f368890f6af4479d6c5f3b2cf0c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumAttackChargeTime: 3
-  chargeAttackDamageModifier: 2.5
+  maxChargeAttackDamageMultiplier: 2.5
   blockMotionTime: 0.5
   basicAttackMotionTime: 0.3
-  jumpKickAttackCooldown: 0.5
+  attackChargeMotionTime: 3
+  powerAttackMotionTime: 0.6
   jumpKickAttackMotionTime: 0.4
-  slideKickAttackCooldown: 0.5
   slideKickAttackMotionTime: 0.6
+  blockCooldown: 0.3
+  basicAttackCooldown: 0.1
+  jumpKickAttackCooldown: 0.5
+  slideKickAttackCooldown: 0.5
 --- !u!114 &114056668229482642
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -353,8 +356,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae6f7cef10723494585576a6ee25bdeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xMouseSensitivity: 45
-  yMouseSensitivity: 45
   bobbingSpeed: 0.18
   bobbingAmount: 0.1
 --- !u!114 &114252358778383702
@@ -446,6 +447,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95c6cec7c10161342982d66e1ea82441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  X_MouseSensitivity: 45
+  Y_MouseSensitivity: 45
 --- !u!114 &114798771744214850
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -27,35 +27,35 @@ public class PlayerAnimationManager : MonoBehaviour {
 
 	internal void ResetAnimatorParameters()
 	{
-		SetAnimationBool("JumpKicking", false);
-		SetAnimationBool("SlideKicking", false);
-		SetAnimationBool("Blocking", false);
+		SetAnimationBool(AnimationCodes.Blocking, false);
+		SetAnimationBool(AnimationCodes.ChargingAttack, false);
+		SetAnimationBool(AnimationCodes.JumpKicking, false);
+		SetAnimationBool(AnimationCodes.SlideKicking, false);
 	}
 
 	internal void BasicAttack()
 	{
-		SetAnimationInteger("BasicAttackIndex", UnityEngine.Random.Range(0, 2));
-		SetAnimationTrigger("BasicAttacking");
+		SetAnimationInteger(AnimationCodes.BasicAttackIndex, UnityEngine.Random.Range(0, 2));
 	}
 
 	internal void ChargeAttack()
 	{
-		Debug.Log("TODO: Charge Animation");
+		SetAnimationBool(AnimationCodes.ChargingAttack, true);
 	}
 
 	internal void Block()
 	{
-		SetAnimationBool("Blocking", true);
+		SetAnimationBool(AnimationCodes.Blocking, true);
 	}
 
 	internal void JumpKick()
 	{
-		SetAnimationBool("JumpKicking", true);
+		SetAnimationBool(AnimationCodes.JumpKicking, true);
 	}
 
 	internal void SlideKick()
 	{
-		SetAnimationBool("SlideKicking", true);
+		SetAnimationBool(AnimationCodes.SlideKicking, true);
 	}
 
 	private void SetAnimationBool(string name, bool value)
@@ -74,5 +74,14 @@ public class PlayerAnimationManager : MonoBehaviour {
 	{
 		PlayerUIAnimator?.SetTrigger(name);
 		PlayerMotionAnimator?.SetTrigger(name);
+	}
+
+	private static class AnimationCodes
+	{
+		public const string Blocking = "Blocking";
+		public const string ChargingAttack = "ChargingAttack";
+		public const string BasicAttackIndex = "BasicAttackIndex";
+		public const string JumpKicking = "JumpKicking";
+		public const string SlideKicking = "SlideKicking";
 	}
 }

@@ -13,25 +13,34 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	private PlayerInteractionManager playerInteractionManager;
 	private PlayerMovementStateMachine playerMovementStateMachine;
 
-	public float maximumAttackChargeTime = 3f;
-	public float chargeAttackDamageModifier = 2.5f;
+	public float maxChargeAttackDamageMultiplier = 2.5f;
 
+	//Attack Motion Times - Convert these to frames?
 	public float blockMotionTime = 0.5f;
 	public float basicAttackMotionTime = 0.3f;
-	public float jumpKickAttackCooldown = 0.5f;
+	public float attackChargeMotionTime = 3f;
+	public float powerAttackMotionTime = 0.6f;
 	public float jumpKickAttackMotionTime = 0.4f;
-
-	public float slideKickAttackCooldown = 0.5f;
 	public float slideKickAttackMotionTime = 0.6f;
 
-	private float attackCooldown = 0f;
-	private float attackMotionTime = 0f;
-	private float blockTime = 0f;
+	//Attack Cooldown Times
+	public float blockCooldown = 0.3f;
+	public float basicAttackCooldown = 0.1f;
+	public float jumpKickAttackCooldown = 0.5f;
+	public float slideKickAttackCooldown = 0.5f;
+
+	private float attackChargePercentage = 0f;
 	private bool blockInputHandled = false;
 
 	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
+
+	#region PropertyGetters
+
+	public float DamageMultiplier { get { return attackChargePercentage * maxChargeAttackDamageMultiplier; } }
+
+	#endregion
 
 	private void ChangeState()
 	{
@@ -112,21 +121,23 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 	#endregion
 
-	#region Charging
-	void Charging_EnterState()
+	#region ChargingAttack
+	void ChargingAttack_EnterState()
 	{
 		playerAnimationManager.ChargeAttack();
 	}
 
-	void Charging_SuperUpdate()
+	void ChargingAttack_SuperUpdate()
 	{
-		if (!playerInputManager.Current.PrimaryFireInput || TimeSinceEnteringCurrentState >= maximumAttackChargeTime)
+		if (!playerInputManager.Current.PrimaryFireInput || TimeSinceEnteringCurrentState >= attackChargeMotionTime)
 		{
 			CurrentState = PlayerAttackState.BasicAttacking;
 			return;
 		}
 
+		attackChargeMotionTime = Mathf.Max(TimeSinceEnteringCurrentState / attackChargeMotionTime, 1f);
 		//Charge up the attack
+		//Update a float in the animation controller - this float should control the speed of the charge animation
 	}
 	#endregion
 
@@ -205,7 +216,7 @@ public class PlayerAttackStateMachine : SuperStateMachine
 			}
 			else
 			{
-				CurrentState = PlayerAttackState.BasicAttacking;
+				CurrentState = PlayerAttackState.ChargingAttack;
 				return;
 			}
 		}
@@ -216,7 +227,7 @@ public enum PlayerAttackState
 {
 	Idle = 1,
 	Blocking = 2,
-	Charging = 3,
+	ChargingAttack = 3,
 	BasicAttacking = 4,
 	JumpKicking = 5,
 	SlideKicking = 6

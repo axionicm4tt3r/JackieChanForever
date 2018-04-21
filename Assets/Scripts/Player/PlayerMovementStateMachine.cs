@@ -43,7 +43,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 	}
 
-	#region StateChecks
+	#region PropertyGetters
 	public bool LocalMovementIsForwardFacing
 	{
 		get

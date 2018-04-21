@@ -4,6 +4,9 @@ public class PlayerInputManager : MonoBehaviour
 {
 	public PlayerInput Current;
 
+	public float X_MouseSensitivity = 45.0f;
+	public float Y_MouseSensitivity = 45.0f;
+
 	void Update()
 	{
 		Vector3 moveInput = new Vector3(Input.GetAxisRaw(InputCodes.Horizontal), 0, Input.GetAxisRaw(InputCodes.Vertical));
