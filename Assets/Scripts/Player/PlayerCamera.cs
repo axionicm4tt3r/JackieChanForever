@@ -4,8 +4,8 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
 	//Move to PlayerConstants class or something
-	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 2.0f;
-	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 1.0f;
+	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 1.8f;
+	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 0.9f;
 	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET;
 
 	public float xMouseSensitivity = 45.0f;
@@ -43,9 +43,7 @@ public class PlayerCamera : MonoBehaviour
 	private void LateUpdate()
 	{
 		MouseLook();
-
-		if (PlayerShouldHeadbob())
-			Headbob();
+		Headbob();
 	}
 
 	private void MouseLook()
@@ -92,7 +90,7 @@ public class PlayerCamera : MonoBehaviour
 			}
 		}
 
-		if (waveslice != 0)
+		if (waveslice != 0 && PlayerShouldHeadbob())
 		{
 			var playerMaxSpeed = playerMovementStateMachine.InCrouchingState ? PlayerMovementStateMachine.RunSpeed : PlayerMovementStateMachine.CrouchSpeed;
 			var planarMovementVector = new Vector2(playerMovementStateMachine.moveDirection.x, playerMovementStateMachine.moveDirection.z);
