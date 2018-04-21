@@ -43,15 +43,28 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 	}
 
+	#region StateChecks
 	public bool LocalMovementIsForwardFacing
 	{
-		get {
+		get
+		{
 			var movement = LocalMovementCardinalDirection;
-			return (movement == AngleDirection.Forward) || 
-				(movement == AngleDirection.ForwardLeft) || 
+			return (movement == AngleDirection.Forward) ||
+				(movement == AngleDirection.ForwardLeft) ||
 				(movement == AngleDirection.ForwardRight);
 		}
 	}
+
+	public bool InCrouchingState
+	{
+		get
+		{
+			return (PlayerMovementState)CurrentState == PlayerMovementState.Crouching ||
+		   (PlayerMovementState)CurrentState == PlayerMovementState.CrouchRunning ||
+		   (PlayerMovementState)CurrentState == PlayerMovementState.Sliding;
+		}
+	}
+	#endregion
 
 	void Awake()
 	{
@@ -69,7 +82,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	protected override void LateGlobalSuperUpdate()
 	{
-		if (IsInCrouchingState())
+		if (InCrouchingState)
 			GoToCrouching();
 		else
 			GoToStanding();
@@ -371,14 +384,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	#endregion
 
 	#endregion
-
-
-	private bool IsInCrouchingState()
-	{
-		return (PlayerMovementState)CurrentState == PlayerMovementState.Crouching || 
-			(PlayerMovementState)CurrentState == PlayerMovementState.CrouchRunning || 
-			(PlayerMovementState)CurrentState == PlayerMovementState.Sliding;
-	}
 
 	private void GoToCrouching()
 	{

@@ -18,6 +18,7 @@ public class PlayerCamera : MonoBehaviour
 	private float rotY = 0.0f;
 
 	private float timer = 0.0f;
+	private float translateChange = 0.0f;
 
 	private PlayerInputManager playerInputManager;
 	private PlayerMovementStateMachine playerMovementStateMachine;
@@ -43,10 +44,11 @@ public class PlayerCamera : MonoBehaviour
 	{
 		MouseLook();
 
-		Headbob();
+		if (PlayerShouldHeadbob())
+			Headbob();
 	}
 
-	internal void MouseLook()
+	private void MouseLook()
 	{
 		if (Cursor.lockState != CursorLockMode.Locked)
 		{
@@ -76,9 +78,9 @@ public class PlayerCamera : MonoBehaviour
 
 		Vector3 cSharpConversion = transform.localPosition;
 
-		if (PlayerShouldHeadbob())
+		if (Mathf.Abs(horizontal) == 0 && Mathf.Abs(vertical) == 0)
 		{
-			timer = Mathf.Lerp(timer, 0.0f, 1 - Mathf.Abs(timer));
+			timer = 0;
 		}
 		else
 		{
@@ -92,9 +94,9 @@ public class PlayerCamera : MonoBehaviour
 
 		if (waveslice != 0)
 		{
-			var playerMaxSpeed = playerInputManager.Current.CrouchInput ? PlayerMovementStateMachine.RunSpeed : PlayerMovementStateMachine.CrouchSpeed;
+			var playerMaxSpeed = playerMovementStateMachine.InCrouchingState ? PlayerMovementStateMachine.RunSpeed : PlayerMovementStateMachine.CrouchSpeed;
 			var planarMovementVector = new Vector2(playerMovementStateMachine.moveDirection.x, playerMovementStateMachine.moveDirection.z);
-			float translateChange = waveslice * bobbingAmount * (planarMovementVector.magnitude / playerMaxSpeed);
+			translateChange = waveslice * bobbingAmount * (planarMovementVector.magnitude / playerMaxSpeed);
 			float totalAxes = Mathf.Abs(horizontal) + Mathf.Abs(vertical);
 			totalAxes = Mathf.Clamp(totalAxes, 0.0f, 1.0f);
 			translateChange = totalAxes * translateChange;
@@ -102,7 +104,8 @@ public class PlayerCamera : MonoBehaviour
 		}
 		else
 		{
-			cSharpConversion.y = midpoint;
+			translateChange = Mathf.MoveTowards(translateChange, 0, bobbingAmount * bobbingSpeed);
+			cSharpConversion.y = midpoint + translateChange;
 		}
 
 		transform.localPosition = cSharpConversion; //This moves the camera
@@ -110,9 +113,9 @@ public class PlayerCamera : MonoBehaviour
 
 	private bool PlayerShouldHeadbob()
 	{
-		return !playerMovementStateMachine.MaintainingGround() ||
-			MoveStateDisallowsHeadbob() ||
-			AttackStateDisallowsHeadbob();
+		return playerMovementStateMachine.MaintainingGround() &&
+			!MoveStateDisallowsHeadbob() &&
+			!AttackStateDisallowsHeadbob();
 	}
 
 	private bool MoveStateDisallowsHeadbob()

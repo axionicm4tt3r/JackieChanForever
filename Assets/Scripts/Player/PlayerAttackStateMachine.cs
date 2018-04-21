@@ -33,8 +33,6 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
 
-	public bool IsInState(PlayerAttackState state) { return (PlayerAttackState)CurrentState == state; }
-
 	private void ChangeState()
 	{
 		lastState = state.currentState;
