@@ -144,8 +144,8 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	#region BasicAttacking
 	void BasicAttacking_EnterState()
 	{
-		playerAttackManager.BasicAttack();
 		playerAnimationManager.BasicAttack();
+		playerAttackManager.BasicAttack();
 	}
 
 	void BasicAttacking_SuperUpdate()

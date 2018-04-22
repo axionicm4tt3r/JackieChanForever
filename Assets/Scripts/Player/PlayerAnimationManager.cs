@@ -35,6 +35,7 @@ public class PlayerAnimationManager : MonoBehaviour {
 
 	internal void BasicAttack()
 	{
+		SetAnimationBool(AnimationCodes.ChargingAttack, false);
 		SetAnimationInteger(AnimationCodes.BasicAttackIndex, UnityEngine.Random.Range(0, 2));
 	}
 
