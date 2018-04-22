@@ -136,7 +136,6 @@ public class PlayerAttackStateMachine : SuperStateMachine
 		}
 
 		attackChargeMotionTime = Mathf.Max(TimeSinceEnteringCurrentState / attackChargeMotionTime, 1f);
-		//Charge up the attack
 		//Update a float in the animation controller - this float should control the speed of the charge animation
 	}
 	#endregion

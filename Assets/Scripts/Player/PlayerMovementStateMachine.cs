@@ -320,6 +320,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
+
 		moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideVelocity, RunAcceleration * Time.deltaTime);
 	}
 
