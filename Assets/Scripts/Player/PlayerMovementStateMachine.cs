@@ -14,16 +14,30 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	public const float AirControl = 0.6f;
 	public const float ChangeStanceSpeed = 0.3f;
 
-	public const float JumpKickVelocity = 18f;
-	public const float SlideVelocity = 12f;
+	public const float JumpingSafeFallHeight = 1.5f * JumpHeight;
+	public const float FallingSafeFallHeight = 1.8f * JumpHeight;
+	public const float SafeHeightMultiplier = 2f;
+
+	public const float StandingRecoveryTime = 0.15f;
+	public const float CrouchRecoveryTime = 0.22f;
+	public const float FallingIntoRecoveryTime = 0.35f;
+
+	public const float JumpKickVelocity = 8f;
+	public const float SlideVelocity = 10f;
 	public const float SlideDuration = 0.6f;
+	public const float LungeVelocity = 14f;
+	public const float LungeDuration = 0.3f;
 
 	public Vector3 moveDirection;
 	public Vector3 lookDirection { get; private set; }
 
-	private PlayerAttackStateMachine playerAttackStateMachine;
-	private PlayerInputManager playerInputManager;
 	private SuperCharacterController controller;
+	private PlayerCamera playerCamera;
+	private PlayerInputManager playerInputManager;
+	private PlayerStatus playerStatus;
+	private PlayerAttackStateMachine playerAttackStateMachine;
+
+	private float startingHeight = 0f;
 
 	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
 
@@ -61,16 +75,28 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		{
 			return (PlayerMovementState)CurrentState == PlayerMovementState.Crouching ||
 		   (PlayerMovementState)CurrentState == PlayerMovementState.CrouchRunning ||
+		   (PlayerMovementState)CurrentState == PlayerMovementState.CrouchRecovering ||
 		   (PlayerMovementState)CurrentState == PlayerMovementState.Sliding;
+		}
+	}
+
+	public bool IsRecovering
+	{
+		get
+		{
+			return (PlayerMovementState)CurrentState == PlayerMovementState.Recovering ||
+		   (PlayerMovementState)CurrentState == PlayerMovementState.CrouchRecovering;
 		}
 	}
 	#endregion
 
 	void Awake()
 	{
-		playerAttackStateMachine = gameObject.GetComponent<PlayerAttackStateMachine>();
-		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
 		controller = gameObject.GetComponent<SuperCharacterController>();
+		playerCamera = gameObject.GetComponentInChildren<PlayerCamera>();
+		playerInputManager = gameObject.GetComponent<PlayerInputManager>();
+		playerStatus = gameObject.GetComponent<PlayerStatus>();
+		playerAttackStateMachine = gameObject.GetComponent<PlayerAttackStateMachine>();
 		lookDirection = transform.forward;
 		CurrentState = PlayerMovementState.Standing;
 	}
@@ -78,6 +104,9 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	protected override void EarlyGlobalSuperUpdate()
 	{
 		lookDirection = transform.forward;
+
+		//Debug.Log($"CurrentState is {CurrentState}");
+		//Debug.Log($"State Time is {TimeSinceEnteringCurrentState}");
 	}
 
 	protected override void LateGlobalSuperUpdate()
@@ -88,6 +117,10 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			GoToStanding();
 
 		transform.position += moveDirection * Time.deltaTime;
+
+		Debug.Log($"CurrentState is {CurrentState}");
+		//Debug.Log($"State Time is {TimeSinceEnteringCurrentState}");
+
 	}
 
 	public bool AcquiringGround()
@@ -140,6 +173,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	void Standing_SuperUpdate()
 	{
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
+
 		if (playerInputManager.Current.JumpInput)
 		{
 			CurrentState = PlayerMovementState.Jumping;
@@ -149,12 +188,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Crouching;
-			return;
-		}
-
-		if (!MaintainingGround())
-		{
-			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -174,11 +207,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, RunDeceleration * Time.deltaTime);
 	}
-
-	void Standing_ExitState()
-	{
-
-	}
 	#endregion
 
 	#region Crouching
@@ -190,6 +218,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	void Crouching_SuperUpdate()
 	{
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
+
 		if (playerInputManager.Current.JumpInput)
 		{
 			CurrentState = PlayerMovementState.Jumping;
@@ -199,12 +233,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (!playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Standing;
-			return;
-		}
-
-		if (!MaintainingGround())
-		{
-			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
@@ -254,12 +282,14 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		{
 			if (LocalMovementIsForwardFacing)
 			{
-
 				CurrentState = PlayerMovementState.Sliding;
+				return;
 			}
 			else
+			{
 				CurrentState = PlayerMovementState.CrouchRunning;
-			return;
+				return;
+			}
 		}
 		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
@@ -314,24 +344,101 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	#region Sliding
 	void Sliding_SuperUpdate()
 	{
-		if (TimeSinceEnteringCurrentState >= SlideDuration)
-		{
-			CurrentState = PlayerMovementState.CrouchRunning;
-			return;
-		}
-
 		if (!MaintainingGround())
 		{
 			CurrentState = PlayerMovementState.Falling;
 			return;
 		}
 
-		moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideVelocity, RunAcceleration * Time.deltaTime);
+		if (TimeSinceEnteringCurrentState >= SlideDuration)
+		{
+			if ((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.SlideKicking)
+			{
+				CurrentState = PlayerMovementState.CrouchRecovering;
+				return;
+			}
+			else
+			{
+				CurrentState = PlayerMovementState.Crouching;
+				return;
+			}
+
+		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideVelocity, SlideVelocity * Time.deltaTime);
+	}
+	#endregion
+
+	#region Lunging
+	void Lunging_EnterState()
+	{
+		controller.DisableClamping();
+		controller.DisableSlopeLimit();
+
+		if (MaintainingGround())
+			moveDirection += (transform.forward * LungeVelocity * playerAttackStateMachine.AttackChargePercentage);
 	}
 
-	void Sliding_ExitState()
+	void Lunging_SuperUpdate()
 	{
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
 
+		if (TimeSinceEnteringCurrentState >= (LungeDuration * playerAttackStateMachine.AttackChargePercentage))
+		{
+			//Debug.Log($"Player shouldn't recover from attack. Charge rate is {playerAttackStateMachine.AttackChargePercentage}");
+			CurrentState = PlayerMovementState.Recovering;
+			return;
+		}
+		
+		moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, RunDeceleration * Time.deltaTime);
+	}
+	#endregion
+
+	#region Recovering
+	void Recovering_SuperUpdate()
+	{
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
+
+		bool recoverFromFalling = ((PlayerMovementState)lastState == PlayerMovementState.Falling || (PlayerMovementState)lastState == PlayerMovementState.Jumping);
+
+		if ((recoverFromFalling && TimeSinceEnteringCurrentState >= FallingIntoRecoveryTime) || 
+			(!recoverFromFalling && TimeSinceEnteringCurrentState >= StandingRecoveryTime))
+		{
+			CurrentState = PlayerMovementState.Standing;
+			return;
+		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, RunDeceleration * Time.deltaTime);
+	}
+	#endregion
+
+	#region CrouchRecovering
+	void CrouchRecovering_SuperUpdate()
+	{
+		if (!MaintainingGround())
+		{
+			CurrentState = PlayerMovementState.Falling;
+			return;
+		}
+
+		bool recoverFromFalling = ((PlayerMovementState)lastState == PlayerMovementState.Falling || (PlayerMovementState)lastState == PlayerMovementState.Jumping);
+
+		if ((recoverFromFalling && TimeSinceEnteringCurrentState >= FallingIntoRecoveryTime) ||
+			(!recoverFromFalling && TimeSinceEnteringCurrentState >= CrouchRecoveryTime)) //Maybe handle a getting up into stand recovery state
+		{
+			CurrentState = PlayerMovementState.Crouching;
+			return;
+		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, CrouchDeceleration * Time.deltaTime);
 	}
 	#endregion
 
@@ -341,6 +448,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		controller.DisableClamping();
 		controller.DisableSlopeLimit();
 
+		startingHeight = transform.position.y;
 		moveDirection += controller.up * CalculateJumpSpeed(JumpHeight, Gravity);
 	}
 
@@ -352,12 +460,27 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (Vector3.Angle(verticalMoveDirection, controller.up) > 90 && AcquiringGround())
 		{
 			moveDirection = planarMoveDirection;
-			CurrentState = PlayerMovementState.Standing;
-			return;
+			var fallenHeight = startingHeight - transform.position.y;
+
+			if (fallenHeight >= SafeHeightMultiplier * JumpingSafeFallHeight)
+			{
+				CurrentState = PlayerMovementState.CrouchRecovering;
+				return;
+			}
+			else if (fallenHeight >= JumpingSafeFallHeight)
+			{
+				CurrentState = PlayerMovementState.Recovering;
+				return;
+			}
+			else
+			{
+				CurrentState = PlayerMovementState.Standing;
+				return;
+			}
 		}
 
 		if ((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.JumpKicking)
-			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, transform.forward * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
+			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, playerCamera.AimDirectionVector * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
 		else
 			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * RunSpeed, AirControl * RunAcceleration * Time.deltaTime);
 
@@ -372,6 +495,8 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	{
 		controller.DisableClamping();
 		controller.DisableSlopeLimit();
+
+		startingHeight = transform.position.y;
 	}
 
 	void Falling_SuperUpdate()
@@ -379,8 +504,23 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (AcquiringGround())
 		{
 			moveDirection = Math3d.ProjectVectorOnPlane(controller.up, moveDirection);
-			CurrentState = PlayerMovementState.Standing;
-			return;
+			var fallenHeight = startingHeight - transform.position.y;
+
+			if (fallenHeight >= SafeHeightMultiplier * FallingSafeFallHeight)
+			{
+				CurrentState = PlayerMovementState.CrouchRecovering;
+				return;
+			}
+			else if (fallenHeight >= FallingSafeFallHeight)
+			{
+				CurrentState = PlayerMovementState.Recovering;
+				return;
+			}
+			else
+			{
+				CurrentState = PlayerMovementState.Standing;
+				return;
+			}
 		}
 
 		Vector3 planarMoveDirection = Math3d.ProjectVectorOnPlane(controller.up, moveDirection);
@@ -390,6 +530,11 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	#endregion
 
 	#endregion
+
+	public void Lunge()
+	{
+		CurrentState = PlayerMovementState.Lunging;
+	}
 
 	private void GoToCrouching()
 	{
@@ -410,11 +555,14 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 public enum PlayerMovementState
 {
-	Standing = 1,
-	Crouching = 2,
-	Running = 3,
-	CrouchRunning = 4,
-	Sliding = 5,
-	Jumping = 6,
-	Falling = 7
+	Standing,
+	Crouching,
+	Running,
+	CrouchRunning,
+	Sliding,
+	Lunging,
+	Recovering,
+	CrouchRecovering,
+	Jumping,
+	Falling
 }

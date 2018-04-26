@@ -31,30 +31,50 @@ public class PlayerAnimationManager : MonoBehaviour {
 		SetAnimationBool(AnimationCodes.ChargingAttack, false);
 		SetAnimationBool(AnimationCodes.JumpKicking, false);
 		SetAnimationBool(AnimationCodes.SlideKicking, false);
+		ResetAnimationSpeed();
 	}
 
-	internal void BasicAttack()
+	internal void ResetAnimationSpeed()
+	{
+		if (PlayerUIAnimator != null)
+			playerUIAnimator.speed = 1;
+		if (playerMotionAnimator != null)
+			playerMotionAnimator.speed = 1;
+	}
+
+	internal void ChangeAnimationSpeed(float multiplier)
+	{
+		playerUIAnimator.speed = multiplier;
+	}
+
+	internal void ChargeUpAttack()
+	{
+		SetAnimationBool(AnimationCodes.ChargingAttack, true);
+	}
+
+	internal void ExecuteBasicAttack()
 	{
 		SetAnimationBool(AnimationCodes.ChargingAttack, false);
 		SetAnimationInteger(AnimationCodes.BasicAttackIndex, UnityEngine.Random.Range(0, 2));
 	}
 
-	internal void ChargeAttack()
+	internal void ExecuteChargeAttack() //TODO - Make a charged attack animation
 	{
-		SetAnimationBool(AnimationCodes.ChargingAttack, true);
+		SetAnimationBool(AnimationCodes.ChargingAttack, false);
+		SetAnimationInteger(AnimationCodes.BasicAttackIndex, UnityEngine.Random.Range(0, 2));
 	}
 
-	internal void Block()
+	internal void ExecuteBlock()
 	{
 		SetAnimationBool(AnimationCodes.Blocking, true);
 	}
 
-	internal void JumpKick()
+	internal void ExecuteJumpKick()
 	{
 		SetAnimationBool(AnimationCodes.JumpKicking, true);
 	}
 
-	internal void SlideKick()
+	internal void ExecuteSlideKick()
 	{
 		SetAnimationBool(AnimationCodes.SlideKicking, true);
 	}

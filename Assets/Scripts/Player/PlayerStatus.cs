@@ -15,12 +15,14 @@ public class PlayerStatus : MonoBehaviour, IAttackable
 	private float staggerKnockbackVelocity = 2f;
 	private float currentStaggerRecoveryTime = 0.1f;
 
-	public HealthState state { get; private set; }
+	public HealthState healthState { get; private set; }
 
-	public string stateName { get { return state.ToString(); } }
+	public string stateName { get { return healthState.ToString(); } }
 
-	void Awake () {
-		state = HealthState.FreeMoving;
+	void Awake()
+	{
+		healthState = HealthState.FreeMoving;
+		Health = MaxHealth;
 
 		if (!GameObject.FindGameObjectWithTag("PlayerHUD"))
 			PlayerHUD = Instantiate(PlayerHUD) as GameObject;
@@ -64,44 +66,44 @@ public class PlayerStatus : MonoBehaviour, IAttackable
 
 	internal virtual void Die()
 	{
-		state = HealthState.Dead;
+		healthState = HealthState.Dead;
 	}
 	#endregion
 
 	#region PlayerState
 	public bool IsDead()
 	{
-		return state == HealthState.Dead;
+		return healthState == HealthState.Dead;
 	}
 
 	public bool IsKnockedBack()
 	{
-		return state == HealthState.KnockedBack;
+		return healthState == HealthState.KnockedBack;
 	}
 
 	internal bool IsStaggered()
 	{
-		return state == HealthState.Staggered;
+		return healthState == HealthState.Staggered;
 	}
 
 	internal bool IsFreeMoving()
 	{
-		return state == HealthState.FreeMoving;
+		return healthState == HealthState.FreeMoving;
 	}
 
 	public void BecomeFreeMoving()
 	{
-		state = HealthState.FreeMoving;
+		healthState = HealthState.FreeMoving;
 	}
 
 	public void BecomeKnockedBack()
 	{
-		state = HealthState.KnockedBack;
+		healthState = HealthState.KnockedBack;
 	}
 
 	internal void BecomeStaggered()
 	{
-		state = HealthState.Staggered;
+		healthState = HealthState.Staggered;
 	}
 	#endregion
 }

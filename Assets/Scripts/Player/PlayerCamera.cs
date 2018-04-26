@@ -8,8 +8,6 @@ public class PlayerCamera : MonoBehaviour
 	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 0.9f;
 	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET;
 
-	
-
 	public float bobbingSpeed = 0.18f;
 	public float bobbingAmount = 0.2f;
 
@@ -19,15 +17,25 @@ public class PlayerCamera : MonoBehaviour
 	private float timer = 0.0f;
 	private float translateChange = 0.0f;
 
-	private PlayerInputManager playerInputManager;
+	private Camera playerCamera;
 	private PlayerMovementStateMachine playerMovementStateMachine;
 	private PlayerAttackStateMachine playerAttackStateMachine;
+	private PlayerInputManager playerInputManager;
+
+	private PlayerMovementState moveState;
+	private PlayerAttackState attackState;
+
+	public Vector3 AimDirectionVector
+	{
+		get { return playerCamera.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2)).direction; }
+	}
 
 	void Awake ()
 	{
-		playerInputManager = gameObject.GetComponentInParent<PlayerInputManager>();
+		playerCamera = gameObject.GetComponent<Camera>();
 		playerMovementStateMachine = gameObject.GetComponentInParent<PlayerMovementStateMachine>();
 		playerAttackStateMachine = gameObject.GetComponentInParent<PlayerAttackStateMachine>();
+		playerInputManager = gameObject.GetComponentInParent<PlayerInputManager>();
 
 		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
@@ -41,6 +49,9 @@ public class PlayerCamera : MonoBehaviour
 
 	private void LateUpdate()
 	{
+		moveState = (PlayerMovementState)playerMovementStateMachine.CurrentState;
+		attackState = (PlayerAttackState)playerAttackStateMachine.CurrentState;
+
 		MouseLook();
 		Headbob();
 	}
@@ -117,13 +128,13 @@ public class PlayerCamera : MonoBehaviour
 
 	private bool MoveStateDisallowsHeadbob()
 	{
-		return ((PlayerMovementState)playerMovementStateMachine.CurrentState == PlayerMovementState.Sliding);
+		return (moveState == PlayerMovementState.Sliding) ||
+			(moveState == PlayerMovementState.Lunging);
 	}
 
 	private bool AttackStateDisallowsHeadbob()
 	{
-		return !((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Idle ||
-					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.Blocking ||
-					(PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.ChargingAttack);
+		return (attackState == PlayerAttackState.JumpKicking ||
+			attackState == PlayerAttackState.SlideKicking);
 	}
 }

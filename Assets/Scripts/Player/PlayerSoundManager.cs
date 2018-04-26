@@ -12,6 +12,30 @@ public class PlayerSoundManager : MonoBehaviour
 		playerAudioSource = GetComponent<AudioSource>();
 	}
 
+	public void PlayBasicAttackHitSound()
+	{
+		var randomIndex = Random.Range(0, basicAttackHitSounds.Length);
+		playerAudioSource.PlayOneShot(basicAttackHitSounds[randomIndex]);
+	}
+
+	public void PlayBasicAttackMissSound()
+	{
+		var randomIndex = Random.Range(0, basicAttackMissSounds.Length);
+		playerAudioSource.PlayOneShot(basicAttackMissSounds[randomIndex]);
+	}
+
+	public void PlayChargeAttackHitSound()
+	{
+		var randomIndex = 1;//Random.Range(0, basicAttackHitSounds.Length);
+		playerAudioSource.PlayOneShot(basicAttackHitSounds[randomIndex]);
+	}
+
+	public void PlayChargeAttackMissSound()
+	{
+		var randomIndex = Random.Range(0, basicAttackMissSounds.Length);
+		playerAudioSource.PlayOneShot(basicAttackMissSounds[randomIndex]);
+	}
+
 	public void PlayJumpAttackHitSound()
 	{
 		var randomIndex = 1;//Random.Range(0, basicAttackHitSounds.Length);
@@ -31,18 +55,6 @@ public class PlayerSoundManager : MonoBehaviour
 	}
 
 	public void PlaySlideAttackMissSound()
-	{
-		var randomIndex = Random.Range(0, basicAttackMissSounds.Length);
-		playerAudioSource.PlayOneShot(basicAttackMissSounds[randomIndex]);
-	}
-
-	public void PlayBasicAttackHitSound()
-	{
-		var randomIndex = Random.Range(0, basicAttackHitSounds.Length);
-		playerAudioSource.PlayOneShot(basicAttackHitSounds[randomIndex]);
-	}
-
-	public void PlayBasicAttackMissSound()
 	{
 		var randomIndex = Random.Range(0, basicAttackMissSounds.Length);
 		playerAudioSource.PlayOneShot(basicAttackMissSounds[randomIndex]);

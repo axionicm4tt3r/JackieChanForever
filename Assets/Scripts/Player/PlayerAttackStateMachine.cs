@@ -4,7 +4,6 @@ using UnityEngine;
 public class PlayerAttackStateMachine : SuperStateMachine
 {
 	public const float JUMP_KICK_ALLOWANCE_TIME = 0.2f;
-	public const float SLIDE_KICK_ALLOWANCE_TIME = 0.2f;
 
 	private PlayerStatus playerStatus;
 	private PlayerAnimationManager playerAnimationManager;
@@ -13,21 +12,23 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	private PlayerInteractionManager playerInteractionManager;
 	private PlayerMovementStateMachine playerMovementStateMachine;
 
-	public float maxChargeAttackDamageMultiplier = 2.5f;
+	public float MaxChargeAttackDamageMultiplier = 2.5f;
+	public float ChargeAttackMinimumChargePercentage = 0.3f;
+	public float ChargeAttackLungeMinimumChargePercentage = 0.6f;
 
 	//Attack Motion Times - Convert these to frames?
-	public float blockMotionTime = 0.5f;
-	public float basicAttackMotionTime = 0.3f;
-	public float attackChargeMotionTime = 3f;
-	public float powerAttackMotionTime = 0.6f;
-	public float jumpKickAttackMotionTime = 0.4f;
-	public float slideKickAttackMotionTime = 0.6f;
+	public float BlockMotionTime = 0.5f;
+	public float BasicAttackMotionTime = 0.3f;
+	public float AttackChargingMotionTime = 3f;
+	public float ChargeAttackMotionTime = 0.6f;
+	public float JumpKickAttackMotionTime = 15f;
+	public float SlideKickAttackMotionTime = 0.6f;
 
 	//Attack Cooldown Times
-	public float blockCooldown = 0.3f;
-	public float basicAttackCooldown = 0.1f;
-	public float jumpKickAttackCooldown = 0.5f;
-	public float slideKickAttackCooldown = 0.5f;
+	public float BlockCooldown = 0.3f;
+	public float BasicAttackCooldown = 0.1f;
+	public float JumpKickAttackCooldown = 0.5f;
+	public float SlideKickAttackCooldown = 0.5f;
 
 	private float attackChargePercentage = 0f;
 	private bool blockInputHandled = false;
@@ -38,7 +39,9 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 	#region PropertyGetters
 
-	public float DamageMultiplier { get { return attackChargePercentage * maxChargeAttackDamageMultiplier; } }
+	public float DamageMultiplier { get { return attackChargePercentage * MaxChargeAttackDamageMultiplier; } }
+
+	public float AttackChargePercentage { get { return attackChargePercentage; } }
 
 	#endregion
 
@@ -83,6 +86,9 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 	void Idle_SuperUpdate()
 	{
+		if (playerMovementStateMachine.IsRecovering)
+			return;
+
 		if (playerInputManager.Current.PrimaryFireInput)
 		{
 			Attack();
@@ -107,66 +113,99 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	void Blocking_EnterState()
 	{
 		blockInputHandled = true;
-		playerAnimationManager.Block();
+		playerAnimationManager.ExecuteBlock();
 	}
 
 	void Blocking_SuperUpdate()
 	{
-		if (TimeSinceEnteringCurrentState >= blockMotionTime)
+		if (TimeSinceEnteringCurrentState >= BlockMotionTime)
 		{
 			CurrentState = PlayerAttackState.Idle;
 			return;
 		}
 	}
 
-	#endregion
-
-	#region ChargingAttack
-	void ChargingAttack_EnterState()
-	{
-		playerAnimationManager.ChargeAttack();
-	}
-
-	void ChargingAttack_SuperUpdate()
-	{
-		if (!playerInputManager.Current.PrimaryFireInput || TimeSinceEnteringCurrentState >= attackChargeMotionTime)
-		{
-			CurrentState = PlayerAttackState.BasicAttacking;
-			return;
-		}
-
-		attackChargeMotionTime = Mathf.Max(TimeSinceEnteringCurrentState / attackChargeMotionTime, 1f);
-		//Update a float in the animation controller - this float should control the speed of the charge animation
-	}
 	#endregion
 
 	#region BasicAttacking
 	void BasicAttacking_EnterState()
 	{
-		playerAnimationManager.BasicAttack();
-		playerAttackManager.BasicAttack();
+		playerAnimationManager.ExecuteBasicAttack();
+		playerAttackManager.BasicAttack(); //Move this to a connecting frame in the animation
 	}
 
 	void BasicAttacking_SuperUpdate()
 	{
-		if (TimeSinceEnteringCurrentState >= basicAttackMotionTime)
+		if (TimeSinceEnteringCurrentState >= BasicAttackMotionTime)
 		{
 			CurrentState = PlayerAttackState.Idle;
 			return;
 		}
+	}
+	#endregion
 
+	#region ChargingAttack
+	void ChargingAttack_EnterState()
+	{
+		playerAnimationManager.ChargeUpAttack();
+		attackChargePercentage = 0f;
+	}
+
+	void ChargingAttack_SuperUpdate()
+	{
+		attackChargePercentage = Mathf.Min(TimeSinceEnteringCurrentState / AttackChargingMotionTime, 1f);
+		playerAnimationManager.ChangeAnimationSpeed(Mathf.Min(attackChargePercentage + 0.3f, 1f)); //Fix this to show the UI Charge nicely
+
+		if (!playerInputManager.Current.PrimaryFireInput && attackChargePercentage < ChargeAttackMinimumChargePercentage)
+		{
+			CurrentState = PlayerAttackState.BasicAttacking;
+			return;
+		}
+
+		if (attackChargePercentage >= ChargeAttackMinimumChargePercentage && !playerInputManager.Current.PrimaryFireInput)
+		{
+			CurrentState = PlayerAttackState.ChargeAttacking;
+			return;
+		}
+
+		//Debug.Log($"Attack Charge Percentage: {attackChargePercentage}");
+	}
+
+	void ChargingAttack_ExitState()
+	{
+		playerAnimationManager.ResetAnimationSpeed();
+	}
+	#endregion
+
+	#region ChargeAttacking
+	void ChargeAttacking_EnterState()
+	{
+		if (attackChargePercentage >= ChargeAttackLungeMinimumChargePercentage)
+			playerMovementStateMachine.Lunge(); //Execute Standing slide for a short period of time - Horizontal jump on enter state
+
+		playerAnimationManager.ExecuteChargeAttack();
+		playerAttackManager.ChargeAttack(); //Move this to a connecting frame in the animation. Event Trigger on the animation frame that strikes the enemy
+	}
+
+	void ChargeAttacking_SuperUpdate()
+	{
+		if (TimeSinceEnteringCurrentState >= ChargeAttackMotionTime && (PlayerMovementState)playerMovementStateMachine.CurrentState != PlayerMovementState.Lunging)
+		{
+			CurrentState = PlayerAttackState.Idle;
+			return;
+		}
 	}
 	#endregion
 
 	#region JumpKicking
 	void JumpKicking_EnterState()
 	{
-		playerAnimationManager.JumpKick();
+		playerAnimationManager.ExecuteJumpKick();
 	}
 
 	void JumpKicking_SuperUpdate()
 	{
-		if (TimeSinceEnteringCurrentState >= jumpKickAttackMotionTime)
+		if (TimeSinceEnteringCurrentState >= JumpKickAttackMotionTime || (PlayerMovementState)playerMovementStateMachine.CurrentState != PlayerMovementState.Jumping)
 		{
 			CurrentState = PlayerAttackState.Idle;
 			return;
@@ -177,12 +216,12 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	#region SlideKicking
 	void SlideKicking_EnterState()
 	{
-		playerAnimationManager.SlideKick();
+		playerAnimationManager.ExecuteSlideKick();
 	}
 
 	void SlideKicking_SuperUpdate()
 	{
-		if (TimeSinceEnteringCurrentState >= slideKickAttackMotionTime || (PlayerMovementState)playerMovementStateMachine.CurrentState != PlayerMovementState.Sliding)
+		if (TimeSinceEnteringCurrentState >= SlideKickAttackMotionTime || (PlayerMovementState)playerMovementStateMachine.CurrentState != PlayerMovementState.Sliding)
 		{
 			CurrentState = PlayerAttackState.Idle;
 			return;
@@ -224,10 +263,11 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 public enum PlayerAttackState
 {
-	Idle = 1,
-	Blocking = 2,
-	ChargingAttack = 3,
-	BasicAttacking = 4,
-	JumpKicking = 5,
-	SlideKicking = 6
+	Idle,
+	Blocking,
+	BasicAttacking,
+	ChargingAttack,
+	ChargeAttacking,
+	JumpKicking,
+	SlideKicking
 }

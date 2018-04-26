@@ -8,6 +8,10 @@ public class PlayerAttackManager : MonoBehaviour
 	public static float BasicAttackDamage = 5f;
 	public static float BasicAttackStaggerTime = 0.2f;
 
+	public static float ChargeAttackDamage = 5f;
+	public static float ChargeAttackKnockbackVelocity = 12f;
+	public static float ChargeAttackKnockbackTime = 0.2f;
+
 	public static float JumpKickDamage = 18f;
 	public static float JumpKickKnockbackVelocity = 25f;
 	public static float JumpKickKnockbackTime = 0.2f;
@@ -38,8 +42,7 @@ public class PlayerAttackManager : MonoBehaviour
 
 		foreach (IAttackable attackableComponent in results)
 		{
-			var damage = BasicAttackDamage * playerAttackStateMachine.DamageMultiplier;
-			//TODO: Knockback for charged attack
+			var damage = BasicAttackDamage + BasicAttackDamage * playerAttackStateMachine.DamageMultiplier;
 			attackableComponent.ReceiveStaggerAttack(damage, transform.forward, BasicAttackStaggerTime);
 		}
 
@@ -47,6 +50,23 @@ public class PlayerAttackManager : MonoBehaviour
 			playerSoundManager.PlayBasicAttackHitSound();
 		else
 			playerSoundManager.PlayBasicAttackMissSound();
+	}
+
+	public void ChargeAttack()
+	{
+		bool hitEnemy = false;
+		List<IAttackable> results = CheckInstantFrameHitboxForEnemies(out hitEnemy);
+
+		foreach (IAttackable attackableComponent in results)
+		{
+			var damage = ChargeAttackDamage + ChargeAttackDamage * playerAttackStateMachine.DamageMultiplier;
+			attackableComponent.ReceiveKnockbackAttack(damage, transform.forward, ChargeAttackKnockbackVelocity, ChargeAttackKnockbackTime);
+		}
+
+		if (hitEnemy)
+			playerSoundManager.PlayChargeAttackHitSound();
+		else
+			playerSoundManager.PlayChargeAttackMissSound();
 	}
 
 	public void JumpKick(IAttackable attackableComponent)
