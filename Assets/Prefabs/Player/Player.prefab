@@ -413,20 +413,23 @@ MonoBehaviour:
   debugGrounding: 0
   debugPushbackMesssages: 0
   spheres:
-  - offset: 0.5
+  - offset: 0.4
     isFeet: 1
     isHead: 0
-  - offset: 1
+  - offset: 0.8
     isFeet: 0
     isHead: 0
-  - offset: 1.5
+  - offset: 1.2
+    isFeet: 0
+    isHead: 0
+  - offset: 1.6
     isFeet: 0
     isHead: 1
   Walkable:
     serializedVersion: 2
     m_Bits: 16385
   ownCollider: {fileID: 136361498246921962}
-  radius: 0.5
+  radius: 0.4
 --- !u!114 &114611215730509340
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -498,7 +501,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
