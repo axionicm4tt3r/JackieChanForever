@@ -40,8 +40,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	private PlayerStatus playerStatus;
 	private PlayerAttackStateMachine playerAttackStateMachine;
 
-	private float startingHeight = 0f;
+	//Change these if you mess with the player size
+	private float collisionSphereSize = 0.4f;
+	private Vector3 standingTorsoPosition = new Vector3(0, 1.2f, 0);
+	private Vector3 standingHeadPosition = new Vector3(0, 1.6f, 0);
 
+	private float fallStartingHeight = 0f;
+	
 	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
@@ -136,7 +141,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	public bool MaintainingGround()
 	{
-		return controller.currentGround.IsGrounded(true, 0.5f);
+		return controller.currentGround.IsGrounded(true, collisionSphereSize);
 	}
 
 	public void RotateGravity(Vector3 up)
@@ -492,7 +497,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		controller.DisableClamping();
 		controller.DisableSlopeLimit();
 
-		startingHeight = transform.position.y;
+		fallStartingHeight = transform.position.y;
 		moveDirection += controller.up * CalculateJumpSpeed(JumpHeight, Gravity);
 	}
 
@@ -504,7 +509,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (Vector3.Angle(verticalMoveDirection, controller.up) > 90 && AcquiringGround())
 		{
 			moveDirection = planarMoveDirection;
-			var fallenHeight = startingHeight - transform.position.y;
+			var fallenHeight = fallStartingHeight - transform.position.y;
 
 			if (fallenHeight >= SafeHeightMultiplier * JumpingSafeFallHeight)
 			{
@@ -546,7 +551,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		controller.DisableClamping();
 		controller.DisableSlopeLimit();
 
-		startingHeight = transform.position.y;
+		fallStartingHeight = transform.position.y;
 	}
 
 	void Falling_SuperUpdate()
@@ -554,7 +559,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if (AcquiringGround())
 		{
 			moveDirection = Math3d.ProjectVectorOnPlane(controller.up, moveDirection);
-			var fallenHeight = startingHeight - transform.position.y;
+			var fallenHeight = fallStartingHeight - transform.position.y;
 
 			if (fallenHeight >= SafeHeightMultiplier * FallingSafeFallHeight)
 			{
@@ -597,8 +602,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			Mathf.Min(TimeSinceEnteringCurrentState / ChangeStanceSpeed, 1));
 
 		var offsetRatio = PlayerCamera.currentViewYOffset / PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET;
-		//playerCollider.height = offsetRatio * 2;
-		//playerCollider.center = new Vector3(0, offsetRatio, 0);
 		controller.heightScale = offsetRatio;
 	}
 
@@ -608,18 +611,24 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			Mathf.Min(TimeSinceEnteringCurrentState / ChangeStanceSpeed, 1));
 
 		var offsetRatio = PlayerCamera.currentViewYOffset / PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET;
-		//playerCollider.height = offsetRatio * 2;
-		//playerCollider.center = new Vector3(0, offsetRatio, 0);
 		controller.heightScale = offsetRatio;
 	}
 
 	private bool PlayerCanExitCrouch()
 	{
-		RaycastHit hitInfo;
-		var result = Physics.Raycast(transform.position, transform.up * controller.height, out hitInfo, 2f);
-		Debug.DrawRay(transform.position, transform.up * controller.height, Color.white, 0.5f);
-		return !result;
+		var torsoCheck = Physics.OverlapSphere(transform.position + standingTorsoPosition, collisionSphereSize, LayerMask.GetMask(Helpers.Layers.Default));
+		var headCheck = Physics.OverlapSphere(transform.position + standingHeadPosition, collisionSphereSize, LayerMask.GetMask(Helpers.Layers.Default));
+
+		return torsoCheck.Length == 0 && headCheck.Length == 0;
 	}
+
+	//private void OnDrawGizmos()
+	//{
+	//	Gizmos.color = Color.red;
+	//	Gizmos.DrawWireSphere(transform.position + standingTorsoPosition, collisionSphereSize);
+	//	Gizmos.color = Color.blue;
+	//	Gizmos.DrawWireSphere(transform.position + standingHeadPosition, collisionSphereSize);
+	//}
 }
 
 public enum PlayerMovementState
