@@ -181,7 +181,12 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	void ChargeAttacking_EnterState()
 	{
 		if (attackChargePercentage >= ChargeAttackLungeMinimumChargePercentage)
-			playerMovementStateMachine.Lunge();
+		{
+			if (playerMovementStateMachine.InCrouchingState)
+				playerMovementStateMachine.CrouchLunge();
+			else
+				playerMovementStateMachine.Lunge();
+		}
 
 		playerAnimationManager.ExecuteChargeAttack();
 	}

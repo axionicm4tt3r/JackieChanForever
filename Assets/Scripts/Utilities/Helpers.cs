@@ -15,6 +15,7 @@ public static class Helpers
 
 	public class Layers
 	{
+		public const string Default = "Default";
 		public const string Interactable = "Interactable";
 		public const string Enemy = "Enemy";
 		public const string Player = "Player";

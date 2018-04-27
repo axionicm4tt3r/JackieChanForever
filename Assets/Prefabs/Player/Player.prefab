@@ -123,7 +123,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1162274536680252}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: 0.5, z: -3}
+  m_LocalPosition: {x: 30, y: 1, z: 17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4724950592248332}
@@ -323,17 +323,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f368890f6af4479d6c5f3b2cf0c81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChargeAttackDamageMultiplier: 2.5
-  blockMotionTime: 0.5
-  basicAttackMotionTime: 0.3
-  attackChargeMotionTime: 3
-  powerAttackMotionTime: 0.6
-  jumpKickAttackMotionTime: 0.4
-  slideKickAttackMotionTime: 0.6
-  blockCooldown: 0.3
-  basicAttackCooldown: 0.1
-  jumpKickAttackCooldown: 0.5
-  slideKickAttackCooldown: 0.5
+  MaxChargeAttackDamageMultiplier: 2.5
+  ChargeAttackMinimumChargePercentage: 0.3
+  ChargeAttackLungeMinimumChargePercentage: 0.6
+  BlockMotionTime: 0.5
+  BasicAttackMotionTime: 0.3
+  AttackFullyChargedMotionTime: 2.5
+  ChargeAttackMotionTime: 0.6
+  JumpKickAttackMotionTime: 15
+  SlideKickAttackMotionTime: 0.6
+  BlockCooldown: 0.3
+  BasicAttackCooldown: 0.1
+  JumpKickAttackCooldown: 0.5
+  SlideKickAttackCooldown: 0.5
 --- !u!114 &114056668229482642
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -405,8 +407,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugMove: {x: 0, y: 0, z: 0}
-  fixedTimeStep: 0
-  fixedUpdatesPerSecond: 0
+  fixedTimeStep: 1
+  fixedUpdatesPerSecond: 60
   debugSpheres: 1
   debugGrounding: 0
   debugPushbackMesssages: 0

@@ -129,7 +129,8 @@ public class PlayerCamera : MonoBehaviour
 	private bool MoveStateDisallowsHeadbob()
 	{
 		return (moveState == PlayerMovementState.Sliding) ||
-			(moveState == PlayerMovementState.Lunging);
+			(moveState == PlayerMovementState.Lunging) ||
+			(moveState == PlayerMovementState.CrouchLunging);
 	}
 
 	private bool AttackStateDisallowsHeadbob()
