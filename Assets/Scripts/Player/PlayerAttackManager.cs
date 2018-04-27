@@ -52,21 +52,18 @@ public class PlayerAttackManager : MonoBehaviour
 			playerSoundManager.PlayBasicAttackMissSound();
 	}
 
-	public void ChargeAttack()
+	public void ChargeAttack(IAttackable attackableComponent)
 	{
-		bool hitEnemy = false;
-		List<IAttackable> results = CheckInstantFrameHitboxForEnemies(out hitEnemy);
+		var damage = ChargeAttackDamage + ChargeAttackDamage * playerAttackStateMachine.DamageMultiplier;
 
-		foreach (IAttackable attackableComponent in results)
+		if (!enemiesHit.Contains(attackableComponent))
 		{
-			var damage = ChargeAttackDamage + ChargeAttackDamage * playerAttackStateMachine.DamageMultiplier;
+			enemiesHit.Add(attackableComponent);
 			attackableComponent.ReceiveKnockbackAttack(damage, transform.forward, ChargeAttackKnockbackVelocity, ChargeAttackKnockbackTime);
-		}
-
-		if (hitEnemy)
 			playerSoundManager.PlayChargeAttackHitSound();
+		}
 		else
-			playerSoundManager.PlayChargeAttackMissSound();
+			attackableComponent.ReceiveKnockbackAttack(0f, transform.forward, ChargeAttackKnockbackVelocity, ChargeAttackKnockbackTime);
 	}
 
 	public void JumpKick(IAttackable attackableComponent)

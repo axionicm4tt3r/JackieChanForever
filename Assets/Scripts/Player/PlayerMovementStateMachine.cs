@@ -14,18 +14,18 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	public const float AirControl = 0.6f;
 	public const float ChangeStanceSpeed = 0.3f;
 
-	public const float JumpingSafeFallHeight = 1.5f * JumpHeight;
-	public const float FallingSafeFallHeight = 1.8f * JumpHeight;
-	public const float SafeHeightMultiplier = 2f;
+	public const float JumpingSafeFallHeight = 2.3f * JumpHeight;
+	public const float FallingSafeFallHeight = 2.6f * JumpHeight;
+	public const float SafeHeightMultiplier = 1.5f;
 
 	public const float StandingRecoveryTime = 0.15f;
-	public const float CrouchRecoveryTime = 0.22f;
+	public const float CrouchRecoveryTime = 0.11f;
 	public const float FallingIntoRecoveryTime = 0.35f;
 
 	public const float JumpKickVelocity = 8f;
 	public const float SlideVelocity = 10f;
 	public const float SlideDuration = 0.6f;
-	public const float LungeVelocity = 14f;
+	public const float LungeVelocity = 16f;
 	public const float LungeDuration = 0.3f;
 
 	public Vector3 moveDirection;
@@ -118,7 +118,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		transform.position += moveDirection * Time.deltaTime;
 
-		Debug.Log($"CurrentState is {CurrentState}");
+		//Debug.Log($"CurrentState is {CurrentState}");
 		//Debug.Log($"State Time is {TimeSinceEnteringCurrentState}");
 
 	}
@@ -274,11 +274,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
-		if (playerInputManager.Current.MoveInput != Vector3.zero && !playerInputManager.Current.CrouchInput)
-		{
-			moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * RunSpeed, RunAcceleration * Time.deltaTime);
-		}
-		else if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput)
+		if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput) //Fix up going into slide. Add a way for them to go into crouch fully without sliding
 		{
 			if (LocalMovementIsForwardFacing)
 			{
@@ -291,16 +287,20 @@ public class PlayerMovementStateMachine : SuperStateMachine
 				return;
 			}
 		}
-		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
+
+		if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Crouching;
 			return;
 		}
-		else if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
+
+		if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * RunSpeed, RunAcceleration * Time.deltaTime);
 	}
 	#endregion
 
@@ -319,25 +319,25 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
-		if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput)
-		{
-			moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * CrouchSpeed, CrouchAcceleration * Time.deltaTime);
-		}
-		else if (playerInputManager.Current.MoveInput != Vector3.zero && !playerInputManager.Current.CrouchInput)
+		if (playerInputManager.Current.MoveInput != Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Running;
 			return;
 		}
-		else if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
-		{
-			CurrentState = PlayerMovementState.Crouching;
-			return;
-		}
-		else if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
+
+		if (playerInputManager.Current.MoveInput == Vector3.zero && !playerInputManager.Current.CrouchInput)
 		{
 			CurrentState = PlayerMovementState.Standing;
 			return;
 		}
+
+		if (playerInputManager.Current.MoveInput == Vector3.zero && playerInputManager.Current.CrouchInput)
+		{
+			CurrentState = PlayerMovementState.Crouching;
+			return;
+		}
+
+		moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * CrouchSpeed, CrouchAcceleration * Time.deltaTime);
 	}
 	#endregion
 
@@ -389,7 +389,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		if (TimeSinceEnteringCurrentState >= (LungeDuration * playerAttackStateMachine.AttackChargePercentage))
 		{
-			//Debug.Log($"Player shouldn't recover from attack. Charge rate is {playerAttackStateMachine.AttackChargePercentage}");
 			CurrentState = PlayerMovementState.Recovering;
 			return;
 		}
@@ -434,7 +433,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		if ((recoverFromFalling && TimeSinceEnteringCurrentState >= FallingIntoRecoveryTime) ||
 			(!recoverFromFalling && TimeSinceEnteringCurrentState >= CrouchRecoveryTime)) //Maybe handle a getting up into stand recovery state
 		{
-			CurrentState = PlayerMovementState.Crouching;
+			CurrentState = PlayerMovementState.Recovering;
 			return;
 		}
 
@@ -480,7 +479,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 
 		if ((PlayerAttackState)playerAttackStateMachine.CurrentState == PlayerAttackState.JumpKicking)
-			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, playerCamera.AimDirectionVector * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
+		{
+			var aimVector = playerCamera.AimDirectionVector;
+			aimVector.Set(aimVector.x, Mathf.Min(0f, aimVector.y), aimVector.z);
+			//Debug.Log($"Aim vector is {aimVector}");
+
+			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, aimVector * JumpKickVelocity, JumpKickVelocity * Time.deltaTime);
+		}
 		else
 			planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * RunSpeed, AirControl * RunAcceleration * Time.deltaTime);
 

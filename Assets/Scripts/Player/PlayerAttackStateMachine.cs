@@ -19,7 +19,7 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	//Attack Motion Times - Convert these to frames?
 	public float BlockMotionTime = 0.5f;
 	public float BasicAttackMotionTime = 0.3f;
-	public float AttackChargingMotionTime = 3f;
+	public float AttackFullyChargedMotionTime = 2.5f;
 	public float ChargeAttackMotionTime = 0.6f;
 	public float JumpKickAttackMotionTime = 15f;
 	public float SlideKickAttackMotionTime = 0.6f;
@@ -153,8 +153,8 @@ public class PlayerAttackStateMachine : SuperStateMachine
 
 	void ChargingAttack_SuperUpdate()
 	{
-		attackChargePercentage = Mathf.Min(TimeSinceEnteringCurrentState / AttackChargingMotionTime, 1f);
-		playerAnimationManager.ChangeAnimationSpeed(Mathf.Min(attackChargePercentage + 0.3f, 1f)); //Fix this to show the UI Charge nicely
+		attackChargePercentage = Mathf.Min(TimeSinceEnteringCurrentState / AttackFullyChargedMotionTime, 1f);
+		playerAnimationManager.ChangeAnimationSpeed(Mathf.Lerp(0.5f, 1f, attackChargePercentage));
 
 		if (!playerInputManager.Current.PrimaryFireInput && attackChargePercentage < ChargeAttackMinimumChargePercentage)
 		{
@@ -181,10 +181,9 @@ public class PlayerAttackStateMachine : SuperStateMachine
 	void ChargeAttacking_EnterState()
 	{
 		if (attackChargePercentage >= ChargeAttackLungeMinimumChargePercentage)
-			playerMovementStateMachine.Lunge(); //Execute Standing slide for a short period of time - Horizontal jump on enter state
+			playerMovementStateMachine.Lunge();
 
 		playerAnimationManager.ExecuteChargeAttack();
-		playerAttackManager.ChargeAttack(); //Move this to a connecting frame in the animation. Event Trigger on the animation frame that strikes the enemy
 	}
 
 	void ChargeAttacking_SuperUpdate()

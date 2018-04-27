@@ -19,6 +19,9 @@ public class PlayerHitbox : MonoBehaviour
 		{
 			switch((PlayerAttackState)playerController.CurrentState)
 			{
+				case PlayerAttackState.ChargeAttacking:
+					playerAttackManager.ChargeAttack(attackableComponent);
+					break;
 				case PlayerAttackState.JumpKicking:
 					playerAttackManager.JumpKick(attackableComponent);
 					break;

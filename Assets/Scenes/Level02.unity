@@ -2296,7 +2296,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4215498645123982, guid: cf90af9d33b61e8409de30f594c3a41d, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4215498645123982, guid: cf90af9d33b61e8409de30f594c3a41d, type: 2}
       propertyPath: m_LocalPosition.z
@@ -2322,17 +2322,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114835253636620654, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: MaxHealth
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 114835253636620654, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: PlayerHUD
-      value: 
-      objectReference: {fileID: 1536770228554084, guid: 14bbb78c3da652542a07eb6aff098e62,
-        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cf90af9d33b61e8409de30f594c3a41d, type: 2}
   m_IsPrefabParent: 0
@@ -6268,31 +6257,9 @@ MonoBehaviour:
     areaError: 15
   asset_guid: 
   dontDestroyMeshOnDelete: 0
-  m_selectedFaces: 27000000
-  m_SelectedEdges:
-  - x: 81
-    y: 79
-  - x: 80
-    y: 82
-  - x: 82
-    y: 81
-  - x: 79
-    y: 49
-  - x: 50
-    y: 80
-  - x: 49
-    y: 51
-  - x: 52
-    y: 50
-  - x: 51
-    y: 61
-  - x: 62
-    y: 52
-  - x: 61
-    y: 65
-  - x: 65
-    y: 62
-  m_selectedTriangles: 4f00000050000000510000005000000052000000510000004f0000003100000050000000310000003200000050000000310000003300000032000000330000003400000032000000330000003d000000340000003d0000003e000000340000003e0000003d00000041000000
+  m_selectedFaces: 
+  m_SelectedEdges: []
+  m_selectedTriangles: 
 --- !u!114 &1667449368
 MonoBehaviour:
   m_ObjectHideFlags: 0
