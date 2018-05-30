@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
 	//Move to PlayerConstants class or something
-	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 2.0f;
+	public const float PLAYER_STANDING_VIEW_Y_OFFSET = 1.6f;
 	public const float PLAYER_CROUCHING_VIEW_Y_OFFSET = 0.70f;
 	public static float currentViewYOffset = PLAYER_STANDING_VIEW_Y_OFFSET;
 

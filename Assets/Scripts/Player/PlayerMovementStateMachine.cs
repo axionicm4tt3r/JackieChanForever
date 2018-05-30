@@ -41,7 +41,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	private PlayerAttackStateMachine playerAttackStateMachine;
 
 	//Change these if you mess with the player size
-	private float collisionSphereSize = 0.4f;
+	private float collisionSphereSize = 0.38f;
 	private Vector3 standingTorsoPosition = new Vector3(0, 1.2f, 0);
 	private Vector3 standingHeadPosition = new Vector3(0, 1.6f, 0);
 
@@ -117,6 +117,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		//Debug.Log($"CurrentState is {CurrentState}");
 		//Debug.Log($"State Time is {TimeSinceEnteringCurrentState}");
+		//Debug.Log($"LocalMovement is {LocalMovement()}");
 	}
 
 	protected override void LateGlobalSuperUpdate()
@@ -130,6 +131,8 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		transform.position += moveDirection * controller.deltaTime;
 
+		//Debug.Log($"heightScale is {controller.heightScale}");
+		//Debug.Log($"moveDirection is {moveDirection}");
 		//Debug.Log($"CurrentState is {CurrentState}");
 		//Debug.Log($"State Time is {TimeSinceEnteringCurrentState}");
 	}
@@ -179,7 +182,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	void Standing_EnterState()
 	{
 		controller.EnableSlopeLimit();
-		controller.EnableClamping();
+		//controller.EnableClamping();
 	}
 
 	void Standing_SuperUpdate()
@@ -222,7 +225,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	void Crouching_EnterState()
 	{
 		controller.EnableSlopeLimit();
-		controller.EnableClamping();
+		//controller.EnableClamping();
 	}
 
 	void Crouching_SuperUpdate()
@@ -258,11 +261,6 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		}
 
 		moveDirection = Vector3.MoveTowards(moveDirection, Vector3.zero, CrouchDeceleration * controller.deltaTime);
-	}
-
-	void Crouching_ExitState()
-	{
-
 	}
 	#endregion
 
@@ -371,7 +369,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 		}
 
-		moveDirection = Vector3.MoveTowards(moveDirection, transform.forward * SlideVelocity, SlideVelocity * controller.deltaTime);
+		moveDirection = Vector3.MoveTowards(moveDirection, LocalMovement() * SlideVelocity, SlideVelocity * controller.deltaTime);
 	}
 	#endregion
 
@@ -602,6 +600,8 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			Mathf.Min(TimeSinceEnteringCurrentState / ChangeStanceSpeed, 1));
 
 		var offsetRatio = PlayerCamera.currentViewYOffset / PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET;
+		if (PlayerCamera.currentViewYOffset <= PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET / 2)
+			controller.SetCrouchingSpheres();
 		controller.heightScale = offsetRatio;
 	}
 
@@ -611,6 +611,8 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			Mathf.Min(TimeSinceEnteringCurrentState / ChangeStanceSpeed, 1));
 
 		var offsetRatio = PlayerCamera.currentViewYOffset / PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET;
+		if (PlayerCamera.currentViewYOffset > PlayerCamera.PLAYER_STANDING_VIEW_Y_OFFSET / 2)
+			controller.SetStandingSpheres();
 		controller.heightScale = offsetRatio;
 	}
 

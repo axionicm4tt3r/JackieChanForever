@@ -62,6 +62,9 @@ public class SuperCharacterController : MonoBehaviour
 			new CollisionSphere(1.5f, false, true),
 		};
 
+	CollisionSphere[] standingSpheres;
+	CollisionSphere[] crouchingSpheres;
+
 	public LayerMask Walkable;
 
 	[SerializeField]
@@ -122,6 +125,9 @@ public class SuperCharacterController : MonoBehaviour
 
 		if (ownCollider)
 			IgnoreCollider(ownCollider);
+
+		standingSpheres = spheres;
+		crouchingSpheres = spheres.Where(x => x.isFeet || x.isHead).ToArray();
 
 		foreach (var sphere in spheres)
 		{
@@ -300,6 +306,18 @@ public class SuperCharacterController : MonoBehaviour
 	public bool IsClamping()
 	{
 		return clamping;
+	}
+
+	public void SetCrouchingSpheres()
+	{
+		//if (spheres.Length != 2)
+			spheres = crouchingSpheres;
+	}
+
+	public void SetStandingSpheres()
+	{
+		//if (spheres.Length <= 2)
+			spheres = standingSpheres;
 	}
 
 	/// <summary>
