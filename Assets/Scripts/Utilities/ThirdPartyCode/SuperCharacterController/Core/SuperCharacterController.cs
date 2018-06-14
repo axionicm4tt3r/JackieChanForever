@@ -15,10 +15,16 @@ public class SuperCharacterController : MonoBehaviour
 	Vector3 debugMove = Vector3.zero;
 
 	[SerializeField]
+	QueryTriggerInteraction triggerInteraction;
+
+	[SerializeField]
 	bool fixedTimeStep;
 
 	[SerializeField]
 	int fixedUpdatesPerSecond;
+
+	[SerializeField]
+	bool clampToMovingGround;
 
 	[SerializeField]
 	bool debugSpheres;
@@ -89,6 +95,10 @@ public class SuperCharacterController : MonoBehaviour
 	public Transform currentlyClampedTo { get; set; }
 	public float heightScale { get; set; }
 	public float radiusScale { get; set; }
+	public bool manualUpdateOnly { get; set; }
+
+	public delegate void UpdateDelegate();
+	public event UpdateDelegate AfterSingleUpdate;
 
 	private Vector3 initialPosition;
 	private Vector3 groundOffset;
@@ -147,7 +157,9 @@ public class SuperCharacterController : MonoBehaviour
 		if (defaultCollisionType == null)
 			defaultCollisionType = new GameObject("DefaultSuperCollisionType", typeof(SuperCollisionType)).GetComponent<SuperCollisionType>();
 
-		currentGround = new SuperGround(Walkable, this);
+		currentGround = new SuperGround(Walkable, this, triggerInteraction);
+
+		manualUpdateOnly = false;
 
 		gameObject.SendMessage("SuperStart", SendMessageOptions.DontRequireReceiver);
 	}
@@ -156,6 +168,8 @@ public class SuperCharacterController : MonoBehaviour
 	{
 		// If we are using a fixed timestep, ensure we run the main update loop
 		// a sufficient number of times based on the Time.deltaTime
+		if (manualUpdateOnly)
+			return;
 
 		if (!fixedTimeStep)
 		{
@@ -186,13 +200,20 @@ public class SuperCharacterController : MonoBehaviour
 		}
 	}
 
+	public void ManualUpdate(float deltaTime)
+	{
+		this.deltaTime = deltaTime;
+
+		SingleUpdate();
+	}
+
 	void SingleUpdate()
 	{
 		// Check if we are clamped to an object implicity or explicity
 		bool isClamping = clamping || currentlyClampedTo != null;
 		Transform clampedTo = currentlyClampedTo != null ? currentlyClampedTo : currentGround.transform;
 
-		if (isClamping && clampedTo != null && clampedTo.position - lastGroundPosition != Vector3.zero)
+		if (clampToMovingGround && isClamping && clampedTo != null && clampedTo.position - lastGroundPosition != Vector3.zero)
 			transform.position += clampedTo.position - lastGroundPosition;
 
 		initialPosition = transform.position;
@@ -203,6 +224,8 @@ public class SuperCharacterController : MonoBehaviour
 
 		gameObject.SendMessage("SuperUpdate", SendMessageOptions.DontRequireReceiver);
 
+		collisionData.Clear();
+
 		RecursivePushback(0, MaxPushbackIterations);
 
 		ProbeGround(2);
@@ -211,6 +234,8 @@ public class SuperCharacterController : MonoBehaviour
 			SlopeLimit();
 
 		ProbeGround(3);
+
+		gameObject.SendMessage("OnBeforeClamp", SendMessageOptions.DontRequireReceiver);
 
 		if (clamping)
 			ClampToGround();
@@ -224,6 +249,8 @@ public class SuperCharacterController : MonoBehaviour
 		if (debugGrounding)
 			currentGround.DebugGround(true, true, true, true, true);
 
+		if (AfterSingleUpdate != null)
+			AfterSingleUpdate();
 	}
 
 	void ProbeGround(int iter)
@@ -262,7 +289,7 @@ public class SuperCharacterController : MonoBehaviour
 			RaycastHit hit;
 
 			// Check if our path to our resolved position is blocked by any colliders
-			if (Physics.CapsuleCast(SpherePosition(feet), SpherePosition(head), radius, direction.normalized, out hit, direction.magnitude, Walkable))
+			if (Physics.CapsuleCast(SpherePosition(feet), SpherePosition(head), radius, direction.normalized, out hit, direction.magnitude, Walkable, triggerInteraction))
 			{
 				transform.position += v.normalized * hit.distance;
 			}
@@ -310,53 +337,12 @@ public class SuperCharacterController : MonoBehaviour
 
 	public void SetCrouchingSpheres()
 	{
-		//if (spheres.Length != 2)
-			spheres = crouchingSpheres;
+		spheres = crouchingSpheres;
 	}
 
 	public void SetStandingSpheres()
 	{
-		//if (spheres.Length <= 2)
-			spheres = standingSpheres;
-	}
-
-	/// <summary>
-	/// Provides raycast data based on where a SphereCast would contact the specified normal
-	/// Raycasting downwards from a point along the controller's bottom sphere, based on the provided
-	/// normal
-	/// </summary>
-	/// <param name="groundNormal">Normal of a triangle assumed to be directly below the controller</param>
-	/// <param name="hit">Simulated SphereCast data</param>
-	/// <returns>True if the raycast is successful</returns>
-	private bool SimulateSphereCast(Vector3 groundNormal, out RaycastHit hit)
-	{
-		float groundAngle = Vector3.Angle(groundNormal, up) * Mathf.Deg2Rad;
-
-		Vector3 secondaryOrigin = transform.position + up * Tolerance;
-
-		if (!Mathf.Approximately(groundAngle, 0))
-		{
-			float horizontal = Mathf.Sin(groundAngle) * radius;
-			float vertical = (1.0f - Mathf.Cos(groundAngle)) * radius;
-
-			// Retrieve a vector pointing up the slope
-			Vector3 r2 = Vector3.Cross(groundNormal, down);
-			Vector3 v2 = -Vector3.Cross(r2, groundNormal);
-
-			secondaryOrigin += Math3d.ProjectVectorOnPlane(up, v2).normalized * horizontal + up * vertical;
-		}
-
-		if (Physics.Raycast(secondaryOrigin, down, out hit, Mathf.Infinity, Walkable))
-		{
-			// Remove the tolerance from the distance travelled
-			hit.distance -= Tolerance;
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		spheres = standingSpheres;
 	}
 
 	/// <summary>
@@ -366,8 +352,6 @@ public class SuperCharacterController : MonoBehaviour
 	void RecursivePushback(int depth, int maxDepth)
 	{
 		PushIgnoredColliders();
-
-		collisionData.Clear();
 
 		bool contact = false;
 
@@ -549,10 +533,11 @@ public class SuperCharacterController : MonoBehaviour
 
 	public class SuperGround
 	{
-		public SuperGround(LayerMask walkable, SuperCharacterController controller)
+		public SuperGround(LayerMask walkable, SuperCharacterController controller, QueryTriggerInteraction triggerInteraction)
 		{
 			this.walkable = walkable;
 			this.controller = controller;
+			this.triggerInteraction = triggerInteraction;
 		}
 
 		private class GroundHit
@@ -571,6 +556,7 @@ public class SuperCharacterController : MonoBehaviour
 
 		private LayerMask walkable;
 		private SuperCharacterController controller;
+		private QueryTriggerInteraction triggerInteraction;
 
 		private GroundHit primaryGround;
 		private GroundHit nearGround;
@@ -582,8 +568,8 @@ public class SuperCharacterController : MonoBehaviour
 		public Transform transform { get; private set; }
 
 		private const float groundingUpperBoundAngle = 60.0f;
-		private const float groundingMaxPercentFromCenter = 0.85f;
-		private const float groundingMinPercentFromcenter = 0.50f;
+		private const float groundingMaxPercentFromCenter = 1.0f;
+		private const float groundingMinPercentFromCenter = 1.0f;
 
 		/// <summary>
 		/// Scan the surface below us for ground. Follow up the initial scan with subsequent scans
@@ -605,7 +591,7 @@ public class SuperCharacterController : MonoBehaviour
 
 			RaycastHit hit;
 
-			if (Physics.SphereCast(o, smallerRadius, down, out hit, Mathf.Infinity, walkable))
+			if (Physics.SphereCast(o, smallerRadius, down, out hit, Mathf.Infinity, walkable, triggerInteraction))
 			{
 				var superColType = hit.collider.gameObject.GetComponent<SuperCollisionType>();
 
@@ -643,8 +629,8 @@ public class SuperCharacterController : MonoBehaviour
 				RaycastHit nearHit;
 				RaycastHit farHit;
 
-				Physics.Raycast(nearPoint, down, out nearHit, Mathf.Infinity, walkable);
-				Physics.Raycast(farPoint, down, out farHit, Mathf.Infinity, walkable);
+				Physics.Raycast(nearPoint, down, out nearHit, Mathf.Infinity, walkable, triggerInteraction);
+				Physics.Raycast(farPoint, down, out farHit, Mathf.Infinity, walkable, triggerInteraction);
 
 				nearGround = new GroundHit(nearHit.point, nearHit.normal, nearHit.distance);
 				farGround = new GroundHit(farHit.point, farHit.normal, farHit.distance);
@@ -661,7 +647,7 @@ public class SuperCharacterController : MonoBehaviour
 
 					RaycastHit flushHit;
 
-					if (Physics.Raycast(flushOrigin, v, out flushHit, Mathf.Infinity, walkable))
+					if (Physics.Raycast(flushOrigin, v, out flushHit, Mathf.Infinity, walkable, triggerInteraction))
 					{
 						RaycastHit sphereCastHit;
 
@@ -681,7 +667,12 @@ public class SuperCharacterController : MonoBehaviour
 				// it is connected to at it's base, if there exists any
 				if (Vector3.Angle(nearHit.normal, up) > superColType.StandAngle || nearHit.distance > Tolerance)
 				{
-					var col = nearHit.collider.gameObject.GetComponent<SuperCollisionType>();
+					SuperCollisionType col = null;
+
+					if (nearHit.collider != null)
+					{
+						col = nearHit.collider.gameObject.GetComponent<SuperCollisionType>();
+					}
 
 					if (col == null)
 					{
@@ -690,7 +681,7 @@ public class SuperCharacterController : MonoBehaviour
 
 					// We contacted the wall of the ledge, rather than the landing. Raycast down
 					// the wall to retrieve the proper landing
-					if (Vector3.Angle(nearHit.normal, up) > superColType.StandAngle)
+					if (Vector3.Angle(nearHit.normal, up) > col.StandAngle)
 					{
 						// Retrieve a vector pointing down the slope
 						Vector3 r = Vector3.Cross(nearHit.normal, down);
@@ -698,7 +689,7 @@ public class SuperCharacterController : MonoBehaviour
 
 						RaycastHit stepHit;
 
-						if (Physics.Raycast(nearPoint, v, out stepHit, Mathf.Infinity, walkable))
+						if (Physics.Raycast(nearPoint, v, out stepHit, Mathf.Infinity, walkable, triggerInteraction))
 						{
 							stepGround = new GroundHit(stepHit.point, stepHit.normal, stepHit.distance);
 						}
@@ -711,7 +702,7 @@ public class SuperCharacterController : MonoBehaviour
 			}
 			// If the initial SphereCast fails, likely due to the controller clipping a wall,
 			// fallback to a raycast simulated to SphereCast data
-			else if (Physics.Raycast(o, down, out hit, Mathf.Infinity, walkable))
+			else if (Physics.Raycast(o, down, out hit, Mathf.Infinity, walkable, triggerInteraction))
 			{
 				var superColType = hit.collider.gameObject.GetComponent<SuperCollisionType>();
 
@@ -823,7 +814,7 @@ public class SuperCharacterController : MonoBehaviour
 
 			float angleRatio = angle / groundingUpperBoundAngle;
 
-			float distanceRatio = Mathf.Lerp(groundingMinPercentFromcenter, groundingMaxPercentFromCenter, angleRatio);
+			float distanceRatio = Mathf.Lerp(groundingMinPercentFromCenter, groundingMaxPercentFromCenter, angleRatio);
 
 			Vector3 p = Math3d.ProjectPointOnPlane(controller.up, controller.transform.position, point);
 
@@ -835,18 +826,6 @@ public class SuperCharacterController : MonoBehaviour
 		public Vector3 PrimaryNormal()
 		{
 			return primaryGround.normal;
-		}
-
-		public Vector3 Normal(bool isGrounded, float distance)
-		{
-			Vector3 n;
-			IsGrounded(isGrounded, distance, out n);
-			return n;
-		}
-
-		public float HitDistance()
-		{
-			return primaryGround.distance;
 		}
 
 		public float Distance()
@@ -882,6 +861,14 @@ public class SuperCharacterController : MonoBehaviour
 			}
 		}
 
+		/// <summary>
+		/// Provides raycast data based on where a SphereCast would contact the specified normal
+		/// Raycasting downwards from a point along the controller's bottom sphere, based on the provided
+		/// normal
+		/// </summary>
+		/// <param name="groundNormal">Normal of a triangle assumed to be directly below the controller</param>
+		/// <param name="hit">Simulated SphereCast data</param>
+		/// <returns>True if the raycast is successful</returns>
 		private bool SimulateSphereCast(Vector3 groundNormal, out RaycastHit hit)
 		{
 			float groundAngle = Vector3.Angle(groundNormal, controller.up) * Mathf.Deg2Rad;
@@ -900,10 +887,10 @@ public class SuperCharacterController : MonoBehaviour
 				secondaryOrigin += Math3d.ProjectVectorOnPlane(controller.up, v2).normalized * horizontal + controller.up * vertical;
 			}
 
-			if (Physics.Raycast(secondaryOrigin, controller.down, out hit, Mathf.Infinity, walkable))
+			if (Physics.Raycast(secondaryOrigin, controller.down, out hit, Mathf.Infinity, walkable, triggerInteraction))
 			{
 				// Remove the tolerance from the distance travelled
-				hit.distance -= Tolerance;
+				hit.distance -= Tolerance + TinyTolerance;
 
 				return true;
 			}

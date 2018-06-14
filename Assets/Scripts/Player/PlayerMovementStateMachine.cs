@@ -9,8 +9,10 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	public const float CrouchSpeed = 5.0f;
 	public const float CrouchAcceleration = CrouchSpeed * 9.0f;
 	public const float CrouchDeceleration = CrouchSpeed * 8.0f;
+
 	public const float JumpHeight = 1.3f;
 	public const float Gravity = 25.0f;
+
 	public const float AirControl = 0.6f;
 	public const float ChangeStanceSpeed = 0.3f;
 
@@ -41,12 +43,12 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	private PlayerAttackStateMachine playerAttackStateMachine;
 
 	//Change these if you mess with the player size
-	private float collisionSphereSize = 0.38f;
+	private float collisionSphereSize = 0.4f;
 	private Vector3 standingTorsoPosition = new Vector3(0, 1.2f, 0);
 	private Vector3 standingHeadPosition = new Vector3(0, 1.6f, 0);
 
 	private float fallStartingHeight = 0f;
-	
+
 	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
 
 	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
@@ -144,7 +146,23 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	public bool MaintainingGround()
 	{
-		return controller.currentGround.IsGrounded(true, collisionSphereSize);
+		return controller.currentGround.IsGrounded(true, 0.4f);
+	}
+
+	private void OnBeforeClamp()
+	{
+		if ((PlayerMovementState)currentState == PlayerMovementState.Standing 
+			|| (PlayerMovementState)currentState == PlayerMovementState.Running
+			|| (PlayerMovementState) currentState == PlayerMovementState.Crouching
+			 || (PlayerMovementState)currentState == PlayerMovementState.CrouchRunning
+			 || (PlayerMovementState)currentState == PlayerMovementState.Sliding)
+		{
+			if (!MaintainingGround())
+			{
+				currentState = PlayerMovementState.Falling;
+				return;
+			}
+		}
 	}
 
 	public void RotateGravity(Vector3 up)
@@ -182,7 +200,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	void Standing_EnterState()
 	{
 		controller.EnableSlopeLimit();
-		//controller.EnableClamping();
+		controller.EnableClamping();
 	}
 
 	void Standing_SuperUpdate()
@@ -225,7 +243,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 	void Crouching_EnterState()
 	{
 		controller.EnableSlopeLimit();
-		//controller.EnableClamping();
+		controller.EnableClamping();
 	}
 
 	void Crouching_SuperUpdate()
@@ -471,7 +489,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 				return;
 			}
 			else
-			{ 
+			{
 				if ((PlayerMovementState)lastState != PlayerMovementState.CrouchRecovering)
 				{
 					CurrentState = PlayerMovementState.CrouchRecovering;
@@ -594,6 +612,15 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		CurrentState = PlayerMovementState.CrouchLunging;
 	}
 
+	private bool PlayerMovementStateShouldAllowClamping()
+	{
+		return (PlayerMovementState)CurrentState == PlayerMovementState.Standing
+			|| (PlayerMovementState)CurrentState == PlayerMovementState.Running
+			|| (PlayerMovementState)CurrentState == PlayerMovementState.Crouching
+			|| (PlayerMovementState)CurrentState == PlayerMovementState.CrouchRunning
+			|| (PlayerMovementState)CurrentState == PlayerMovementState.Sliding;
+	}
+
 	private void GoToCrouching()
 	{
 		PlayerCamera.currentViewYOffset = Mathf.Lerp(PlayerCamera.currentViewYOffset, PlayerCamera.PLAYER_CROUCHING_VIEW_Y_OFFSET,
@@ -624,13 +651,13 @@ public class PlayerMovementStateMachine : SuperStateMachine
 		return torsoCheck.Length == 0 && headCheck.Length == 0;
 	}
 
-	//private void OnDrawGizmos()
-	//{
-	//	Gizmos.color = Color.red;
-	//	Gizmos.DrawWireSphere(transform.position + standingTorsoPosition, collisionSphereSize);
-	//	Gizmos.color = Color.blue;
-	//	Gizmos.DrawWireSphere(transform.position + standingHeadPosition, collisionSphereSize);
-	//}
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(transform.position + standingTorsoPosition, collisionSphereSize);
+		Gizmos.color = Color.blue;
+		Gizmos.DrawWireSphere(transform.position + standingHeadPosition, collisionSphereSize);
+	}
 }
 
 public enum PlayerMovementState
