@@ -151,9 +151,9 @@ public class PlayerMovementStateMachine : SuperStateMachine
 
 	private void OnBeforeClamp()
 	{
-		if ((PlayerMovementState)currentState == PlayerMovementState.Standing 
+		if ((PlayerMovementState)currentState == PlayerMovementState.Standing
 			|| (PlayerMovementState)currentState == PlayerMovementState.Running
-			|| (PlayerMovementState) currentState == PlayerMovementState.Crouching
+			|| (PlayerMovementState)currentState == PlayerMovementState.Crouching
 			 || (PlayerMovementState)currentState == PlayerMovementState.CrouchRunning
 			 || (PlayerMovementState)currentState == PlayerMovementState.Sliding)
 		{
@@ -539,8 +539,17 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			}
 			else
 			{
-				CurrentState = PlayerMovementState.Standing;
-				return;
+				if (playerInputManager.Current.MoveInput != Vector3.zero && playerInputManager.Current.CrouchInput && LocalMovementIsForwardFacing
+					&& (PlayerAttackState)playerAttackStateMachine.currentState != PlayerAttackState.JumpKicking)
+				{
+					CurrentState = PlayerMovementState.Sliding;
+					return;
+				}
+				else
+				{
+					CurrentState = PlayerMovementState.Standing;
+					return;
+				}
 			}
 		}
 
