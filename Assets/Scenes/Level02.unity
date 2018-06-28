@@ -3046,6 +3046,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawMeshTreeOnStart: 1
+--- !u!1 &973862783 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1130459233875592, guid: cf90af9d33b61e8409de30f594c3a41d,
+    type: 2}
+  m_PrefabInternal: {fileID: 1463486987}
+--- !u!95 &973862784
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 973862783}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c1e911a1fd9feae47a4597eda2ecff5b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1001 &1199270932
 Prefab:
   m_ObjectHideFlags: 0
@@ -5932,26 +5954,6 @@ Prefab:
     - target: {fileID: 4215498645123982, guid: cf90af9d33b61e8409de30f594c3a41d, type: 2}
       propertyPath: m_RootOrder
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114379109696973968, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: Walkable.m_Bits
-      value: 1073758209
-      objectReference: {fileID: 0}
-    - target: {fileID: 114379109696973968, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: debugSpheres
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114379109696973968, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: clampToMovingGround
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 20467914906854800, guid: cf90af9d33b61e8409de30f594c3a41d,
-        type: 2}
-      propertyPath: near clip plane
-      value: 0.15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cf90af9d33b61e8409de30f594c3a41d, type: 2}
