@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(EnemyStatus))]
 [RequireComponent(typeof(NavMeshAgent))]
-public abstract class EnemyAI : MonoBehaviour, IAttackable
+public abstract class EnemyAI : SuperStateMachine, IAttackable
 {
 	public bool isAlerted;
 	public bool wasAttacked;
@@ -21,6 +22,16 @@ public abstract class EnemyAI : MonoBehaviour, IAttackable
 	internal Animator animator;
 	internal EnemyStatus status;
 	internal NavMeshAgent navAgent;
+
+	public Enum CurrentState { get { return currentState; } private set { ChangeState(); currentState = value; } }
+
+	public float TimeSinceEnteringCurrentState { get { return Time.time - timeEnteredState; } }
+
+	private void ChangeState()
+	{
+		lastState = CurrentState;
+		timeEnteredState = Time.time;
+	}
 
 	public virtual void Awake()
 	{

@@ -3078,7 +3078,7 @@ Prefab:
     - target: {fileID: 114928903552488530, guid: c5259106ad9516249ae50e60c9a2407c,
         type: 2}
       propertyPath: debugPositions.Array.size
-      value: 10
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4959278111422990, guid: c5259106ad9516249ae50e60c9a2407c, type: 2}
       propertyPath: m_LocalPosition.x

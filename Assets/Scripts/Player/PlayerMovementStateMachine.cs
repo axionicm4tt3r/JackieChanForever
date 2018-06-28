@@ -456,6 +456,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
+		//Are we recovering from a fall, or something like a slide?
 		bool recoverFromFalling = ((PlayerMovementState)lastState == PlayerMovementState.Falling || (PlayerMovementState)lastState == PlayerMovementState.Jumping);
 
 		if ((recoverFromFalling && TimeSinceEnteringCurrentState >= FallingIntoRecoveryTime) ||
@@ -478,6 +479,7 @@ public class PlayerMovementStateMachine : SuperStateMachine
 			return;
 		}
 
+		//Are we recovering from a fall, or something like a slide?
 		bool recoverFromFalling = ((PlayerMovementState)lastState == PlayerMovementState.Falling || (PlayerMovementState)lastState == PlayerMovementState.Jumping);
 
 		if ((recoverFromFalling && TimeSinceEnteringCurrentState >= FallingIntoRecoveryTime) ||
